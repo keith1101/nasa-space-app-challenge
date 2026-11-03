@@ -48,8 +48,8 @@ PRESET_TARGETS = [
     {
         "id": "cygnus-deep-field",
         "name": "Cygnus Calibrated Field (SPHEREx QR2)",
-        "ra": 304.6935,
-        "dec": 42.4437,
+        "ra": 305.5988,
+        "dec": 41.1489,
         "fov_arcmin": 13.1,
         "description": "Official SPHEREx QR2 calibration coverage field in Cygnus with verified IRSA Multi-Extension FITS."
     },

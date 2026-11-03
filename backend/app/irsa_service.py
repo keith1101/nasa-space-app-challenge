@@ -37,7 +37,7 @@ MANIFEST_PATH = os.path.join(CACHE_DIR, "cache_manifest.json")
 os.makedirs(CACHE_DIR, exist_ok=True)
 os.makedirs(SAMPLE_DIR, exist_ok=True)
 
-IRSA_IBE_BASE = "https://irsa.ipac.caltech.edu/ibe/data/spherex/qr/level2"
+IRSA_IBE_BASE = "https://irsa.ipac.caltech.edu/ibe/data/spherex/qr2/level2"
 
 
 class FITSCacheManager:
@@ -100,7 +100,7 @@ class FITSCacheManager:
 class IRSACutoutClient:
     """Client for querying the official NASA IPAC / IRSA SPHEREx Cutout API."""
 
-    def __init__(self, timeout_sec: float = 4.0):
+    def __init__(self, timeout_sec: float = 12.0):
         self.timeout_sec = timeout_sec
 
     def fetch_cutout(
@@ -109,27 +109,38 @@ class IRSACutoutClient:
         dec: float,
         channel_id: int,
         epoch_id: str = "survey-1",
-        size_deg: float = 0.1
+        size_deg: float = 0.05
     ) -> Optional[bytes]:
-        """Queries NASA IPAC/IRSA Cutout API with short timeout."""
-        subpath = "2025W19_2B" if epoch_id in ["survey-1", "2025W19_2B"] else "2025W43_1A"
+        """Queries NASA IPAC/IRSA Cutout API with adaptive release paths."""
         channel = get_channel_by_id(channel_id)
         band_id = channel["band_id"]
 
-        query_url = f"{IRSA_IBE_BASE}/{subpath}/l2b-v11-2025-163/{band_id}/level2_{subpath}_0073_2D{band_id}_spx.fits"
+        # Release scan candidates available on NASA IRSA QR2
+        if epoch_id in ["survey-2", "2025W43_1A"]:
+            scan_candidates = [
+                f"{IRSA_IBE_BASE}/2025W20_1C/l2b-v20-2025-247/{band_id}/level2_2025W20_1C_0002_2D{band_id}_spx_l2b-v20-2025-247.fits",
+                f"{IRSA_IBE_BASE}/2025W18_1B/l2b-v20-2025-240/{band_id}/level2_2025W18_1B_0023_2D{band_id}_spx_l2b-v20-2025-240.fits",
+            ]
+        else:
+            scan_candidates = [
+                f"{IRSA_IBE_BASE}/2025W18_1B/l2b-v20-2025-240/{band_id}/level2_2025W18_1B_0023_2D{band_id}_spx_l2b-v20-2025-240.fits",
+                f"{IRSA_IBE_BASE}/2025W20_1C/l2b-v20-2025-247/{band_id}/level2_2025W20_1C_0002_2D{band_id}_spx_l2b-v20-2025-247.fits",
+            ]
+
         params = {
-            "center": f"{ra:.5f},{dec:.5f}",
-            "size": f"{size_deg:.3f}"
+            "center": f"{ra:.5f},{dec:.5f}d",
+            "size": f"{size_deg:.4f}"
         }
 
-        try:
-            with httpx.Client(timeout=self.timeout_sec) as client:
-                resp = client.get(query_url, params=params)
-                if resp.status_code == 200 and len(resp.content) > 2880:
-                    if resp.content[:8] == b"SIMPLE  ":
-                        return resp.content
-        except Exception:
-            pass
+        for query_url in scan_candidates:
+            try:
+                with httpx.Client(timeout=self.timeout_sec) as client:
+                    resp = client.get(query_url, params=params)
+                    if resp.status_code == 200 and len(resp.content) > 2880:
+                        if resp.content[:8] == b"SIMPLE  ":
+                            return resp.content
+            except Exception:
+                continue
 
         return None
 
