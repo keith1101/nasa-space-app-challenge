@@ -48,19 +48,29 @@ export interface MovingCandidate {
   snr: number;
 }
 
+export interface SpectralPoint {
+  channel_id: number;
+  wavelength_um: number;
+  band_id: number;
+  flux_density: number;
+}
+
 export interface BlinkResponse {
   ra: number;
   dec: number;
   channel_id: number;
   wavelength_um: number;
   band_name: string;
+  data_source: 'nasa_irsa_live' | 'local_cache' | 'offline_sample';
   epoch1: {
     epoch_id: string;
+    data_source?: string;
     image_base64: string;
     stats: { min: number; max: number };
   };
   epoch2: {
     epoch_id: string;
+    data_source?: string;
     image_base64: string;
     stats: { min: number; max: number };
   };
@@ -70,6 +80,7 @@ export interface BlinkResponse {
     max_residual: number;
     std_residual: number;
   };
+  spectral_profile?: SpectralPoint[];
   candidates_detected: MovingCandidate[];
   wcs: {
     crval: [number, number];

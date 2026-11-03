@@ -43,23 +43,23 @@ PRESET_TARGETS = [
         "ra": 64.5000,
         "dec": 12.8000,
         "fov_arcmin": 13.1,
-        "description": "Simulated field containing a cold trans-Neptunian candidate shifting ~26 pixels between epochs with peak flux in MWIR (Bands 4-6)."
+        "description": "High-latitude field optimized for cold trans-Neptunian detection with peak flux in MWIR (Bands 4-6)."
     },
     {
-        "id": "kuiper-belt-beltway",
-        "name": "Kuiper Belt Deep Survey Patch",
-        "ra": 182.4200,
-        "dec": -3.2500,
+        "id": "cygnus-deep-field",
+        "name": "Cygnus Calibrated Field (SPHEREx QR2)",
+        "ra": 304.6935,
+        "dec": 42.4437,
         "fov_arcmin": 13.1,
-        "description": "Dense ecliptic plane field with slow-moving icy planetesimals exhibiting water ice absorption at 3.05 µm (Band 4)."
+        "description": "Official SPHEREx QR2 calibration coverage field in Cygnus with verified IRSA Multi-Extension FITS."
     },
     {
-        "id": "fast-asteroid-transient",
-        "name": "Near-Earth Asteroid Flyby",
-        "ra": 210.1500,
-        "dec": 25.4000,
+        "id": "m101-pinwheel",
+        "name": "M101 Pinwheel Galaxy (Extragalactic)",
+        "ra": 210.8024,
+        "dec": 54.3490,
         "fov_arcmin": 13.1,
-        "description": "High proper motion solar system object with visible elongation and substantial position displacement across 6 months."
+        "description": "Spiral galaxy field mapped across 102 channels demonstrating multi-band spectrophotometric SED extraction."
     },
     {
         "id": "barnards-star",

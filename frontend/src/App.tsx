@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
-import { CoordinateSearch } from './components/CoordinateSearch';
-import { BandSelector } from './components/BandSelector';
+import { CompactToolbar } from './components/CompactToolbar';
 import { SkyViewer } from './components/SkyViewer';
-import { AstrometryPanel } from './components/AstrometryPanel';
+import { SpectralProfile } from './components/SpectralProfile';
+import { AstrometryLedger } from './components/AstrometryLedger';
 import { CandidateModal } from './components/CandidateModal';
 import {
   BlinkResponse,
@@ -20,22 +20,19 @@ import {
 } from './services/api';
 
 export const App: React.FC = () => {
-  // Backend Status
   const [backendHealthy, setBackendHealthy] = useState<boolean>(false);
   const [astropyVersion, setAstropyVersion] = useState<string>('');
 
-  // Astronomical Query Parameters
-  const [ra, setRa] = useState<number>(64.5000);
-  const [dec, setDec] = useState<number>(12.8000);
+  // Coordinates & Query state
+  const [ra, setRa] = useState<number>(304.6935);
+  const [dec, setDec] = useState<number>(42.4437);
   const [channelId, setChannelId] = useState<number>(60);
   const [stretch, setStretch] = useState<string>('asinh');
   const [colormap, setColormap] = useState<string>('magma');
 
-  // Metadata catalogs
-  const [detectorBands, setDetectorBands] = useState<DetectorBand[]>([]);
-  const [channels, setChannels] = useState<ChannelInfo[]>([]);
+  // Metadata
   const [targets, setTargets] = useState<PresetTarget[]>([]);
-  const [selectedTargetId, setSelectedTargetId] = useState<string | null>('planet-x-candidate');
+  const [selectedTargetId, setSelectedTargetId] = useState<string | null>('cygnus-deep-field');
 
   // Query Results
   const [blinkData, setBlinkData] = useState<BlinkResponse | null>(null);
@@ -46,29 +43,23 @@ export const App: React.FC = () => {
   // Modal
   const [isFlagModalOpen, setIsFlagModalOpen] = useState<boolean>(false);
 
-  // Initial Data Fetch
   useEffect(() => {
-    async function initData() {
+    async function init() {
       try {
         const health = await fetchHealth();
         setBackendHealthy(true);
         setAstropyVersion(health.astropy_version);
 
-        const bandsData = await fetchBands();
-        setDetectorBands(bandsData.detector_bands);
-        setChannels(bandsData.channels);
-
         const targetsData = await fetchTargets();
         setTargets(targetsData.targets);
 
-        // Run initial sky query
-        performQuery(64.5, 12.8, 60, 'asinh', 'magma');
+        // Run initial sky query for Cygnus field (real SPHEREx QR2 coverage)
+        performQuery(304.6935, 42.4437, 60, 'asinh', 'magma');
       } catch (err: any) {
-        console.warn('Backend not responding yet:', err);
         setErrorMsg('Connecting to local FastAPI AstroPy service...');
       }
     }
-    initData();
+    init();
   }, []);
 
   const performQuery = async (
@@ -98,7 +89,7 @@ export const App: React.FC = () => {
         setSelectedCandidate(null);
       }
     } catch (err: any) {
-      setErrorMsg(err.message || 'Failed to query celestial coordinates.');
+      setErrorMsg(err.message || 'Failed to query coordinates from NASA IRSA service.');
     } finally {
       setIsLoading(false);
     }
@@ -117,78 +108,74 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-space-950 text-slate-100 flex flex-col selection:bg-nasa-cyan selection:text-space-950">
+    <div className="min-h-screen bg-[#060913] text-slate-100 flex flex-col selection:bg-nasa-cyan selection:text-[#060913]">
       <Navbar backendHealthy={backendHealthy} astropyVersion={astropyVersion} />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-8 space-y-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 lg:px-8 py-4 space-y-4">
         {errorMsg && (
-          <div className="bg-amber-500/10 border border-amber-500/30 text-amber-300 px-4 py-2.5 rounded-xl text-xs font-mono flex items-center justify-between">
+          <div className="bg-amber-500/10 border border-amber-500/30 text-amber-300 px-3 py-2 rounded-lg text-xs font-mono flex items-center justify-between">
             <span>{errorMsg}</span>
             <button
               type="button"
               onClick={() => performQuery()}
-              className="underline hover:text-white ml-2 font-bold"
+              className="underline hover:text-white font-bold ml-2"
             >
               Retry
             </button>
           </div>
         )}
 
-        {/* Top Controls: Coordinates and Bands */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-6">
-            <CoordinateSearch
-              ra={ra}
-              dec={dec}
-              onRaChange={(newRa) => {
-                setRa(newRa);
-                setSelectedTargetId(null);
-              }}
-              onDecChange={(newDec) => {
-                setDec(newDec);
-                setSelectedTargetId(null);
-              }}
-              targets={targets}
-              onSelectTarget={handleSelectTarget}
-              selectedTargetId={selectedTargetId}
-              onSearch={() => performQuery(ra, dec, channelId, stretch, colormap)}
-              isLoading={isLoading}
-            />
-          </div>
+        {/* 1. Compact Exploration Toolbar */}
+        <CompactToolbar
+          ra={ra}
+          dec={dec}
+          onRaChange={(val) => {
+            setRa(val);
+            setSelectedTargetId(null);
+          }}
+          onDecChange={(val) => {
+            setDec(val);
+            setSelectedTargetId(null);
+          }}
+          channelId={channelId}
+          onChannelChange={handleChannelChange}
+          targets={targets}
+          selectedTargetId={selectedTargetId}
+          onSelectTarget={handleSelectTarget}
+          onSearch={() => performQuery(ra, dec, channelId, stretch, colormap)}
+          isLoading={isLoading}
+          dataSource={blinkData?.data_source}
+          wavelengthUm={blinkData?.wavelength_um}
+        />
 
-          <div className="lg:col-span-6">
-            <BandSelector
-              detectorBands={detectorBands}
-              channels={channels}
-              selectedChannelId={channelId}
+        {/* 2. Core Sky Viewer (Blink Comparator ⇄ DIA Difference) */}
+        <SkyViewer
+          blinkData={blinkData}
+          isLoading={isLoading}
+          onSelectCandidate={setSelectedCandidate}
+          selectedCandidate={selectedCandidate}
+          stretch={stretch}
+          onStretchChange={setStretch}
+          colormap={colormap}
+          onColormapChange={setColormap}
+          onRequery={() => performQuery(ra, dec, channelId, stretch, colormap)}
+        />
+
+        {/* 3. Bottom Grid: 1D Spectral Profile & Astrometry Ledger */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+          <div className="lg:col-span-7">
+            <SpectralProfile
+              spectralProfile={blinkData?.spectral_profile}
+              currentChannelId={channelId}
               onSelectChannel={handleChannelChange}
             />
           </div>
-        </div>
 
-        {/* Core Visualization & Astrometry Data Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left: Interactive Sky Viewer (Blink / Side-by-Side / Diff) */}
-          <div className="lg:col-span-8">
-            <SkyViewer
-              blinkData={blinkData}
-              isLoading={isLoading}
-              onSelectCandidate={setSelectedCandidate}
+          <div className="lg:col-span-5">
+            <AstrometryLedger
+              candidates={blinkData?.candidates_detected || []}
               selectedCandidate={selectedCandidate}
-              stretch={stretch}
-              onStretchChange={setStretch}
-              colormap={colormap}
-              onColormapChange={setColormap}
-              onRequery={() => performQuery(ra, dec, channelId, stretch, colormap)}
-            />
-          </div>
-
-          {/* Right: Astrometry Ledger & Candidate List */}
-          <div className="lg:col-span-4">
-            <AstrometryPanel
-              blinkData={blinkData}
               onSelectCandidate={setSelectedCandidate}
-              selectedCandidate={selectedCandidate}
               onOpenFlagModal={() => setIsFlagModalOpen(true)}
             />
           </div>
@@ -205,11 +192,8 @@ export const App: React.FC = () => {
         channelId={channelId}
       />
 
-      {/* Footer */}
-      <footer className="border-t border-space-800 bg-space-900/60 py-4 px-6 text-center text-xs text-slate-500">
-        <p>
-          NASA International Space Apps Challenge 2026 • Challenge: <strong>Planet X and SPHEREx</strong> • Open Source MIT License
-        </p>
+      <footer className="border-t border-space-850 py-3 text-center text-[11px] font-mono text-slate-500">
+        NASA Space Apps Challenge 2026 • SPHEREx All-Sky Time-Lapse & Planet X Explorer • MIT Open Source
       </footer>
     </div>
   );

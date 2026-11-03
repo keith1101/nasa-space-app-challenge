@@ -50,12 +50,16 @@ venv.bak/
 # Astronomical Data Cache & Scratch
 data/*.fits
 data/cache/
+backend/data/cache/
 *.fits
 *.fits.gz
 *.h5
 *.hdf5
 backend/data/*.fits
 !backend/data/sample_targets.json
+
+# Agents & Coordination Workspaces
+.agents/
 
 # IDE and OS
 .vscode/

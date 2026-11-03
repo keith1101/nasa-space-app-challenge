@@ -18,5 +18,255 @@
     "observer_name": "Test Astronomer",
     "classification": "Planet X Candidate",
     "notes": "Verified parallax motion across 6-month baseline."
+  },
+  {
+    "id": "FLAG-1793645474",
+    "timestamp": "2026-11-03T01:51:14.806501Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Test Astronomer",
+    "classification": "Planet X Candidate",
+    "notes": "Verified parallax motion across 6-month baseline."
+  },
+  {
+    "id": "FLAG-1793646073",
+    "timestamp": "2026-11-03T02:01:13.513908Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Test Astronomer",
+    "classification": "Planet X Candidate",
+    "notes": "Verified parallax motion across 6-month baseline."
+  },
+  {
+    "id": "FLAG-1793646387",
+    "timestamp": "2026-11-03T02:06:27.873110Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Test Astronomer",
+    "classification": "Planet X Candidate",
+    "notes": "Verified parallax motion across 6-month baseline."
+  },
+  {
+    "id": "FLAG-1793646432",
+    "timestamp": "2026-11-03T02:07:12.736069Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Test Astronomer",
+    "classification": "Planet X Candidate",
+    "notes": "Verified parallax motion across 6-month baseline."
+  },
+  {
+    "id": "FLAG-1793646657",
+    "timestamp": "2026-11-03T02:10:57.792087Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Dr. Chlo\u00eb O'Connor \ud83d\udd2d",
+    "classification": "Planet X Candidate",
+    "notes": "Verified 'Planet X' candidate!\nHigh proper motion: \u03bc = 10.3\"/yr.\nUnicode: \u03b1 Centauri, \u03a9-Nebula."
+  },
+  {
+    "id": "FLAG-1793646658",
+    "timestamp": "2026-11-03T02:10:58.010639Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Autonomous E2E Validator",
+    "classification": "Planet X / Distant Trans-Neptunian",
+    "notes": "Verified moving dipole in Clyde Tombaugh blink comparison."
+  },
+  {
+    "id": "FLAG-1793646768",
+    "timestamp": "2026-11-03T02:12:48.808508Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Dr. Chlo\u00eb O'Connor \ud83d\udd2d",
+    "classification": "Planet X Candidate",
+    "notes": "Verified 'Planet X' candidate!\nHigh proper motion: \u03bc = 10.3\"/yr.\nUnicode: \u03b1 Centauri, \u03a9-Nebula."
+  },
+  {
+    "id": "FLAG-1793646769",
+    "timestamp": "2026-11-03T02:12:49.022130Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Autonomous E2E Validator",
+    "classification": "Planet X / Distant Trans-Neptunian",
+    "notes": "Verified moving dipole in Clyde Tombaugh blink comparison."
+  },
+  {
+    "id": "FLAG-1793646777",
+    "timestamp": "2026-11-03T02:12:57.460210Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Dr. Chlo\u00eb O'Connor \ud83d\udd2d",
+    "classification": "Planet X Candidate",
+    "notes": "Verified 'Planet X' candidate!\nHigh proper motion: \u03bc = 10.3\"/yr.\nUnicode: \u03b1 Centauri, \u03a9-Nebula."
+  },
+  {
+    "id": "FLAG-1793646777",
+    "timestamp": "2026-11-03T02:12:57.581815Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Autonomous E2E Validator",
+    "classification": "Planet X / Distant Trans-Neptunian",
+    "notes": "Verified moving dipole in Clyde Tombaugh blink comparison."
+  },
+  {
+    "id": "FLAG-1793646786",
+    "timestamp": "2026-11-03T02:13:06.009085Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Test Astronomer",
+    "classification": "Planet X Candidate",
+    "notes": "Verified parallax motion across 6-month baseline."
+  },
+  {
+    "id": "FLAG-1793646786",
+    "timestamp": "2026-11-03T02:13:06.496630Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Dr. Chlo\u00eb O'Connor \ud83d\udd2d",
+    "classification": "Planet X Candidate",
+    "notes": "Verified 'Planet X' candidate!\nHigh proper motion: \u03bc = 10.3\"/yr.\nUnicode: \u03b1 Centauri, \u03a9-Nebula."
+  },
+  {
+    "id": "FLAG-1793646786",
+    "timestamp": "2026-11-03T02:13:06.614304Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Autonomous E2E Validator",
+    "classification": "Planet X / Distant Trans-Neptunian",
+    "notes": "Verified moving dipole in Clyde Tombaugh blink comparison."
+  },
+  {
+    "id": "FLAG-1793647058",
+    "timestamp": "2026-11-03T02:17:38.851805Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Test Astronomer",
+    "classification": "Planet X Candidate",
+    "notes": "Verified parallax motion across 6-month baseline."
+  },
+  {
+    "id": "FLAG-1793647059",
+    "timestamp": "2026-11-03T02:17:39.265067Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Dr. Chlo\u00eb O'Connor \ud83d\udd2d",
+    "classification": "Planet X Candidate",
+    "notes": "Verified 'Planet X' candidate!\nHigh proper motion: \u03bc = 10.3\"/yr.\nUnicode: \u03b1 Centauri, \u03a9-Nebula."
+  },
+  {
+    "id": "FLAG-1793647059",
+    "timestamp": "2026-11-03T02:17:39.456647Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Autonomous E2E Validator",
+    "classification": "Planet X / Distant Trans-Neptunian",
+    "notes": "Verified moving dipole in Clyde Tombaugh blink comparison."
+  },
+  {
+    "id": "FLAG-1793648608",
+    "timestamp": "2026-11-03T02:43:28.422293Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Dr. Chlo\u00eb O'Connor \ud83d\udd2d",
+    "classification": "Planet X Candidate",
+    "notes": "Verified 'Planet X' candidate!\nHigh proper motion: \u03bc = 10.3\"/yr.\nUnicode: \u03b1 Centauri, \u03a9-Nebula."
+  },
+  {
+    "id": "FLAG-1793648608",
+    "timestamp": "2026-11-03T02:43:28.681626Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Autonomous E2E Validator",
+    "classification": "Planet X / Distant Trans-Neptunian",
+    "notes": "Verified moving dipole in Clyde Tombaugh blink comparison."
+  },
+  {
+    "id": "FLAG-1793648891",
+    "timestamp": "2026-11-03T02:48:11.522671Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Test Astronomer",
+    "classification": "Planet X Candidate",
+    "notes": "Verified parallax motion across 6-month baseline."
+  },
+  {
+    "id": "FLAG-1793648996",
+    "timestamp": "2026-11-03T02:49:56.324531Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Dr. Chlo\u00eb O'Connor \ud83d\udd2d",
+    "classification": "Planet X Candidate",
+    "notes": "Verified 'Planet X' candidate!\nHigh proper motion: \u03bc = 10.3\"/yr.\nUnicode: \u03b1 Centauri, \u03a9-Nebula."
+  },
+  {
+    "id": "FLAG-1793649030",
+    "timestamp": "2026-11-03T02:50:30.933313Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Autonomous E2E Validator",
+    "classification": "Planet X / Distant Trans-Neptunian",
+    "notes": "Verified moving dipole in Clyde Tombaugh blink comparison."
+  },
+  {
+    "id": "FLAG-1793649417",
+    "timestamp": "2026-11-03T02:56:57.428634Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Test Astronomer",
+    "classification": "Planet X Candidate",
+    "notes": "Verified parallax motion across 6-month baseline."
+  },
+  {
+    "id": "FLAG-1793649885",
+    "timestamp": "2026-11-03T03:04:45.156154Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Test Astronomer",
+    "classification": "Planet X Candidate",
+    "notes": "Verified parallax motion across 6-month baseline."
+  },
+  {
+    "id": "FLAG-1793649960",
+    "timestamp": "2026-11-03T03:06:00.544522Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Dr. Chlo\u00eb O'Connor \ud83d\udd2d",
+    "classification": "Planet X Candidate",
+    "notes": "Verified 'Planet X' candidate!\nHigh proper motion: \u03bc = 10.3\"/yr.\nUnicode: \u03b1 Centauri, \u03a9-Nebula."
+  },
+  {
+    "id": "FLAG-1793649995",
+    "timestamp": "2026-11-03T03:06:35.396321Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Autonomous E2E Validator",
+    "classification": "Planet X / Distant Trans-Neptunian",
+    "notes": "Verified moving dipole in Clyde Tombaugh blink comparison."
   }
 ]
