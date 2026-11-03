@@ -6,7 +6,7 @@ Write-Host "  NASA Space Apps 2026: SPHEREx All-Sky Time-Lapse MVP    " -Foregro
 Write-Host "==========================================================" -ForegroundColor Cyan
 
 $RootDir = $PSScriptRoot
-if (-not $RootDir) { $RootDir = Get-Location }
+if (-not $RootDir) { $RootDir = (Get-Location).Path }
 
 $CondaPython = "C:\Users\LENOVO\miniconda3\envs\pds301m\python.exe"
 
@@ -33,14 +33,16 @@ Start-Sleep -Seconds 3
 Write-Host "`n--- Health & Readiness Verification ---" -ForegroundColor Cyan
 try {
     $health = Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/health" -TimeoutSec 4 -ErrorAction Stop
-    Write-Host "[✓] Backend:  http://127.0.0.1:8000/api/health (AstroPy $($health.astropy_version), IRSA Online)" -ForegroundColor Green
+    $v = $health.astropy_version
+    Write-Host "[OK] Backend:  http://127.0.0.1:8000/api/health (AstroPy $v, IRSA Online)" -ForegroundColor Green
 } catch {
     Write-Host "[!] Backend is still starting up or waiting on port 8000." -ForegroundColor Yellow
 }
 
 try {
-    $fe = Invoke-WebRequest -Uri "http://localhost:3000" -TimeoutSec 4 -ErrorAction Stop
-    Write-Host "[✓] Frontend: http://localhost:3000 (HTTP $($fe.StatusCode))" -ForegroundColor Green
+    $fe = Invoke-WebRequest -Uri "http://localhost:3000" -UseBasicParsing -TimeoutSec 4 -ErrorAction Stop
+    $sc = $fe.StatusCode
+    Write-Host "[OK] Frontend: http://localhost:3000 (HTTP $sc)" -ForegroundColor Green
 } catch {
     Write-Host "[!] Frontend is still starting up or waiting on port 3000." -ForegroundColor Yellow
 }
