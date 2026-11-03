@@ -1,0 +1,22 @@
+[
+  {
+    "id": "FLAG-1793644421",
+    "timestamp": "2026-11-03T01:33:41.613117Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Test Astronomer",
+    "classification": "Planet X Candidate",
+    "notes": "Verified parallax motion across 6-month baseline."
+  },
+  {
+    "id": "FLAG-1793644455",
+    "timestamp": "2026-11-03T01:34:15.051639Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Test Astronomer",
+    "classification": "Planet X Candidate",
+    "notes": "Verified parallax motion across 6-month baseline."
+  }
+]
