@@ -24,8 +24,8 @@ export const App: React.FC = () => {
   const [astropyVersion, setAstropyVersion] = useState<string>('');
 
   // Coordinates & Query state
-  const [ra, setRa] = useState<number>(304.6935);
-  const [dec, setDec] = useState<number>(42.4437);
+  const [ra, setRa] = useState<number>(305.5988);
+  const [dec, setDec] = useState<number>(41.1489);
   const [channelId, setChannelId] = useState<number>(60);
   const [stretch, setStretch] = useState<string>('asinh');
   const [colormap, setColormap] = useState<string>('magma');
@@ -54,7 +54,7 @@ export const App: React.FC = () => {
         setTargets(targetsData.targets);
 
         // Run initial sky query for Cygnus field (real SPHEREx QR2 coverage)
-        performQuery(304.6935, 42.4437, 60, 'asinh', 'magma');
+        performQuery(305.5988, 41.1489, 60, 'asinh', 'magma');
       } catch (err: any) {
         setErrorMsg('Connecting to local FastAPI AstroPy service...');
       }

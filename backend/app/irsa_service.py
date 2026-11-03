@@ -196,6 +196,10 @@ def parse_mef_fits(fits_bytes: bytes, req_ra: Optional[float] = None, req_dec: O
             raise ValueError("No 2D image data found in FITS HDUList")
 
         data = target_hdu.data.astype(np.float32)
+        # Replace NaNs/Infs from raw detector masks with median background or 0.0
+        valid_mask = np.isfinite(data)
+        median_val = float(np.median(data[valid_mask])) if np.any(valid_mask) else 0.0
+        data = np.nan_to_num(data, nan=median_val, posinf=median_val, neginf=0.0)
         header = target_hdu.header
 
         try:
@@ -272,7 +276,10 @@ def compute_spectral_profile(data: np.ndarray, channel_id: int) -> List[Dict[str
     Computes 1D Spectral Energy Distribution (SED) across all 102 SPHEREx channels.
     """
     h, w = data.shape
-    center_flux = float(np.mean(data[h//2 - 2:h//2 + 3, w//2 - 2:w//2 + 3]))
+    center_sub = data[max(0, h//2 - 2):min(h, h//2 + 3), max(0, w//2 - 2):min(w, w//2 + 3)]
+    center_flux = float(np.nanmean(center_sub)) if center_sub.size > 0 else 1.0
+    if not np.isfinite(center_flux) or center_flux <= 0:
+        center_flux = 1.0
 
     profile = []
     for ch in ALL_CHANNELS:

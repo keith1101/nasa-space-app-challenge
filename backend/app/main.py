@@ -149,9 +149,9 @@ def get_cutout(req: CutoutRequest):
             "ctype": list(wcs.wcs.ctype)
         },
         "stats": {
-            "min_flux_mjy_sr": round(float(np.min(data)), 3),
-            "max_flux_mjy_sr": round(float(np.max(data)), 3),
-            "mean_flux_mjy_sr": round(float(np.mean(data)), 3)
+            "min_flux_mjy_sr": round(float(np.nanmin(data)), 3) if np.isfinite(np.nanmin(data)) else 0.0,
+            "max_flux_mjy_sr": round(float(np.nanmax(data)), 3) if np.isfinite(np.nanmax(data)) else 0.0,
+            "mean_flux_mjy_sr": round(float(np.nanmean(data)), 3) if np.isfinite(np.nanmean(data)) else 0.0
         }
     }
 
