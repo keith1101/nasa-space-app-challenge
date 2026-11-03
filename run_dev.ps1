@@ -5,6 +5,9 @@ Write-Host "==========================================================" -Foregro
 Write-Host "  NASA Space Apps 2026: SPHEREx All-Sky Time-Lapse MVP    " -ForegroundColor Cyan
 Write-Host "==========================================================" -ForegroundColor Cyan
 
+$RootDir = $PSScriptRoot
+if (-not $RootDir) { $RootDir = Get-Location }
+
 $CondaPython = "C:\Users\LENOVO\miniconda3\envs\pds301m\python.exe"
 
 if (-not (Test-Path $CondaPython)) {
@@ -12,16 +15,38 @@ if (-not (Test-Path $CondaPython)) {
     $CondaPython = "python"
 }
 
-Write-Host "`n[1/2] Starting FastAPI Backend on http://127.0.0.1:8000..." -ForegroundColor Green
-$BackendJob = Start-Process -FilePath $CondaPython -ArgumentList "-m", "uvicorn", "app.main:app", "--app-dir", "backend", "--host", "127.0.0.1", "--port", "8000", "--reload" -PassThru
+# 1. Start FastAPI Backend in a dedicated titled PowerShell window
+Write-Host "`n[1/2] Launching Backend (FastAPI + AstroPy) on port 8000..." -ForegroundColor Green
+$BackendCmd = "`$host.ui.RawUI.WindowTitle = 'SPHEREx Backend (FastAPI + AstroPy - Port 8000)'; Set-Location '$RootDir'; `$env:PYTHONPATH='backend'; & '$CondaPython' -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000 --reload"
+Start-Process powershell.exe -ArgumentList "-NoExit", "-Command", $BackendCmd
 
 Start-Sleep -Seconds 2
 
-Write-Host "[2/2] Starting Vite React Frontend on http://localhost:3000..." -ForegroundColor Green
-Set-Location "frontend"
-Start-Process "npm" -ArgumentList "run", "dev"
+# 2. Start Vite React Frontend in a dedicated titled PowerShell window
+Write-Host "[2/2] Launching Frontend (Vite React) on port 3000..." -ForegroundColor Green
+$FrontendCmd = "`$host.ui.RawUI.WindowTitle = 'SPHEREx Frontend (Vite React - Port 3000)'; Set-Location '$RootDir\frontend'; npm run dev"
+Start-Process powershell.exe -ArgumentList "-NoExit", "-Command", $FrontendCmd
 
-Write-Host "`n[+] Fullstack MVP is running!" -ForegroundColor Cyan
-Write-Host "    - Web App: http://localhost:3000" -ForegroundColor White
+Start-Sleep -Seconds 3
+
+# 3. Health & Readiness Verification
+Write-Host "`n--- Health & Readiness Verification ---" -ForegroundColor Cyan
+try {
+    $health = Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/health" -TimeoutSec 4 -ErrorAction Stop
+    Write-Host "[✓] Backend:  http://127.0.0.1:8000/api/health (AstroPy $($health.astropy_version), IRSA Online)" -ForegroundColor Green
+} catch {
+    Write-Host "[!] Backend is still starting up or waiting on port 8000." -ForegroundColor Yellow
+}
+
+try {
+    $fe = Invoke-WebRequest -Uri "http://localhost:3000" -TimeoutSec 4 -ErrorAction Stop
+    Write-Host "[✓] Frontend: http://localhost:3000 (HTTP $($fe.StatusCode))" -ForegroundColor Green
+} catch {
+    Write-Host "[!] Frontend is still starting up or waiting on port 3000." -ForegroundColor Yellow
+}
+
+Write-Host "`n[+] Fullstack MVP is running with 2 dedicated windows:" -ForegroundColor Cyan
+Write-Host "    - Web App:  http://localhost:3000" -ForegroundColor White
 Write-Host "    - API Docs: http://127.0.0.1:8000/docs" -ForegroundColor White
-Write-Host "`nPress Ctrl+C or close windows to terminate." -ForegroundColor Gray
+Write-Host "`nBoth Backend and Frontend are running in their respective windows." -ForegroundColor Gray
+Write-Host "Close those windows or press Ctrl+C in them to terminate.`n" -ForegroundColor Gray
