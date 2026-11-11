@@ -21,7 +21,6 @@ services:
   - type: web
     name: spherex-sky-viewer-frontend
     env: static
-    region: singapore
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: dist
