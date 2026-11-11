@@ -9,10 +9,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@lottiefiles/dotlottie-react": "^0.22.0",
+    "@types/katex": "^0.16.8",
+    "@xyflow/react": "^12.12.1",
     "clsx": "^2.1.1",
+    "katex": "^0.19.1",
     "lucide-react": "^0.460.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "recharts": "^3.10.1",
     "tailwind-merge": "^2.5.4"
   },
   "devDependencies": {
