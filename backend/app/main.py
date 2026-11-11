@@ -33,7 +33,9 @@ from app.irsa_service import (
     get_spherex_cutout,
     compute_spectral_profile,
     SampleFITSManager,
-    FITSCacheManager
+    FITSCacheManager,
+    IRSACutoutClient,
+    is_irsa_online
 )
 
 app = FastAPI(
@@ -146,7 +148,7 @@ def get_cutout(req: CutoutRequest):
         "wcs": {
             "crval": list(wcs.wcs.crval),
             "cdelt": list(wcs.wcs.cdelt),
-            "ctype": list(wcs.wcs.ctype)
+            "ctype": [c.split("-SIP")[0] if "-SIP" in c else c for c in list(wcs.wcs.ctype)]
         },
         "stats": {
             "min_flux_mjy_sr": round(float(np.nanmin(data)), 3) if np.isfinite(np.nanmin(data)) else 0.0,
@@ -179,6 +181,12 @@ def get_blink_comparison(req: BlinkRequest):
         channel_id=req.channel_id,
         epoch_id=req.epoch2_id
     )
+
+    # Align grid shapes if different survey scans return different pixel bounds
+    if data1.shape != data2.shape:
+        from scipy import ndimage
+        zoom_factors = (data1.shape[0] / max(1, data2.shape[0]), data1.shape[1] / max(1, data2.shape[1]))
+        data2 = ndimage.zoom(data2, zoom_factors, order=1).astype(np.float32)
 
     # 1. Render both single-epoch frames
     img1_b64 = array_to_base64_png(data1, stretch=req.stretch, colormap=req.colormap)
@@ -234,7 +242,7 @@ def get_blink_comparison(req: BlinkRequest):
         "wcs": {
             "crval": list(wcs.wcs.crval),
             "cdelt": list(wcs.wcs.cdelt),
-            "ctype": list(wcs.wcs.ctype)
+            "ctype": [c.split("-SIP")[0] if "-SIP" in c else c for c in list(wcs.wcs.ctype)]
         }
     }
 
@@ -246,14 +254,14 @@ def download_fits(
     channel_id: int = Query(60, ge=1, le=102),
     epoch_id: str = Query("survey-1")
 ):
-    """Generates and returns standard astronomical Multi-Extension FITS file."""
-    # Check cache first
-    cached = FITSCacheManager.get(ra, dec, channel_id, epoch_id)
-    if cached:
-        fits_bytes = cached
-    else:
-        sample_bytes = SampleFITSManager.get_sample(ra, dec, channel_id, epoch_id)
-        fits_bytes = sample_bytes
+    """Generates and returns standard astronomical FITS file with primary 2D data and WCS."""
+    data, wcs, meta, _ = get_spherex_cutout(
+        ra=ra,
+        dec=dec,
+        channel_id=channel_id,
+        epoch_id=epoch_id
+    )
+    fits_bytes = export_fits_bytes(data, wcs, meta)
 
     filename = f"spherex_ra{ra:.2f}_dec{dec:.2f}_ch{channel_id}_{epoch_id}.fits"
     return Response(

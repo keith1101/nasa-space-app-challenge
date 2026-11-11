@@ -20,7 +20,14 @@ def compute_difference_matrix(
     data_epoch2: np.ndarray
 ) -> np.ndarray:
     """Computes direct algebraic difference matrix Delta I = Epoch2 - Epoch1."""
-    return data_epoch2.astype(np.float64) - data_epoch1.astype(np.float64)
+    d1 = data_epoch1.astype(np.float64)
+    d2 = data_epoch2.astype(np.float64)
+
+    if d1.shape != d2.shape:
+        zoom_factors = (d1.shape[0] / max(1, d2.shape[0]), d1.shape[1] / max(1, d2.shape[1]))
+        d2 = ndimage.zoom(d2, zoom_factors, order=1)
+
+    return d2 - d1
 
 
 def detect_moving_candidates(
