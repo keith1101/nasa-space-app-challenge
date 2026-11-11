@@ -56,6 +56,7 @@ backend/data/cache/
 *.h5
 *.hdf5
 backend/data/*.fits
+!backend/data/sample_fits/*.fits
 !backend/data/sample_targets.json
 
 # Agents & Coordination Workspaces

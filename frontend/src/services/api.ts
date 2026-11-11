@@ -1,6 +1,6 @@
 import { BlinkResponse, CandidateFlagSubmission, ChannelInfo, DetectorBand, PresetTarget } from '../types';
 
-const BASE_URL = '/api';
+const BASE_URL = (import.meta.env.VITE_API_BASE_URL as string) || '/api';
 
 export async function fetchHealth(): Promise<{ status: string; astropy_version: string }> {
   const res = await fetch(`${BASE_URL}/health`);
