@@ -1,7 +1,8 @@
 import React from 'react';
-import { Search, Download, Compass, Database, CheckCircle2, ChevronDown } from 'lucide-react';
-import { PresetTarget } from '../types';
+import { Search, Download, Database, CheckCircle2, ChevronDown, Compass } from 'lucide-react';
+import { PresetTarget, Language } from '../types';
 import { getFitsDownloadUrl } from '../services/api';
+import { workstationTranslations } from '../data/workstationData';
 
 interface CompactToolbarProps {
   ra: number;
@@ -17,6 +18,7 @@ interface CompactToolbarProps {
   isLoading: boolean;
   dataSource?: 'nasa_irsa_live' | 'local_cache' | 'offline_sample';
   wavelengthUm?: number;
+  lang?: Language;
 }
 
 export const CompactToolbar: React.FC<CompactToolbarProps> = ({
@@ -32,26 +34,33 @@ export const CompactToolbar: React.FC<CompactToolbarProps> = ({
   onSearch,
   isLoading,
   dataSource = 'offline_sample',
-  wavelengthUm = 2.45
+  wavelengthUm = 2.45,
+  lang = 'vi'
 }) => {
+  const t = workstationTranslations[lang].toolbar;
+
   return (
-    <div className="shrink-0 bg-space-900/70 px-3 py-2 flex flex-wrap items-center justify-between gap-3">
+    <div className="shrink-0 bg-spaceapps-deepblue border-b border-spaceapps-electricblue px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-3 text-white font-sans shadow-xs">
       {/* Left: Preset Selector & Coordinates */}
       <div className="flex flex-wrap items-center gap-2.5">
         {/* Preset Target Dropdown */}
         <div className="relative">
+          <label htmlFor="preset-target-select" className="sr-only">
+            {t.presetLabel}
+          </label>
           <select
+            id="preset-target-select"
             value={selectedTargetId || ''}
             onChange={(e) => {
-              const t = targets.find((item) => item.id === e.target.value);
-              if (t) onSelectTarget(t);
+              const target = targets.find((item) => item.id === e.target.value);
+              if (target) onSelectTarget(target);
             }}
-            aria-label="Preset target"
-            className="focus-ring appearance-none bg-space-950 border border-space-700 hover:border-slate-500 rounded-lg pl-3 pr-8 py-1.5 text-xs font-semibold text-slate-200 cursor-pointer transition-colors"
+            aria-label={t.presetLabel}
+            className="focus-ring appearance-none bg-spaceapps-nearblack border border-spaceapps-electricblue hover:border-spaceapps-neonblue rounded-btn pl-3 pr-8 py-1.5 text-xs font-semibold text-white cursor-pointer transition-colors"
           >
-            {targets.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.name}
+            {targets.map((target) => (
+              <option key={target.id} value={target.id}>
+                {target.name}
               </option>
             ))}
           </select>
@@ -59,53 +68,62 @@ export const CompactToolbar: React.FC<CompactToolbarProps> = ({
         </div>
 
         {/* RA Input */}
-        <div className="flex items-center space-x-1.5 bg-space-950 px-2.5 py-1 rounded-lg border border-space-750">
-          <span className="text-[11px] font-mono text-slate-400">α:</span>
+        <div className="flex items-center space-x-1.5 bg-spaceapps-nearblack px-2.5 py-1 rounded-btn border border-spaceapps-electricblue hover:border-spaceapps-neonblue transition-colors">
+          <label htmlFor="ra-input" className="text-[11px] font-mono font-bold text-spaceapps-neonyellow cursor-pointer">
+            {t.raLabel}
+          </label>
           <input
+            id="ra-input"
             type="number"
             step="0.001"
             min="0"
             max="359.999"
             value={ra}
             onChange={(e) => onRaChange(parseFloat(e.target.value) || 0)}
-            aria-label="Right ascension in degrees"
-            className="focus-ring w-20 bg-transparent text-xs font-mono text-white text-right"
+            aria-label="Right ascension in degrees (J2000)"
+            className="focus-ring w-20 bg-transparent text-xs font-mono text-white text-right font-medium focus:outline-hidden"
           />
-          <span className="text-[10px] text-slate-500 font-mono">°</span>
+          <span className="text-[10px] text-slate-400 font-mono">°</span>
         </div>
 
         {/* Dec Input */}
-        <div className="flex items-center space-x-1.5 bg-space-950 px-2.5 py-1 rounded-lg border border-space-750">
-          <span className="text-[11px] font-mono text-slate-400">δ:</span>
+        <div className="flex items-center space-x-1.5 bg-spaceapps-nearblack px-2.5 py-1 rounded-btn border border-spaceapps-electricblue hover:border-spaceapps-neonblue transition-colors">
+          <label htmlFor="dec-input" className="text-[11px] font-mono font-bold text-spaceapps-neonyellow cursor-pointer">
+            {t.decLabel}
+          </label>
           <input
+            id="dec-input"
             type="number"
             step="0.001"
             min="-90"
             max="90"
             value={dec}
             onChange={(e) => onDecChange(parseFloat(e.target.value) || 0)}
-            aria-label="Declination in degrees"
-            className="focus-ring w-18 bg-transparent text-xs font-mono text-white text-right"
+            aria-label="Declination in degrees (J2000)"
+            className="focus-ring w-18 bg-transparent text-xs font-mono text-white text-right font-medium focus:outline-hidden"
           />
-          <span className="text-[10px] text-slate-500 font-mono">°</span>
+          <span className="text-[10px] text-slate-400 font-mono">°</span>
         </div>
 
         {/* Channel Stepper */}
-        <div className="flex items-center space-x-1 bg-space-950 px-2 py-1 rounded-lg border border-space-750">
+        <div className="flex items-center space-x-1 bg-spaceapps-nearblack px-2 py-1 rounded-btn border border-spaceapps-electricblue">
           <button
             type="button"
             onClick={() => onChannelChange(Math.max(1, channelId - 1))}
-            className="text-slate-400 hover:text-white px-1 text-xs font-bold"
+            aria-label={t.prevChannel}
+            className="focus-ring rounded px-2 py-0.5 text-xs font-bold text-slate-300 hover:text-spaceapps-neonyellow hover:bg-spaceapps-electricblue/60 active:scale-95 transition-all"
           >
-            -
+            −
           </button>
-          <span className="text-xs font-mono text-nasa-cyan font-semibold px-1">
-            Ch {channelId} ({wavelengthUm.toFixed(2)} µm)
+          <span className="text-xs font-mono text-spaceapps-neonyellow font-bold px-1.5">
+            {t.channel} {channelId}{' '}
+            <span className="text-slate-300 font-normal">({wavelengthUm.toFixed(2)} µm)</span>
           </span>
           <button
             type="button"
             onClick={() => onChannelChange(Math.min(102, channelId + 1))}
-            className="text-slate-400 hover:text-white px-1 text-xs font-bold"
+            aria-label={t.nextChannel}
+            className="focus-ring rounded px-2 py-0.5 text-xs font-bold text-slate-300 hover:text-spaceapps-neonyellow hover:bg-spaceapps-electricblue/60 active:scale-95 transition-all"
           >
             +
           </button>
@@ -116,14 +134,14 @@ export const CompactToolbar: React.FC<CompactToolbarProps> = ({
           type="button"
           onClick={onSearch}
           disabled={isLoading}
-            className="focus-ring flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-nasa-blue to-nasa-cyan hover:opacity-90 active:scale-[.98] text-white text-xs font-semibold shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="focus-ring flex items-center space-x-1.5 px-3.5 py-1.5 rounded-btn bg-spaceapps-neonyellow text-spaceapps-nearblack hover:bg-white hover:text-spaceapps-neonblue active:scale-95 text-xs font-bold uppercase tracking-wider shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? (
-            <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            <span className="w-3.5 h-3.5 border-2 border-spaceapps-nearblack/30 border-t-spaceapps-nearblack rounded-full animate-spin" />
           ) : (
             <Search className="w-3.5 h-3.5" />
           )}
-          <span>Inspect</span>
+          <span>{isLoading ? t.inspecting : t.inspectBtn}</span>
         </button>
       </div>
 
@@ -131,21 +149,21 @@ export const CompactToolbar: React.FC<CompactToolbarProps> = ({
       <div className="flex items-center space-x-2">
         {/* Data Source Badge */}
         {dataSource === 'nasa_irsa_live' && (
-          <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[11px] font-semibold">
+          <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-btn bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 font-mono text-[11px] font-bold">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span>LIVE NASA IRSA</span>
+            <span>{t.liveSource}</span>
           </div>
         )}
         {dataSource === 'local_cache' && (
-          <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-nasa-cyan/10 border border-nasa-cyan/30 text-nasa-cyan font-mono text-[11px] font-semibold">
-            <Database className="w-3 h-3 text-nasa-cyan" />
-            <span>LOCAL CACHE</span>
+          <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-btn bg-spaceapps-neonblue/20 border border-spaceapps-neonblue/50 text-spaceapps-blueyonder font-mono text-[11px] font-bold">
+            <Database className="w-3 h-3 text-spaceapps-blueyonder" />
+            <span>{t.cacheSource}</span>
           </div>
         )}
         {dataSource === 'offline_sample' && (
-          <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 font-mono text-[11px] font-semibold">
-            <CheckCircle2 className="w-3 h-3 text-amber-400" />
-            <span>OFFLINE SAMPLE</span>
+          <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-btn bg-amber-500/15 border border-amber-500/40 text-spaceapps-neonyellow font-mono text-[11px] font-bold">
+            <CheckCircle2 className="w-3 h-3 text-spaceapps-neonyellow" />
+            <span>{t.offlineSource}</span>
           </div>
         )}
 
@@ -153,10 +171,10 @@ export const CompactToolbar: React.FC<CompactToolbarProps> = ({
         <a
           href={getFitsDownloadUrl(ra, dec, channelId, 'survey-1')}
           download
-          className="flex items-center space-x-1 px-2.5 py-1 rounded-lg bg-space-850 hover:bg-space-800 text-slate-300 hover:text-white border border-space-700 text-xs font-medium transition-colors"
+          className="focus-ring flex items-center space-x-1.5 px-3 py-1 rounded-btn bg-spaceapps-electricblue/40 hover:bg-spaceapps-neonblue text-white border border-spaceapps-electricblue text-xs font-bold uppercase tracking-wider transition-all active:scale-95"
         >
-          <Download className="w-3 h-3 text-nasa-cyan" />
-          <span>FITS</span>
+          <Download className="w-3.5 h-3.5 text-spaceapps-neonyellow" />
+          <span>{t.fitsBtn}</span>
         </a>
       </div>
     </div>

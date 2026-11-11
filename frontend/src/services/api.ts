@@ -44,7 +44,18 @@ export async function fetchBlinkComparison(params: {
       colormap: params.colormap || 'magma'
     })
   });
-  if (!res.ok) throw new Error(`Query failed: ${res.statusText}`);
+  if (!res.ok) {
+    let detail = res.statusText;
+    try {
+      const errJson = await res.json();
+      if (errJson && errJson.detail) {
+        detail = typeof errJson.detail === 'string' ? errJson.detail : JSON.stringify(errJson.detail);
+      }
+    } catch {
+      // ignore json parse error
+    }
+    throw new Error(`Query failed: ${detail} (${res.status})`);
+  }
   return res.json();
 }
 

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { X, Flag, CheckCircle2, AlertCircle } from 'lucide-react';
-import { CandidateFlagSubmission, MovingCandidate } from '../types';
+import React, { useEffect, useRef, useState } from 'react';
+import { X, Flag, CheckCircle2, AlertCircle, Compass } from 'lucide-react';
+import { CandidateFlagSubmission, MovingCandidate, Language } from '../types';
 import { submitCandidateFlag } from '../services/api';
+import { workstationTranslations } from '../data/workstationData';
 
 interface CandidateModalProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface CandidateModalProps {
   ra: number;
   dec: number;
   channelId: number;
+  lang?: Language;
 }
 
 export const CandidateModal: React.FC<CandidateModalProps> = ({
@@ -18,23 +20,43 @@ export const CandidateModal: React.FC<CandidateModalProps> = ({
   candidate,
   ra,
   dec,
-  channelId
+  channelId,
+  lang = 'vi'
 }) => {
+  const t = workstationTranslations[lang].modal;
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const [observerName, setObserverName] = useState<string>('NASA Citizen Astronomer');
   const [classification, setClassification] = useState<string>('Planet X / TNO');
   const [notes, setNotes] = useState<string>(
     candidate
-      ? `Detected ${candidate.type} shifting by ${candidate.angular_displacement_arcsec} arcsec over 6-month survey interval.`
-      : 'Visual inspection shows distinct shifting dipole between Survey 1 and Survey 2.'
+      ? t.detectedShift(candidate.type, candidate.angular_displacement_arcsec)
+      : t.defaultNotes
   );
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
-    setNotes(candidate
-      ? `Detected ${candidate.type} shifting by ${candidate.angular_displacement_arcsec} arcsec over the survey interval.`
-      : 'Visual inspection evidence and notes.');
-  }, [candidate]);
+    setNotes(
+      candidate
+        ? t.detectedShift(candidate.type, candidate.angular_displacement_arcsec)
+        : t.defaultNotes
+    );
+  }, [candidate, lang]);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (isOpen) {
+      if (!dialog.open) {
+        dialog.showModal();
+      }
+    } else {
+      if (dialog.open) {
+        dialog.close();
+      }
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -55,122 +77,157 @@ export const CandidateModal: React.FC<CandidateModalProps> = ({
 
     try {
       await submitCandidateFlag(payload);
-      setStatusMsg({ type: 'success', text: 'Candidate successfully logged into the NASA SPHEREx discovery database!' });
+      setStatusMsg({
+        type: 'success',
+        text: t.successMsg
+      });
       setTimeout(() => {
         onClose();
         setStatusMsg(null);
       }, 1800);
     } catch (err: any) {
-      setStatusMsg({ type: 'error', text: err.message || 'Submission failed' });
+      setStatusMsg({ type: 'error', text: err.message || t.errorMsg });
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-space-950/80 p-4 backdrop-blur-md" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
-      <div role="dialog" aria-modal="true" aria-labelledby="candidate-dialog-title" className="relative w-full max-w-md border border-space-700 bg-space-900 p-5 shadow-2xl">
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close candidate flag form"
-          className="focus-ring absolute right-3 top-3 rounded p-1.5 text-slate-300 hover:bg-space-800 hover:text-white"
-        >
-          <X className="w-4 h-4" />
-        </button>
-
-        <div className="flex items-center space-x-2.5 mb-4">
-          <div className="w-9 h-9 rounded-xl bg-nasa-blue/20 border border-nasa-blue/40 flex items-center justify-center text-nasa-cyan">
-            <Flag className="w-5 h-5" />
+    <dialog
+      ref={dialogRef}
+      onClose={onClose}
+      aria-labelledby="candidate-dialog-title"
+      className="fixed inset-0 z-50 m-auto w-full max-w-lg rounded-card border-2 border-spaceapps-electricblue bg-spaceapps-deepblue p-0 text-white shadow-2xl backdrop:bg-black/85 backdrop:backdrop-blur-md open:flex open:flex-col overflow-hidden font-sans"
+    >
+      {/* Header */}
+      <header className="flex shrink-0 items-center justify-between border-b border-spaceapps-electricblue bg-spaceapps-electricblue px-6 py-4">
+        <div className="flex items-center space-x-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-btn bg-spaceapps-neonyellow text-spaceapps-nearblack font-bold">
+            <Flag className="h-5 w-5" />
           </div>
           <div>
-            <h3 id="candidate-dialog-title" className="text-base font-bold text-white">Flag candidate</h3>
-            <p className="text-xs text-slate-400">Citizen Science Reporting Registry</p>
+            <h2 id="candidate-dialog-title" className="text-base font-extrabold uppercase tracking-wide text-white">
+              {t.title}
+            </h2>
+            <p className="text-xs text-slate-200">
+              {t.subtitle}
+            </p>
           </div>
         </div>
 
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close dialog"
+          className="focus-ring rounded-btn p-1.5 text-white hover:bg-spaceapps-neonblue transition-colors"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </header>
+
+      {/* Body */}
+      <div className="p-6 space-y-4 overflow-y-auto max-h-[80vh]">
         {statusMsg && (
           <div
             role="status"
-            className={`mb-4 flex items-center space-x-2 p-3 text-xs ${
+            className={`flex items-center space-x-2.5 p-3 rounded-btn text-xs font-semibold ${
               statusMsg.type === 'success'
-                ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400'
-                : 'bg-rose-500/10 border border-rose-500/30 text-rose-400'
+                ? 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-300'
+                : 'bg-rose-500/20 border border-rose-500/40 text-rose-300'
             }`}
           >
             {statusMsg.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 shrink-0" />
+              <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
             ) : (
-              <AlertCircle className="w-4 h-4 shrink-0" />
+              <AlertCircle className="h-4 w-4 shrink-0 text-rose-400" />
             )}
             <span>{statusMsg.text}</span>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Coordinates readout */}
           <div>
-            <label className="text-xs font-medium text-slate-400 block mb-1">Target Coordinates (Epoch 2 J2000):</label>
-            <div className="bg-space-950 border border-space-800 px-3 py-2 rounded-xl text-xs font-mono text-slate-200">
-              RA: {candidate ? candidate.epoch2.ra_deg.toFixed(4) : ra.toFixed(4)}° • Dec:{' '}
-              {candidate ? candidate.epoch2.dec_deg.toFixed(4) : dec.toFixed(4)}°
+            <label className="text-xs font-bold uppercase tracking-wider text-spaceapps-neonyellow block mb-1">
+              {t.targetCoords}
+            </label>
+            <div className="bg-spaceapps-nearblack border border-spaceapps-electricblue px-3.5 py-2 rounded-btn text-xs font-mono font-bold text-white flex justify-between">
+              <span>RA: {candidate ? candidate.epoch2.ra_deg.toFixed(6) : ra.toFixed(6)}°</span>
+              <span>Dec: {candidate ? candidate.epoch2.dec_deg.toFixed(6) : dec.toFixed(6)}°</span>
+              <span className="text-spaceapps-neonyellow">Ch: {channelId}</span>
             </div>
           </div>
 
+          {/* Observer Name */}
           <div>
-            <label className="text-xs font-medium text-slate-400 block mb-1">Observer / Team Name:</label>
+            <label htmlFor="observer-name" className="text-xs font-bold uppercase tracking-wider text-slate-300 block mb-1">
+              {t.observerLabel}
+            </label>
             <input
+              id="observer-name"
               type="text"
               required
               value={observerName}
               onChange={(e) => setObserverName(e.target.value)}
-              className="focus-ring w-full border border-space-700 bg-space-950 px-3 py-2 text-xs font-mono text-white"
+              className="focus-ring w-full rounded-btn border border-spaceapps-electricblue bg-spaceapps-nearblack px-3.5 py-2 text-xs font-sans text-white focus:outline-hidden"
+              placeholder={t.observerPlaceholder}
             />
           </div>
 
+          {/* Classification */}
           <div>
-            <label className="text-xs font-medium text-slate-400 block mb-1">Hypothesized Classification:</label>
+            <label htmlFor="classification-select" className="text-xs font-bold uppercase tracking-wider text-slate-300 block mb-1">
+              {t.classificationLabel}
+            </label>
             <select
+              id="classification-select"
               value={classification}
               onChange={(e) => setClassification(e.target.value)}
-              className="focus-ring w-full border border-space-700 bg-space-950 px-3 py-2 text-xs text-slate-200"
+              className="focus-ring w-full rounded-btn border border-spaceapps-electricblue bg-spaceapps-nearblack px-3.5 py-2 text-xs font-sans text-white cursor-pointer focus:outline-hidden"
             >
-              <option value="Asteroid">Asteroid</option>
-              <option value="Comet">Comet</option>
-              <option value="Brown Dwarf">Brown Dwarf</option>
-              <option value="Planet X / TNO">Planet X / TNO</option>
-              <option value="Optical Artifact">Optical Artifact</option>
+              <option value="Planet X / TNO">{t.classifications.planetX}</option>
+              <option value="Brown Dwarf">{t.classifications.brownDwarf}</option>
+              <option value="Asteroid">{t.classifications.asteroid}</option>
+              <option value="Comet">{t.classifications.comet}</option>
+              <option value="Optical Artifact">{t.classifications.artifact}</option>
             </select>
           </div>
 
+          {/* Scientific Evidence Notes */}
           <div>
-            <label className="text-xs font-medium text-slate-400 block mb-1">Observation Notes & Scientific Evidence:</label>
+            <label htmlFor="notes-textarea" className="text-xs font-bold uppercase tracking-wider text-slate-300 block mb-1">
+              {t.notesLabel}
+            </label>
             <textarea
+              id="notes-textarea"
               rows={3}
               required
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="focus-ring w-full resize-none border border-space-700 bg-space-950 px-3 py-2 text-xs text-white"
+              className="focus-ring w-full resize-none rounded-btn border border-spaceapps-electricblue bg-spaceapps-nearblack p-3 text-xs font-sans text-white focus:outline-hidden leading-relaxed"
+              placeholder={t.notesPlaceholder}
             />
           </div>
 
-          <div className="pt-2 flex items-center justify-end space-x-2">
+          {/* Action buttons */}
+          <div className="pt-2 flex items-center justify-end space-x-3 border-t border-spaceapps-electricblue/60">
             <button
               type="button"
               onClick={onClose}
-              className="focus-ring px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-space-800"
+              className="focus-ring px-4 py-2 rounded-btn border border-spaceapps-electricblue text-xs font-bold uppercase tracking-wider text-slate-300 hover:text-white hover:bg-spaceapps-electricblue/50 transition-all active:scale-95"
             >
-              Cancel
+              {t.cancelBtn}
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="focus-ring bg-cyan-300 px-4 py-2 text-xs font-semibold text-slate-950 transition-colors hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-50"
+              className="focus-ring rounded-btn bg-spaceapps-neonyellow px-5 py-2 text-xs font-bold uppercase tracking-wider text-spaceapps-nearblack hover:bg-white hover:text-spaceapps-neonblue transition-all active:scale-95 shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {isSubmitting ? 'Registering...' : 'Submit Finding'}
+              {isSubmitting ? t.submittingBtn : t.submitBtn}
             </button>
           </div>
         </form>
       </div>
-    </div>
+    </dialog>
   );
 };
