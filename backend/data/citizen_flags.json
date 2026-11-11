@@ -588,5 +588,15 @@
     "observer_name": "Autonomous E2E Validator",
     "classification": "Planet X / Distant Trans-Neptunian",
     "notes": "Verified moving dipole in Clyde Tombaugh blink comparison."
+  },
+  {
+    "id": "FLAG-1794351367",
+    "timestamp": "2026-11-11T05:56:07.093692Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Test Astronomer",
+    "classification": "Planet X Candidate",
+    "notes": "Verified parallax motion across 6-month baseline."
   }
 ]

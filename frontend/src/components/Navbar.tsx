@@ -1,15 +1,17 @@
 import React from 'react';
-import { Telescope, ExternalLink } from 'lucide-react';
+import { Telescope, ExternalLink, Eye } from 'lucide-react';
 
 interface NavbarProps {
   backendHealthy: boolean;
   astropyVersion: string;
+  redMode: boolean;
+  onToggleRedMode: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ backendHealthy, astropyVersion }) => {
+export const Navbar: React.FC<NavbarProps> = ({ backendHealthy, astropyVersion, redMode, onToggleRedMode }) => {
   return (
-    <header className="border-b border-space-800/80 bg-space-950/80 backdrop-blur-md sticky top-0 z-50 px-4 lg:px-8 py-2.5">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+    <header className="shrink-0 border-b border-space-800/80 bg-space-950/80 backdrop-blur-md z-50 px-4 lg:px-6 py-2">
+      <div className="w-full flex items-center justify-between">
         <div className="flex items-center space-x-2.5">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-nasa-blue to-nasa-cyan flex items-center justify-center shadow-md shadow-nasa-cyan/10">
             <Telescope className="w-4 h-4 text-white" />
@@ -32,6 +34,16 @@ export const Navbar: React.FC<NavbarProps> = ({ backendHealthy, astropyVersion }
             <span className={`w-2 h-2 rounded-full ${backendHealthy ? 'bg-emerald-400' : 'bg-rose-500'}`} />
             <span>AstroPy {astropyVersion}</span>
           </div>
+
+          <button
+            type="button"
+            aria-pressed={redMode}
+            onClick={onToggleRedMode}
+            className={`focus-ring flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 font-medium transition-colors ${redMode ? 'border-rose-500 bg-rose-950 text-rose-100' : 'border-space-700 text-slate-300 hover:border-rose-500/70 hover:text-white'}`}
+          >
+            <Eye className="h-3.5 w-3.5" />
+            {redMode ? 'Red mode on' : 'Night vision'}
+          </button>
 
           <a
             href="https://www.spaceappschallenge.org/"

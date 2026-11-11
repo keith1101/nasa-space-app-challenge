@@ -146,7 +146,8 @@ def detect_moving_candidates(
                 },
                 "angular_displacement_arcsec": round(separation_arcsec, 2),
                 "estimated_motion_arcsec_yr": motion_rate_arcsec_yr,
-                "snr": round(psnr, 1)
+                "snr": round(psnr, 1),
+                "flux_delta": round(float(psnr * sigma_est), 2)
             })
             cand_idx += 1
         else:
@@ -165,7 +166,8 @@ def detect_moving_candidates(
                 },
                 "angular_displacement_arcsec": 0.0,
                 "estimated_motion_arcsec_yr": 0.0,
-                "snr": round(psnr, 1)
+                "snr": round(psnr, 1),
+                "flux_delta": round(float(psnr * sigma_est), 2)
             })
             cand_idx += 1
 

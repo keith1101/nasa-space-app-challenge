@@ -35,7 +35,7 @@ export const CompactToolbar: React.FC<CompactToolbarProps> = ({
   wavelengthUm = 2.45
 }) => {
   return (
-    <div className="bg-space-900 border border-space-800 rounded-xl p-3 shadow-lg flex flex-wrap items-center justify-between gap-3">
+    <div className="shrink-0 bg-space-900/70 px-3 py-2 flex flex-wrap items-center justify-between gap-3">
       {/* Left: Preset Selector & Coordinates */}
       <div className="flex flex-wrap items-center gap-2.5">
         {/* Preset Target Dropdown */}
@@ -46,7 +46,8 @@ export const CompactToolbar: React.FC<CompactToolbarProps> = ({
               const t = targets.find((item) => item.id === e.target.value);
               if (t) onSelectTarget(t);
             }}
-            className="appearance-none bg-space-950 border border-space-700 hover:border-slate-500 rounded-lg pl-3 pr-8 py-1.5 text-xs font-semibold text-slate-200 focus:outline-none focus:border-nasa-cyan cursor-pointer transition-colors"
+            aria-label="Preset target"
+            className="focus-ring appearance-none bg-space-950 border border-space-700 hover:border-slate-500 rounded-lg pl-3 pr-8 py-1.5 text-xs font-semibold text-slate-200 cursor-pointer transition-colors"
           >
             {targets.map((t) => (
               <option key={t.id} value={t.id}>
@@ -67,7 +68,8 @@ export const CompactToolbar: React.FC<CompactToolbarProps> = ({
             max="359.999"
             value={ra}
             onChange={(e) => onRaChange(parseFloat(e.target.value) || 0)}
-            className="w-20 bg-transparent text-xs font-mono text-white focus:outline-none text-right"
+            aria-label="Right ascension in degrees"
+            className="focus-ring w-20 bg-transparent text-xs font-mono text-white text-right"
           />
           <span className="text-[10px] text-slate-500 font-mono">°</span>
         </div>
@@ -82,7 +84,8 @@ export const CompactToolbar: React.FC<CompactToolbarProps> = ({
             max="90"
             value={dec}
             onChange={(e) => onDecChange(parseFloat(e.target.value) || 0)}
-            className="w-18 bg-transparent text-xs font-mono text-white focus:outline-none text-right"
+            aria-label="Declination in degrees"
+            className="focus-ring w-18 bg-transparent text-xs font-mono text-white text-right"
           />
           <span className="text-[10px] text-slate-500 font-mono">°</span>
         </div>
@@ -113,7 +116,7 @@ export const CompactToolbar: React.FC<CompactToolbarProps> = ({
           type="button"
           onClick={onSearch}
           disabled={isLoading}
-          className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-nasa-blue to-nasa-cyan hover:opacity-90 text-white text-xs font-semibold shadow-md transition-all disabled:opacity-50"
+            className="focus-ring flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-nasa-blue to-nasa-cyan hover:opacity-90 active:scale-[.98] text-white text-xs font-semibold shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? (
             <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />

@@ -63,7 +63,7 @@ class CutoutRequest(BaseModel):
     channel_id: int = Field(60, ge=1, le=102, description="SPHEREx channel ID (1 to 102)")
     epoch_id: str = Field("survey-1", description="Survey epoch identifier")
     stretch: str = Field("asinh", description="Astronomical stretch: asinh, log, linear")
-    colormap: str = Field("magma", description="Colormap: magma, inferno, viridis, gray")
+    colormap: str = Field("magma", description="Colormap: magma, inferno, viridis, gray, coolwarm")
 
 
 class BlinkRequest(BaseModel):

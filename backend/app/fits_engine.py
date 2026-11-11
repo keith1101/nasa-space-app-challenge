@@ -275,7 +275,7 @@ def array_to_base64_png(
 
     # Use Matplotlib colormap for false-color IR astronomical visualization
     import matplotlib as mpl
-    cmap_name = colormap if colormap in ["magma", "inferno", "viridis", "gray", "plasma"] else "magma"
+    cmap_name = colormap if colormap in ["magma", "inferno", "viridis", "gray", "plasma", "coolwarm"] else "magma"
     try:
         cmap = mpl.colormaps[cmap_name]
     except Exception:

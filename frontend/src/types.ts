@@ -46,6 +46,7 @@ export interface MovingCandidate {
   angular_displacement_arcsec: number;
   estimated_motion_arcsec_yr: number;
   snr: number;
+  flux_delta?: number;
 }
 
 export interface SpectralPoint {
@@ -88,6 +89,8 @@ export interface BlinkResponse {
     ctype: [string, string];
   };
 }
+
+export type ObservationMode = 'blink' | 'side_by_side' | 'difference' | 'spectral' | 'candidates';
 
 export interface CandidateFlagSubmission {
   candidate_id?: string;

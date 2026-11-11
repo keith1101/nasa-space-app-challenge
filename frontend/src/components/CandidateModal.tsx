@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { X, Flag, CheckCircle2, AlertCircle } from 'lucide-react';
 import { CandidateFlagSubmission, MovingCandidate } from '../types';
 import { submitCandidateFlag } from '../services/api';
@@ -21,7 +21,7 @@ export const CandidateModal: React.FC<CandidateModalProps> = ({
   channelId
 }) => {
   const [observerName, setObserverName] = useState<string>('NASA Citizen Astronomer');
-  const [classification, setClassification] = useState<string>('Planet X / Distant Trans-Neptunian');
+  const [classification, setClassification] = useState<string>('Planet X / TNO');
   const [notes, setNotes] = useState<string>(
     candidate
       ? `Detected ${candidate.type} shifting by ${candidate.angular_displacement_arcsec} arcsec over 6-month survey interval.`
@@ -29,6 +29,12 @@ export const CandidateModal: React.FC<CandidateModalProps> = ({
   );
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  useEffect(() => {
+    setNotes(candidate
+      ? `Detected ${candidate.type} shifting by ${candidate.angular_displacement_arcsec} arcsec over the survey interval.`
+      : 'Visual inspection evidence and notes.');
+  }, [candidate]);
 
   if (!isOpen) return null;
 
@@ -62,12 +68,13 @@ export const CandidateModal: React.FC<CandidateModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-space-950/80 backdrop-blur-md">
-      <div className="bg-space-900 border border-space-750 w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-space-950/80 p-4 backdrop-blur-md" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+      <div role="dialog" aria-modal="true" aria-labelledby="candidate-dialog-title" className="relative w-full max-w-md border border-space-700 bg-space-900 p-5 shadow-2xl">
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-lg bg-space-850 hover:bg-space-800 text-slate-400 hover:text-white transition-colors"
+          aria-label="Close candidate flag form"
+          className="focus-ring absolute right-3 top-3 rounded p-1.5 text-slate-300 hover:bg-space-800 hover:text-white"
         >
           <X className="w-4 h-4" />
         </button>
@@ -77,14 +84,15 @@ export const CandidateModal: React.FC<CandidateModalProps> = ({
             <Flag className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-white">Flag Moving Object Candidate</h3>
+            <h3 id="candidate-dialog-title" className="text-base font-bold text-white">Flag candidate</h3>
             <p className="text-xs text-slate-400">Citizen Science Reporting Registry</p>
           </div>
         </div>
 
         {statusMsg && (
           <div
-            className={`p-3 rounded-xl mb-4 text-xs flex items-center space-x-2 ${
+            role="status"
+            className={`mb-4 flex items-center space-x-2 p-3 text-xs ${
               statusMsg.type === 'success'
                 ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400'
                 : 'bg-rose-500/10 border border-rose-500/30 text-rose-400'
@@ -115,7 +123,7 @@ export const CandidateModal: React.FC<CandidateModalProps> = ({
               required
               value={observerName}
               onChange={(e) => setObserverName(e.target.value)}
-              className="w-full bg-space-950 border border-space-700 rounded-xl px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-nasa-cyan"
+              className="focus-ring w-full border border-space-700 bg-space-950 px-3 py-2 text-xs font-mono text-white"
             />
           </div>
 
@@ -124,13 +132,13 @@ export const CandidateModal: React.FC<CandidateModalProps> = ({
             <select
               value={classification}
               onChange={(e) => setClassification(e.target.value)}
-              className="w-full bg-space-950 border border-space-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-nasa-cyan"
+              className="focus-ring w-full border border-space-700 bg-space-950 px-3 py-2 text-xs text-slate-200"
             >
-              <option value="Planet X / Distant Trans-Neptunian">Planet X / Distant Trans-Neptunian</option>
-              <option value="Kuiper Belt Object (KBO)">Kuiper Belt Object (KBO)</option>
-              <option value="Near-Earth Asteroid (NEA)">Near-Earth Asteroid (NEA)</option>
-              <option value="High Proper Motion Brown Dwarf (Y/T Dwarf)">High Proper Motion Brown Dwarf (Y/T Dwarf)</option>
-              <option value="Variable Star / Transient Exoplanet Transit">Variable Star / Transient Exoplanet Transit</option>
+              <option value="Asteroid">Asteroid</option>
+              <option value="Comet">Comet</option>
+              <option value="Brown Dwarf">Brown Dwarf</option>
+              <option value="Planet X / TNO">Planet X / TNO</option>
+              <option value="Optical Artifact">Optical Artifact</option>
             </select>
           </div>
 
@@ -141,7 +149,7 @@ export const CandidateModal: React.FC<CandidateModalProps> = ({
               required
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              className="w-full bg-space-950 border border-space-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-nasa-cyan resize-none"
+              className="focus-ring w-full resize-none border border-space-700 bg-space-950 px-3 py-2 text-xs text-white"
             />
           </div>
 
@@ -149,14 +157,14 @@ export const CandidateModal: React.FC<CandidateModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-space-850 hover:bg-space-800 text-slate-300 text-xs font-semibold transition-colors"
+              className="focus-ring px-4 py-2 text-xs font-semibold text-slate-300 hover:bg-space-800"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-2 rounded-xl bg-gradient-to-r from-nasa-blue via-indigo-600 to-nasa-cyan text-white text-xs font-semibold shadow-lg shadow-nasa-cyan/20 hover:opacity-95 disabled:opacity-50 transition-all"
+              className="focus-ring bg-cyan-300 px-4 py-2 text-xs font-semibold text-slate-950 transition-colors hover:bg-cyan-200 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isSubmitting ? 'Registering...' : 'Submit Finding'}
             </button>
