@@ -246,7 +246,7 @@ export const UserGuidePage: React.FC<UserGuidePageProps> = ({
               </span>
             </div>
 
-            <h1 className="text-base sm:text-lg font-bold tracking-tight text-white uppercase">
+            <h1 className="text-base sm:text-lg font-bold tracking-tight text-white uppercase sm:whitespace-nowrap">
               {content.title}
             </h1>
           </div>

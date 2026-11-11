@@ -131,7 +131,7 @@ export interface UserGuideContent {
 export const userGuideData: Record<'vi' | 'en', UserGuideContent> = {
   vi: {
     badge: 'CẨM NANG VẬN HÀNH · WIKI KHOA HỌC DỰ ÁN',
-    title: 'Cẩm Nang Vận Hành Trạm Quan Sát & Bách Khoa Toàn Thư Thiên Văn',
+    title: 'Cẩm Nang Vận Hành & Bách Khoa Thiên Văn',
     subtitle: 'Hướng dẫn toàn diện cách phân tích ảnh FITS 7-HDU, 5 chế độ quan sát, giải thích dễ hiểu các phương trình toán - lý thiên văn, và từ điển thuật ngữ cho nhà khoa học công dân.',
     breadcrumbHome: 'Trang Chủ',
     breadcrumbCurrent: 'Hướng Dẫn Sử Dụng & Wiki',
@@ -625,8 +625,8 @@ export const userGuideData: Record<'vi' | 'en', UserGuideContent> = {
     }
   },
   en: {
-    badge: 'ASTRONOMER FIELD MANUAL · PROJECT SCIENTIFIC WIKI',
-    title: 'SPHEREx Explorer Operations Manual & Astrophysics Wiki',
+    badge: 'OPERATIONS MANUAL · SCIENCE WIKI',
+    title: 'Operations Manual & Astrophysics Wiki',
     subtitle: 'Comprehensive guide to inspecting 7-HDU Level 2 FITS, mastering 5 observation modes, plain-language explanations of astrophysical equations, and a citizen science glossary.',
     breadcrumbHome: 'Home',
     breadcrumbCurrent: 'User Guide & Wiki',
