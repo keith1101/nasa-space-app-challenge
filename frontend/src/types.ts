@@ -92,6 +92,23 @@ export interface BlinkResponse {
 
 export type ObservationMode = 'blink' | 'side_by_side' | 'difference' | 'spectral' | 'candidates';
 
+export type AppViewMode = 'landing' | 'workstation' | 'overview' | 'guide';
+
+export type ThemeMode = 'light' | 'dark';
+
+export type Language = 'vi' | 'en';
+
+export interface UserAccount {
+  id: string;
+  name: string;
+  email: string;
+  role: 'CITIZEN_ASTRONOMER' | 'PRO_RESEARCHER' | 'INSTITUTIONAL_FELLOW';
+  avatarUrl?: string;
+  organization?: string;
+  flaggedCandidatesCount: number;
+  joinedDate: string;
+}
+
 export interface CandidateFlagSubmission {
   candidate_id?: string;
   ra: number;
