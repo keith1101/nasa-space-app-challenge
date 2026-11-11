@@ -9,6 +9,8 @@ dist-ssr/
 build/
 .next/
 out/
+.vite/
+
 
 # Environment files
 .env

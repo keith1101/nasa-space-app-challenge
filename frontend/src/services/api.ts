@@ -1,23 +1,74 @@
 import { BlinkResponse, CandidateFlagSubmission, ChannelInfo, DetectorBand, PresetTarget } from '../types';
 
-const BASE_URL = (import.meta.env.VITE_API_BASE_URL as string) || '/api';
+// Normalize BASE_URL safely (supports both local proxy '/api' and external 'https://backend.../api')
+function resolveBaseUrl(): string {
+  const envUrl = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim();
+  if (!envUrl) return '/api';
+  const stripped = envUrl.replace(/\/+$/, '');
+  if (stripped.startsWith('http://') || stripped.startsWith('https://')) {
+    return stripped.endsWith('/api') ? stripped : `${stripped}/api`;
+  }
+  return stripped.startsWith('/') ? stripped : `/${stripped}`;
+}
+
+const BASE_URL = resolveBaseUrl();
+
+/**
+ * Defensive JSON parser that intercepts empty bodies or HTML error pages
+ * before `res.json()` can throw "Unexpected end of JSON input".
+ */
+async function parseJsonResponse<T>(res: Response, endpoint: string): Promise<T> {
+  const text = await res.text();
+
+  if (!text || text.trim() === '') {
+    if (!res.ok) {
+      throw new Error(`Máy chủ phản hồi rỗng (${res.status} ${res.statusText || 'No Content'}). Backend có thể đang khởi động hoặc gặp sự cố.`);
+    }
+    throw new Error(
+      `Máy chủ trả về phản hồi rỗng (HTTP ${res.status} OK). Frontend chưa kết nối được với Backend Web Service. ` +
+      `Nếu đang chạy trên Render, vui lòng kiểm tra biến môi trường VITE_API_BASE_URL hoặc cấu hình Rewrite /api/* trên Static Site.`
+    );
+  }
+
+  let data: any;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    if (text.startsWith('<!DOCTYPE html>') || text.startsWith('<html') || text.includes('<body')) {
+      throw new Error(
+        `Yêu cầu tới '${endpoint}' nhận về trang HTML thay vì JSON (bị rewrite về index.html). ` +
+        `Vui lòng kiểm tra cấu hình URL Backend (VITE_API_BASE_URL) trên môi trường triển khai.`
+      );
+    }
+    throw new Error(`Dữ liệu từ máy chủ không đúng định dạng JSON: ${text.slice(0, 120)}`);
+  }
+
+  if (!res.ok) {
+    const detail = data?.detail 
+      ? (typeof data.detail === 'string' ? data.detail : JSON.stringify(data.detail)) 
+      : (res.statusText || 'Lỗi không xác định');
+    throw new Error(`Yêu cầu thất bại (${res.status}): ${detail}`);
+  }
+
+  return data as T;
+}
 
 export async function fetchHealth(): Promise<{ status: string; astropy_version: string }> {
-  const res = await fetch(`${BASE_URL}/health`);
-  if (!res.ok) throw new Error('Failed to fetch health');
-  return res.json();
+  const endpoint = `${BASE_URL}/health`;
+  const res = await fetch(endpoint);
+  return parseJsonResponse<{ status: string; astropy_version: string }>(res, endpoint);
 }
 
 export async function fetchBands(): Promise<{ total_channels: number; detector_bands: DetectorBand[]; channels: ChannelInfo[] }> {
-  const res = await fetch(`${BASE_URL}/spherex/bands`);
-  if (!res.ok) throw new Error('Failed to fetch spectral bands');
-  return res.json();
+  const endpoint = `${BASE_URL}/spherex/bands`;
+  const res = await fetch(endpoint);
+  return parseJsonResponse<{ total_channels: number; detector_bands: DetectorBand[]; channels: ChannelInfo[] }>(res, endpoint);
 }
 
 export async function fetchTargets(): Promise<{ targets: PresetTarget[] }> {
-  const res = await fetch(`${BASE_URL}/spherex/targets`);
-  if (!res.ok) throw new Error('Failed to fetch preset targets');
-  return res.json();
+  const endpoint = `${BASE_URL}/spherex/targets`;
+  const res = await fetch(endpoint);
+  return parseJsonResponse<{ targets: PresetTarget[] }>(res, endpoint);
 }
 
 export async function fetchBlinkComparison(params: {
@@ -30,7 +81,8 @@ export async function fetchBlinkComparison(params: {
   stretch?: string;
   colormap?: string;
 }): Promise<BlinkResponse> {
-  const res = await fetch(`${BASE_URL}/spherex/blink`, {
+  const endpoint = `${BASE_URL}/spherex/blink`;
+  const res = await fetch(endpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -44,29 +96,17 @@ export async function fetchBlinkComparison(params: {
       colormap: params.colormap || 'magma'
     })
   });
-  if (!res.ok) {
-    let detail = res.statusText;
-    try {
-      const errJson = await res.json();
-      if (errJson && errJson.detail) {
-        detail = typeof errJson.detail === 'string' ? errJson.detail : JSON.stringify(errJson.detail);
-      }
-    } catch {
-      // ignore json parse error
-    }
-    throw new Error(`Query failed: ${detail} (${res.status})`);
-  }
-  return res.json();
+  return parseJsonResponse<BlinkResponse>(res, endpoint);
 }
 
 export async function submitCandidateFlag(data: CandidateFlagSubmission): Promise<{ status: string; message: string }> {
-  const res = await fetch(`${BASE_URL}/spherex/flag-candidate`, {
+  const endpoint = `${BASE_URL}/spherex/flag-candidate`;
+  const res = await fetch(endpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   });
-  if (!res.ok) throw new Error('Submission failed');
-  return res.json();
+  return parseJsonResponse<{ status: string; message: string }>(res, endpoint);
 }
 
 export function getFitsDownloadUrl(ra: number, dec: number, channel_id: number, epoch_id: string = 'survey-1'): string {

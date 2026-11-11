@@ -698,5 +698,35 @@
     "observer_name": "Autonomous E2E Validator",
     "classification": "Planet X / Distant Trans-Neptunian",
     "notes": "Verified moving dipole in Clyde Tombaugh blink comparison."
+  },
+  {
+    "id": "FLAG-1794372686",
+    "timestamp": "2026-11-11T11:51:26.866923Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Test Astronomer",
+    "classification": "Planet X Candidate",
+    "notes": "Verified parallax motion across 6-month baseline."
+  },
+  {
+    "id": "FLAG-1794372804",
+    "timestamp": "2026-11-11T11:53:24.441281Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Dr. Chlo\u00eb O'Connor \ud83d\udd2d",
+    "classification": "Planet X Candidate",
+    "notes": "Verified 'Planet X' candidate!\nHigh proper motion: \u03bc = 10.3\"/yr.\nUnicode: \u03b1 Centauri, \u03a9-Nebula."
+  },
+  {
+    "id": "FLAG-1794372825",
+    "timestamp": "2026-11-11T11:53:45.444247Z",
+    "ra": 64.5,
+    "dec": 12.8,
+    "channel_id": 60,
+    "observer_name": "Autonomous E2E Validator",
+    "classification": "Planet X / Distant Trans-Neptunian",
+    "notes": "Verified moving dipole in Clyde Tombaugh blink comparison."
   }
 ]

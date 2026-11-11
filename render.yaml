@@ -25,7 +25,11 @@ services:
     buildCommand: npm install && npm run build
     staticPublishPath: dist
     routes:
-      # SPA fallback routing for React client-side navigation
+      # 1. Reverse proxy API traffic to the backend Web Service
+      - type: rewrite
+        source: /api/*
+        destination: https://spherex-astrometry-backend.onrender.com/api/*
+      # 2. SPA fallback routing for React client-side navigation
       - type: rewrite
         source: /*
         destination: /index.html
