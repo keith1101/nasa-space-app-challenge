@@ -1,44 +1,230 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Fira+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap');
+@import '@xyflow/react/dist/style.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --brand-nearblack: #1b1b1b;
+  --brand-deepblue: #151622;
+  --brand-neonblue: #0050d8;
+  --brand-electricblue: #1b2b85;
+  --brand-neonyellow: #e7f434;
+  --brand-nasared: #e52207;
+  --brand-blueyonder: #2491ff;
+  --brand-paleyellow: #fafaad;
+  --brand-cloudgray: #dfe1e2;
+  --brand-slategray: #3d4551;
+  --color-canvas-fill: #0c0f18;
+  --color-marker-epoch1: #e52207;
+  --color-marker-epoch2: #00F0FF;
+  --color-marker-selected: #e7f434;
+  --color-crosshair: #e7f434;
+}
 
 @layer base {
   html, body, #root {
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
   body {
-    @apply bg-[#060913] text-slate-100;
+    background-color: #ffffff;
+    color: #1b1b1b;
   }
 }
 
 .focus-ring:focus-visible {
-  outline: 2px solid #67e8f9;
+  outline: 2px solid #0050d8;
   outline-offset: 2px;
 }
 
-.night-vision-red,
-.night-vision-red * {
-  color: #ffb4a8 !important;
-  border-color: rgba(255, 82, 65, .48) !important;
+/* Card hover animation from spaceappschallenge.org */
+.scale-on-hover {
+  transition: transform 0.2s ease-in-out;
+}
+.scale-on-hover:hover {
+  transform: scale(1.03);
 }
 
+/* Space Apps Linear Gradients */
+.bg-spaceapps-gradient {
+  background: linear-gradient(178.97deg, #0050d8 0.88%, #1b2b85 99.12%);
+}
+
+.bg-spaceapps-dark-gradient {
+  background: linear-gradient(97.96deg, #0050d8 0%, #1b2b85 100%);
+}
+
+/* ==========================================================================
+   Optical-Grade Night Vision Mode (Monochromatic Red Mode for Observatories)
+   Guarantees scotopic vision preservation (rhodopsin protection) in dark environments.
+   - All light/white backgrounds convert to deep red-black (#080202 / #140404 / #220707)
+   - All text and borders use high-contrast optical red (contrast ratio > 8:1 to 12:1)
+   - Eliminates generic global filter so backgrounds turn genuinely dark instead of pink.
+   ========================================================================== */
+
+/* Root & Page Backgrounds */
 .night-vision-red {
-  background: #090303 !important;
-  filter: sepia(1) saturate(1.5) hue-rotate(310deg);
+  background-color: #080202 !important;
+  color: #ff8c80 !important;
 }
 
-.night-vision-red canvas {
-  filter: grayscale(1) sepia(1) saturate(4) hue-rotate(315deg) brightness(.82);
+.night-vision-red [class*="min-h-screen"],
+.night-vision-red [class*="h-screen"],
+.night-vision-red main {
+  background-color: #080202 !important;
 }
 
+/* Light / White Background Overrides */
+.night-vision-red [class*="bg-white"],
+.night-vision-red [class*="bg-slate-"],
+.night-vision-red [class*="bg-gray-"],
+.night-vision-red [class*="bg-zinc-"] {
+  background-color: #120404 !important;
+  background-image: none !important;
+}
+
+/* Gradients in Night Vision */
+.night-vision-red .bg-spaceapps-gradient,
+.night-vision-red .bg-spaceapps-dark-gradient,
+.night-vision-red [class*="bg-spaceapps-deepblue"] {
+  background: linear-gradient(178.97deg, #240606 0%, #100202 100%) !important;
+  background-color: #100202 !important;
+  border-color: rgba(255, 65, 54, 0.4) !important;
+}
+
+/* Cards, Sections, Modals & Elevated Panels */
+.night-vision-red section,
+.night-vision-red article,
+.night-vision-red [class*="rounded-card"],
+.night-vision-red [class*="rounded-xl"],
+.night-vision-red [class*="rounded-2xl"],
+.night-vision-red [class*="shadow-"],
+.night-vision-red dialog,
+.night-vision-red pre,
+.night-vision-red code {
+  background-color: #160505 !important;
+  border-color: rgba(255, 65, 54, 0.45) !important;
+}
+
+/* Sub-panels, Metric boxes & Stat tiles inside Cards */
+.night-vision-red [class*="rounded-card"] [class*="bg-slate-50"],
+.night-vision-red [class*="rounded-card"] [class*="bg-slate-100"],
+.night-vision-red [class*="rounded-card"] [class*="bg-slate-200"],
+.night-vision-red [class*="rounded-card"] [class*="bg-gray-50"],
+.night-vision-red [class*="rounded-card"] [class*="bg-gray-100"],
+.night-vision-red td,
+.night-vision-red th {
+  background-color: #220707 !important;
+  border-color: rgba(255, 65, 54, 0.35) !important;
+}
+
+/* Universal Text & Border Styling */
+.night-vision-red * {
+  border-color: rgba(255, 65, 54, 0.4) !important;
+}
+
+/* Base Body Text */
+.night-vision-red p,
+.night-vision-red span,
+.night-vision-red li,
+.night-vision-red label,
+.night-vision-red small,
+.night-vision-red td,
+.night-vision-red [class*="text-slate-"],
+.night-vision-red [class*="text-gray-"],
+.night-vision-red [class*="text-zinc-"] {
+  color: #ff8c80 !important;
+}
+
+/* High Emphasis: Titles, Headings & Bold Text */
+.night-vision-red h1,
+.night-vision-red h2,
+.night-vision-red h3,
+.night-vision-red h4,
+.night-vision-red h5,
+.night-vision-red h6,
+.night-vision-red strong,
+.night-vision-red b,
+.night-vision-red th,
+.night-vision-red [class*="font-bold"],
+.night-vision-red [class*="font-black"],
+.night-vision-red [class*="font-extrabold"],
+.night-vision-red [class*="font-semibold"],
+.night-vision-red [class*="text-spaceapps-electricblue"],
+.night-vision-red [class*="text-spaceapps-neonblue"] {
+  color: #ffa399 !important;
+}
+
+/* Standout Metrics & Important Value Numbers */
+.night-vision-red [class*="font-mono"][class*="text-2xl"],
+.night-vision-red [class*="font-mono"][class*="text-xl"],
+.night-vision-red [class*="font-mono"][class*="font-black"] {
+  color: #ffd4cc !important;
+}
+
+/* Interactive Elements: Buttons, Inputs, Selects */
 .night-vision-red button,
+.night-vision-red [role="button"],
+.night-vision-red [class*="rounded-btn"],
 .night-vision-red select,
 .night-vision-red input,
 .night-vision-red textarea {
-  color: #ffd0c8 !important;
+  background-color: #240808 !important;
+  color: #ffd4cc !important;
+  border-color: rgba(255, 82, 65, 0.65) !important;
+}
+
+.night-vision-red button:hover,
+.night-vision-red [role="button"]:hover,
+.night-vision-red [class*="rounded-btn"]:hover,
+.night-vision-red select:hover {
+  background-color: #3d0d0d !important;
+  border-color: #ff4136 !important;
+  color: #ffffff !important;
+}
+
+/* SVG Icons */
+.night-vision-red svg {
+  color: #ff6b5b !important;
+  stroke: currentColor !important;
+}
+
+/* Optical FITS Canvas & Image Monochrome Red Filtration */
+.night-vision-red canvas {
+  filter: grayscale(1) sepia(1) saturate(5) hue-rotate(315deg) brightness(0.85) contrast(1.15) !important;
+}
+
+.night-vision-red img {
+  filter: grayscale(1) sepia(1) saturate(4) hue-rotate(315deg) brightness(0.8) !important;
+}
+
+/* React Flow Pipeline in Night Vision */
+.night-vision-red .react-flow__pane,
+.night-vision-red .react-flow__background {
+  background-color: #0c0404 !important;
+}
+
+.night-vision-red .react-flow__node {
+  background-color: #1a0606 !important;
+  border-color: #ff4136 !important;
+  color: #ffa399 !important;
+}
+
+.night-vision-red .react-flow__edge-path {
+  stroke: #ff4136 !important;
+}
+
+.night-vision-red .react-flow__edge-textbg {
+  fill: #1a0606 !important;
+  stroke: #ff4136 !important;
+}
+
+.night-vision-red .react-flow__edge-text {
+  fill: #ffa399 !important;
 }
 
 /* Custom scrollbars */
@@ -47,27 +233,28 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #0a0f1d;
+  background: #dfe1e2;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e2c4f;
+  background: #1b2b85;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #00F0FF;
+  background: #0050d8;
 }
 
-@keyframes pulse-glow {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.6;
-    transform: scale(1.05);
-  }
+/* React Flow High Contrast Telemetry Edge Labels (WCAG 2.2 AA Contrast > 15:1) */
+.react-flow__edge-textbg {
+  fill: #0c0f18 !important;
+  stroke: #e7f434 !important;
+  stroke-width: 1.5px !important;
+  rx: 4px !important;
 }
 
-.animate-pulse-glow {
-  animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+.react-flow__edge-text {
+  fill: #e7f434 !important;
+  font-family: 'Fira Code', monospace !important;
+  font-weight: 700 !important;
+  font-size: 11px !important;
 }
+
