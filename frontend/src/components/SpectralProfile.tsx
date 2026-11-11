@@ -105,7 +105,11 @@ const Picker: React.FC<Pick<SpectralProfileProps, 'imageBase64' | 'wcs' | 'onPic
         const top = (rect.height - image.naturalHeight * scale) / 2;
         const px = (event.clientX - rect.left - left) / scale;
         const py = (event.clientY - rect.top - top) / scale;
-        onPickCoordinate(wcs.crval[0] + (px - 64) * wcs.cdelt[0], wcs.crval[1] + (py - 64) * wcs.cdelt[1]);
+        const rawRa = wcs.crval[0] + (px - 64) * wcs.cdelt[0];
+        const rawDec = wcs.crval[1] + (py - 64) * wcs.cdelt[1];
+        const normRa = Number((((rawRa % 360) + 360) % 360).toFixed(6));
+        const clampedDec = Number(Math.max(-90, Math.min(90, rawDec)).toFixed(6));
+        onPickCoordinate(normRa, clampedDec);
       }}
     />
   );

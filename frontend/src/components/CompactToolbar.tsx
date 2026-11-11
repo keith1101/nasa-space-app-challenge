@@ -79,7 +79,14 @@ export const CompactToolbar: React.FC<CompactToolbarProps> = ({
             min="0"
             max="359.999"
             value={ra}
-            onChange={(e) => onRaChange(parseFloat(e.target.value) || 0)}
+            onChange={(e) => {
+              const val = parseFloat(e.target.value);
+              onRaChange(isNaN(val) ? 0 : val);
+            }}
+            onBlur={() => {
+              const normalized = ((ra % 360) + 360) % 360;
+              onRaChange(Number(normalized.toFixed(4)));
+            }}
             aria-label="Right ascension in degrees (J2000)"
             className="focus-ring w-20 bg-transparent text-xs font-mono text-white text-right font-medium focus:outline-hidden"
           />
@@ -98,7 +105,14 @@ export const CompactToolbar: React.FC<CompactToolbarProps> = ({
             min="-90"
             max="90"
             value={dec}
-            onChange={(e) => onDecChange(parseFloat(e.target.value) || 0)}
+            onChange={(e) => {
+              const val = parseFloat(e.target.value);
+              onDecChange(isNaN(val) ? 0 : val);
+            }}
+            onBlur={() => {
+              const clamped = Math.max(-90, Math.min(90, dec));
+              onDecChange(Number(clamped.toFixed(4)));
+            }}
             aria-label="Declination in degrees (J2000)"
             className="focus-ring w-18 bg-transparent text-xs font-mono text-white text-right font-medium focus:outline-hidden"
           />

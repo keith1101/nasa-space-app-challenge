@@ -56,6 +56,17 @@ export const App: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isFlagModalOpen, setIsFlagModalOpen] = useState(false);
 
+  const normalizeRa = (val: number): number => {
+    if (isNaN(val)) return 0;
+    const norm = ((val % 360) + 360) % 360;
+    return Number(norm.toFixed(6));
+  };
+
+  const clampDec = (val: number): number => {
+    if (isNaN(val)) return 0;
+    return Number(Math.max(-90, Math.min(90, val)).toFixed(6));
+  };
+
   const performQuery = async (
     targetRa = ra,
     targetDec = dec,
@@ -64,12 +75,14 @@ export const App: React.FC = () => {
     targetColormap = colormap,
     targetSigma = sigmaThreshold
   ) => {
+    const safeRa = normalizeRa(targetRa);
+    const safeDec = clampDec(targetDec);
     setIsLoading(true);
     setErrorMsg(null);
     try {
       const data = await fetchBlinkComparison({
-        ra: targetRa,
-        dec: targetDec,
+        ra: safeRa,
+        dec: safeDec,
         channel_id: targetChannel,
         epoch1_id: 'survey-1',
         epoch2_id: 'survey-2',
@@ -143,10 +156,12 @@ export const App: React.FC = () => {
   };
 
   const handlePickCoordinate = (nextRa: number, nextDec: number) => {
-    setRa(nextRa);
-    setDec(nextDec);
+    const normRa = normalizeRa(nextRa);
+    const clampedDec = clampDec(nextDec);
+    setRa(normRa);
+    setDec(clampedDec);
     setSelectedTargetId(null);
-    void performQuery(nextRa, nextDec);
+    void performQuery(normRa, clampedDec);
   };
 
   const observationModes = getObservationModes(lang);

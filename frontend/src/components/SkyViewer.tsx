@@ -281,8 +281,8 @@ export const SkyViewer: React.FC<SkyViewerProps> = ({
   };
 
   const world = pixel && blinkData ? {
-    ra: blinkData.wcs.crval[0] + (pixel.px - 64) * blinkData.wcs.cdelt[0],
-    dec: blinkData.wcs.crval[1] + (pixel.py - 64) * blinkData.wcs.cdelt[1]
+    ra: (((blinkData.wcs.crval[0] + (pixel.px - 64) * blinkData.wcs.cdelt[0]) % 360) + 360) % 360,
+    dec: Math.max(-90, Math.min(90, blinkData.wcs.crval[1] + (pixel.py - 64) * blinkData.wcs.cdelt[1]))
   } : null;
 
   const resetView = () => setTransform({ zoom: 1, panX: 0, panY: 0 });

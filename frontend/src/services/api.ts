@@ -81,13 +81,15 @@ export async function fetchBlinkComparison(params: {
   stretch?: string;
   colormap?: string;
 }): Promise<BlinkResponse> {
+  const safeRa = ((params.ra % 360) + 360) % 360;
+  const safeDec = Math.max(-90, Math.min(90, params.dec));
   const endpoint = `${BASE_URL}/spherex/blink`;
   const res = await fetch(endpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      ra: params.ra,
-      dec: params.dec,
+      ra: safeRa,
+      dec: safeDec,
       channel_id: params.channel_id,
       epoch1_id: params.epoch1_id || 'survey-1',
       epoch2_id: params.epoch2_id || 'survey-2',
@@ -100,15 +102,23 @@ export async function fetchBlinkComparison(params: {
 }
 
 export async function submitCandidateFlag(data: CandidateFlagSubmission): Promise<{ status: string; message: string }> {
+  const safeRa = ((data.ra % 360) + 360) % 360;
+  const safeDec = Math.max(-90, Math.min(90, data.dec));
   const endpoint = `${BASE_URL}/spherex/flag-candidate`;
   const res = await fetch(endpoint, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
+    body: JSON.stringify({
+      ...data,
+      ra: safeRa,
+      dec: safeDec
+    })
   });
   return parseJsonResponse<{ status: string; message: string }>(res, endpoint);
 }
 
 export function getFitsDownloadUrl(ra: number, dec: number, channel_id: number, epoch_id: string = 'survey-1'): string {
-  return `${BASE_URL}/spherex/download-fits?ra=${ra}&dec=${dec}&channel_id=${channel_id}&epoch_id=${epoch_id}`;
+  const safeRa = ((ra % 360) + 360) % 360;
+  const safeDec = Math.max(-90, Math.min(90, dec));
+  return `${BASE_URL}/spherex/download-fits?ra=${safeRa}&dec=${safeDec}&channel_id=${channel_id}&epoch_id=${epoch_id}`;
 }

@@ -10,7 +10,7 @@ import json
 import os
 from fastapi import FastAPI, Query, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 import astropy
 import numpy as np
@@ -65,6 +65,19 @@ class CutoutRequest(BaseModel):
     stretch: str = Field("asinh", description="Astronomical stretch: asinh, log, linear")
     colormap: str = Field("magma", description="Colormap: magma, inferno, viridis, gray, coolwarm")
 
+    @field_validator("ra", mode="before")
+    @classmethod
+    def wrap_negative_ra(cls, v: Any) -> float:
+        try:
+            val = float(v)
+            # In astronomy, negative RA represents western angular distance wrapping across 0°
+            if val < 0.0:
+                norm = (val % 360.0 + 360.0) % 360.0
+                return 0.0 if norm >= 360.0 else norm
+            return val
+        except (ValueError, TypeError):
+            return v
+
 
 class BlinkRequest(BaseModel):
     ra: float = Field(..., ge=0.0, lt=360.0, description="Right Ascension in degrees (0 to 360)")
@@ -76,6 +89,18 @@ class BlinkRequest(BaseModel):
     stretch: str = Field("asinh", description="Image stretch algorithm")
     colormap: str = Field("magma", description="Colormap for single epoch frames")
 
+    @field_validator("ra", mode="before")
+    @classmethod
+    def wrap_negative_ra(cls, v: Any) -> float:
+        try:
+            val = float(v)
+            if val < 0.0:
+                norm = (val % 360.0 + 360.0) % 360.0
+                return 0.0 if norm >= 360.0 else norm
+            return val
+        except (ValueError, TypeError):
+            return v
+
 
 class CandidateFlag(BaseModel):
     candidate_id: Optional[str] = None
@@ -85,6 +110,27 @@ class CandidateFlag(BaseModel):
     observer_name: str = "Anonymous Citizen Scientist"
     notes: str
     object_classification: str = Field("Planet X / Distant Trans-Neptunian", description="Candidate classification")
+
+    @field_validator("ra", mode="before")
+    @classmethod
+    def wrap_negative_ra(cls, v: Any) -> float:
+        try:
+            val = float(v)
+            if val < 0.0:
+                norm = (val % 360.0 + 360.0) % 360.0
+                return 0.0 if norm >= 360.0 else norm
+            return val
+        except (ValueError, TypeError):
+            return v
+
+    @field_validator("dec", mode="before")
+    @classmethod
+    def clamp_dec(cls, v: Any) -> float:
+        try:
+            val = float(v)
+            return max(-90.0, min(90.0, val))
+        except (ValueError, TypeError):
+            return v
 
 
 @app.get("/api/health")
@@ -249,21 +295,25 @@ def get_blink_comparison(req: BlinkRequest):
 
 @app.get("/api/spherex/download-fits")
 def download_fits(
-    ra: float = Query(..., ge=0.0, lt=360.0),
-    dec: float = Query(..., ge=-90.0, le=90.0),
+    ra: float = Query(..., description="Right Ascension in degrees (auto-wraps negative RA)"),
+    dec: float = Query(..., ge=-90.0, le=90.0, description="Declination in degrees (-90 to +90)"),
     channel_id: int = Query(60, ge=1, le=102),
     epoch_id: str = Query("survey-1")
 ):
     """Generates and returns standard astronomical FITS file with primary 2D data and WCS."""
+    normalized_ra = (ra % 360.0 + 360.0) % 360.0 if ra < 0.0 else ra
+    if normalized_ra >= 360.0 or normalized_ra < 0.0:
+        raise HTTPException(status_code=422, detail="Right Ascension must be within [0, 360) degrees.")
+
     data, wcs, meta, _ = get_spherex_cutout(
-        ra=ra,
+        ra=normalized_ra,
         dec=dec,
         channel_id=channel_id,
         epoch_id=epoch_id
     )
     fits_bytes = export_fits_bytes(data, wcs, meta)
 
-    filename = f"spherex_ra{ra:.2f}_dec{dec:.2f}_ch{channel_id}_{epoch_id}.fits"
+    filename = f"spherex_ra{normalized_ra:.2f}_dec{dec:.2f}_ch{channel_id}_{epoch_id}.fits"
     return Response(
         content=fits_bytes,
         media_type="application/fits",

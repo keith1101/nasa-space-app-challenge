@@ -468,6 +468,18 @@ class TestTier2BoundaryAndCornerCases:
         res_dec = client.post("/api/spherex/cutout", json={"ra": 180.0, "dec": -95.0, "channel_id": 50})
         assert res_dec.status_code == 422
 
+    def test_tc_t2_cb_06_negative_ra_wraparound(self):
+        """TC-T2-CB-06: Verifies negative RA wrap-around across meridian (e.g. -3.7064 deg wraps to ~356.2936 deg)."""
+        res_blink = client.post("/api/spherex/blink", json={
+            "ra": -3.7064116296987777,
+            "dec": 12.8,
+            "channel_id": 60,
+            "epoch1_id": "survey-1",
+            "epoch2_id": "survey-2"
+        })
+        assert res_blink.status_code == 200
+        assert res_blink.json()["ra"] == pytest.approx(356.2936, abs=1e-3)
+
     # --------------------------------------------------------------------------
     # Category 2: Empty & Malformed Input Handling (5 Cases)
     # --------------------------------------------------------------------------
