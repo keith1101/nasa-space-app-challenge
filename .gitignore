@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+
+# Build & bundle artifacts
+frontend/dist/
+dist/
+build/
+.vite/
+*.tsbuildinfo
+
+# Python cache & environments
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+*.egg
+.venv/
+venv/
+env/
+ENV/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+
+# Logs & temporary files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.tmp
+*.bak
+
+# IDE & OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+Desktop.ini

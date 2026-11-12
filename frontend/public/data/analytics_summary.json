@@ -1,0 +1,175 @@
+{
+  "title": "Harmonization of MODIS and VIIRS Hot Spots",
+  "nasa_challenge": "NASA Space Apps 2026 - Track 04 (Data & AI)",
+  "data_period": "Live 7-Day Window (Nov 03 – Nov 09, 2026) + 2018–2026 Climatological Reference",
+  "provenance": {
+    "dataset_name": "NASA FIRMS Active Fire Archive (MODIS Collection 6.1 & VIIRS Collection 2)",
+    "source_url": "https://firms.modaps.eosdis.nasa.gov/active_fire/",
+    "dataset_identifiers": {
+      "MODIS_C6_1": "MOD14 / MYD14 Collection 6.1 (DOI: 10.5067/FIRMS/MODIS/MCD14DL.NRT.0061)",
+      "VIIRS_NOAA20_C2": "VJ114IMGTDL_NRT Collection 2 (DOI: 10.5067/FIRMS/VIIRS/VJ114IMGTDL_NRT.002)",
+      "VIIRS_NOAA21_C2": "VJ214IMGTDL_NRT Collection 2 (NOAA-21 / JPSS-2 Active Fire I-Band 375m)",
+      "boundaries": "geoBoundaries Vietnam ADM1 Simplified Polygons (CC-BY 4.0)"
+    },
+    "retrieval_timestamp": "2026-11-10T06:00:00Z",
+    "processing_version": "FireHarmonizer-ST-DBSCAN-v2.2 (Anisotropic Elliptical Footprint + Pass-Grouped Bayesian Fusion)",
+    "preprocessing_steps": [
+      "Bounding-box spatial clip [102.0°E–110.0°E, 8.0°N–24.0°N] + geoBoundaries ADM1 ray-casting point-in-polygon join",
+      "Laplace confidence clamping [0.05, 0.99] for MODIS (0-100%) and canonical mapping {l: 0.30, n: 0.70, h: 0.95} for VIIRS",
+      "Anisotropic elliptical bow-tie footprint matching along cross-track (scan) and along-track (track) axes",
+      "Pass-grouped Bayesian log-odds confidence fusion across independent satellite overpasses",
+      "Radiative flux-density centroid localization w_i = (FRP_i + 0.1) / max(0.05, scan_i * track_i)",
+      "Leave-One-Year-Out (Jackknife) Z-score seasonal anomaly standardization"
+    ]
+  },
+  "sensors": [
+    {
+      "name": "MODIS",
+      "satellites": [
+        "Terra",
+        "Aqua"
+      ],
+      "spatial_resolution": "1 km (up to 2.0×4.8 km at swath edge)",
+      "detection_count": 198
+    },
+    {
+      "name": "VIIRS",
+      "satellites": [
+        "NOAA-20",
+        "NOAA-21",
+        "Suomi-NPP"
+      ],
+      "spatial_resolution": "375 m (I-band)",
+      "detection_count": 1324
+    }
+  ],
+  "metrics": {
+    "total_raw_detections": 1522,
+    "raw_modis_count": 198,
+    "raw_viirs_count": 1324,
+    "harmonized_fire_events": 1078,
+    "deduplication_rate_percent": 29.17,
+    "dual_confirmed_events": 12,
+    "multi_satellite_verified_events": 120,
+    "viirs_exclusive_events": 912,
+    "modis_exclusive_events": 154,
+    "high_resolution_375m_ratio_percent": 85.7,
+    "mean_harmonized_frp": 7.27,
+    "total_harmonized_frp": 7831.75,
+    "spatial_eps_km": 1.25,
+    "time_window_hours": 3.0
+  },
+  "metrics_vietnam_only": {
+    "total_raw_detections": 934,
+    "raw_modis_count": 144,
+    "raw_viirs_count": 790,
+    "harmonized_fire_events": 680,
+    "deduplication_rate_percent": 27.19,
+    "dual_confirmed_events": 6,
+    "multi_satellite_verified_events": 58,
+    "viirs_exclusive_events": 559,
+    "modis_exclusive_events": 115,
+    "high_resolution_375m_ratio_percent": 83.1,
+    "mean_harmonized_frp": 8.15,
+    "total_harmonized_frp": 5539.73,
+    "spatial_eps_km": 1.25,
+    "time_window_hours": 3.0
+  },
+  "daily_breakdown_7d": [
+    {
+      "date": "2026-11-03",
+      "modis_raw": 9,
+      "viirs_raw": 163,
+      "total_raw": 172,
+      "harmonized_events": 105,
+      "dedup_rate_percent": 39.0,
+      "total_frp_mw": 671.2,
+      "is_partial_day": false,
+      "coverage_note": "Complete 24h UTC window (Terra, Aqua, NOAA-20, NOAA-21)"
+    },
+    {
+      "date": "2026-11-04",
+      "modis_raw": 17,
+      "viirs_raw": 131,
+      "total_raw": 148,
+      "harmonized_events": 112,
+      "dedup_rate_percent": 24.3,
+      "total_frp_mw": 725.5,
+      "is_partial_day": false,
+      "coverage_note": "Complete 24h UTC window (Terra, Aqua, NOAA-20, NOAA-21)"
+    },
+    {
+      "date": "2026-11-05",
+      "modis_raw": 95,
+      "viirs_raw": 258,
+      "total_raw": 353,
+      "harmonized_events": 263,
+      "dedup_rate_percent": 25.5,
+      "total_frp_mw": 2090.7,
+      "is_partial_day": false,
+      "coverage_note": "Complete 24h UTC window (Terra, Aqua, NOAA-20, NOAA-21)"
+    },
+    {
+      "date": "2026-11-06",
+      "modis_raw": 11,
+      "viirs_raw": 204,
+      "total_raw": 215,
+      "harmonized_events": 141,
+      "dedup_rate_percent": 34.4,
+      "total_frp_mw": 1115.4,
+      "is_partial_day": false,
+      "coverage_note": "Complete 24h UTC window (Terra, Aqua, NOAA-20, NOAA-21)"
+    },
+    {
+      "date": "2026-11-07",
+      "modis_raw": 21,
+      "viirs_raw": 200,
+      "total_raw": 221,
+      "harmonized_events": 146,
+      "dedup_rate_percent": 33.9,
+      "total_frp_mw": 1156.8,
+      "is_partial_day": false,
+      "coverage_note": "Complete 24h UTC window (Terra, Aqua, NOAA-20, NOAA-21)"
+    },
+    {
+      "date": "2026-11-08",
+      "modis_raw": 16,
+      "viirs_raw": 225,
+      "total_raw": 241,
+      "harmonized_events": 183,
+      "dedup_rate_percent": 24.1,
+      "total_frp_mw": 1167.2,
+      "is_partial_day": false,
+      "coverage_note": "Complete 24h UTC window (Terra, Aqua, NOAA-20, NOAA-21)"
+    },
+    {
+      "date": "2026-11-09",
+      "modis_raw": 21,
+      "viirs_raw": 92,
+      "total_raw": 113,
+      "harmonized_events": 77,
+      "dedup_rate_percent": 31.9,
+      "total_frp_mw": 637.3,
+      "is_partial_day": false,
+      "coverage_note": "Complete 24h UTC window (Terra, Aqua, NOAA-20, NOAA-21)"
+    },
+    {
+      "date": "2026-11-10",
+      "modis_raw": 8,
+      "viirs_raw": 51,
+      "total_raw": 59,
+      "harmonized_events": 51,
+      "dedup_rate_percent": 13.6,
+      "total_frp_mw": 267.7,
+      "is_partial_day": true,
+      "coverage_note": "Partial UTC window (NOAA-21 J2 feed ends 2026-11-09)"
+    }
+  ],
+  "key_findings": [
+    "True Spatio-Temporal DBSCAN (ε = 1.25 km, Δt ≤ 3.0 h with scan/track footprint matching) eliminates 29.17% of redundant raw detections.",
+    "Resolves afternoon orbital overlap between Aqua, NOAA-20, and NOAA-21 while preventing artificial 12:00 UTC boundary splits and morning/afternoon false merges.",
+    "Refines 85.7% of active fire centroids to 375m ground precision via FRP-weighted VIIRS localization.",
+    "Identifies 12 dual-sensor (MODIS+VIIRS) and 120 multi-satellite corroborated fire fronts with independent pass Bayesian confidence fusion.",
+    "Reconciles Fire Radiative Power (FRP) per satellite overpass before cross-sensor maximization, preventing double-counted radiative energy across NOAA-20 and NOAA-21."
+  ]
+}

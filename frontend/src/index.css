@@ -1,0 +1,197 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-ink-900 font-sans text-slate-200 antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    background-image:
+      radial-gradient(1200px 520px at 80% -10%, rgba(56, 189, 248, 0.07), transparent 60%),
+      radial-gradient(900px 420px at -5% 0%, rgba(59, 130, 246, 0.06), transparent 55%);
+    background-attachment: fixed;
+  }
+
+  /* Keyboard focus is always visible and high-contrast. */
+  :focus-visible {
+    outline: 2px solid #38bdf8;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  ::selection {
+    background: rgba(56, 189, 248, 0.35);
+  }
+
+  select {
+    color-scheme: dark;
+  }
+}
+
+@layer components {
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400;
+  }
+
+  .num {
+    @apply font-mono tabular-nums;
+  }
+
+  /* Diagonal hatch marks values that are simulated or partial, not observed. */
+  .hatch {
+    background-image: repeating-linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.22) 0,
+      rgba(255, 255, 255, 0.22) 1.5px,
+      transparent 1.5px,
+      transparent 5px
+    );
+  }
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #070b14;
+}
+::-webkit-scrollbar-thumb {
+  background: #1f3050;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2c4166;
+}
+
+/* Range inputs */
+input[type='range'] {
+  accent-color: #22d3ee;
+}
+
+/* ---------- Leaflet theme ---------- */
+.leaflet-container {
+  background-color: #070b14 !important;
+  font-family: inherit !important;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #0d1526 !important;
+  color: #e2e8f0 !important;
+  border: 1px solid #2a3d60 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 18px 48px -12px rgba(0, 0, 0, 0.75) !important;
+}
+
+.leaflet-popup-content {
+  margin: 12px 14px !important;
+}
+
+.leaflet-popup-tip {
+  background: #0d1526 !important;
+  border: 1px solid #2a3d60 !important;
+}
+
+.leaflet-popup-close-button {
+  color: #94a3b8 !important;
+}
+
+.leaflet-tooltip.fm-tooltip {
+  background: #0d1526;
+  color: #e2e8f0;
+  border: 1px solid #2a3d60;
+  border-radius: 8px;
+  box-shadow: 0 10px 28px -10px rgba(0, 0, 0, 0.7);
+  padding: 8px 10px;
+}
+.leaflet-tooltip.fm-tooltip::before {
+  display: none;
+}
+
+.leaflet-control-zoom a {
+  background-color: #0d1526 !important;
+  color: #e2e8f0 !important;
+  border: 1px solid #2a3d60 !important;
+}
+.leaflet-control-zoom a:hover {
+  background-color: #1a2a47 !important;
+}
+
+.leaflet-control-attribution {
+  background: rgba(7, 11, 20, 0.78) !important;
+  color: #94a3b8 !important;
+}
+.leaflet-control-attribution a {
+  color: #7dd3fc !important;
+}
+
+/* Popup content blocks (rendered from HTML strings by MapViewer) */
+.fm-pop {
+  min-width: 230px;
+  font-size: 12px;
+}
+.fm-pop-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #1a2842;
+}
+.fm-pop-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+.fm-pop-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 9999px;
+  display: inline-block;
+}
+.fm-pop-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: #cbd5e1;
+  background: #1a2a47;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+.fm-pop-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 12px;
+  row-gap: 3px;
+}
+.fm-pop-grid dt {
+  color: #94a3b8;
+}
+.fm-pop-grid dd {
+  margin: 0;
+  color: #e2e8f0;
+  font-family: 'JetBrains Mono', monospace;
+  text-align: right;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
