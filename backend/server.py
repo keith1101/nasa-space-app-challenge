@@ -19,9 +19,13 @@ from backend.harmonizer import FireHarmonizer
 from backend.build_dataset import load_data, assign_province
 from backend import firms_live
 from backend.services.cache_service import cache_manager
+from backend.services.landcover_service import compute_global_vegetation
+from backend.services.grid_risk_service import predict_live_grid
 from backend.api.routes import (
     load_json_file,
     compute_live_harmonization,
+    compute_live_fire_trajectories,
+    compute_fire_llm_analysis,
     create_api_router,
     DATA_DIR,
 )
@@ -37,6 +41,10 @@ FallbackHTTPHandler.data_dir = DATA_DIR
 FallbackHTTPHandler.dist_dir = DIST_DIR
 FallbackHTTPHandler.compute_live_func = compute_live_harmonization
 FallbackHTTPHandler.load_json_func = load_json_file
+FallbackHTTPHandler.compute_trajectories_func = compute_live_fire_trajectories
+FallbackHTTPHandler.compute_llm_analysis_func = compute_fire_llm_analysis
+FallbackHTTPHandler.compute_vegetation_func = compute_global_vegetation
+FallbackHTTPHandler.predict_grid_func = predict_live_grid
 
 # Backward-compatible references for external callers and existing test suites
 _CACHE = cache_manager._cache

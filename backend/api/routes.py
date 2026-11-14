@@ -12,6 +12,11 @@ ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 DATA_DIR = ROOT_DIR / "frontend" / "public" / "data"
 
 from backend.core.engine import FireHarmonizer
+from backend.core.tracking import track_fire_events
+from backend.services.weather_service import enrich_fire_event_with_weather
+from backend.services.llm_service import analyze_fire_spread_with_llm
+from backend.services.landcover_service import compute_global_vegetation, LandCoverUnavailable
+from backend.services.grid_risk_service import predict_live_grid
 from backend.services.province_service import assign_province
 from backend.services.cache_service import cache_manager
 from backend.models import (
@@ -133,6 +138,82 @@ def compute_live_harmonization(
     }
 
 
+def compute_live_fire_trajectories(
+    max_time_gap_hours: float = 36.0,
+    base_spatial_eps_km: float = 1.5,
+    max_spread_velocity_kmh: float = 3.5,
+    vietnam_only: bool = False,
+    enrich_weather: bool = True,
+) -> Dict[str, Any]:
+    """
+    Computes multi-pass Spatio-Temporal DAG fire event tracking and trajectory kinematics.
+    """
+    cache_manager.ensure_raw_cache()
+    cached = cache_manager.get_cached_records()
+    recs_m = cached["modis_recs"]
+    recs_v = cached["viirs_recs"]
+
+    if vietnam_only:
+        recs_m = [r for r in recs_m if r.get("in_vietnam")]
+        recs_v = [r for r in recs_v if r.get("in_vietnam")]
+
+    harmonizer = FireHarmonizer(spatial_eps_km=1.25, time_window_hours=3.0)
+    harm_recs, _ = harmonizer.harmonize_records(recs_m, recs_v)
+
+    events = track_fire_events(
+        harm_recs,
+        max_time_gap_hours=max_time_gap_hours,
+        base_spatial_eps_km=base_spatial_eps_km,
+        max_spread_velocity_kmh=max_spread_velocity_kmh,
+    )
+
+    if enrich_weather:
+        # Enrich top 10 most energetic events with Open-Meteo ambient weather
+        for ev in events[:10]:
+            enrich_fire_event_with_weather(ev)
+
+    return {
+        "event_count": len(events),
+        "multi_day_conflagrations": sum(1 for e in events if e["status"] == "MULTI_DAY_CONFLAGRATION"),
+        "persistent_active_fires": sum(1 for e in events if e["status"] == "PERSISTENT_ACTIVE_FIRE"),
+        "events": events,
+    }
+
+
+def compute_fire_llm_analysis(
+    event_id: Optional[str] = None,
+    custom_telemetry: Optional[Dict[str, Any]] = None,
+    provider: Optional[str] = None,
+) -> Dict[str, Any]:
+    """
+    Generates tactical SITREP and spread mechanism analysis using configured LLM provider.
+    """
+    if custom_telemetry:
+        telemetry = custom_telemetry
+    else:
+        trajectories = compute_live_fire_trajectories(enrich_weather=True)
+        events = trajectories.get("events", [])
+        if not events:
+            raise ValueError("No active fire events detected in current dataset.")
+        if event_id:
+            matched = [e for e in events if e["event_id"] == event_id]
+            if not matched:
+                raise ValueError(f"Fire event '{event_id}' not found.")
+            telemetry = matched[0]
+        else:
+            telemetry = events[0]
+
+    if "weather" not in telemetry:
+        telemetry = enrich_fire_event_with_weather(telemetry)
+
+    analysis = analyze_fire_spread_with_llm(telemetry, provider=provider)
+    return {
+        "event_id": telemetry.get("event_id"),
+        "telemetry": telemetry,
+        "analysis": analysis,
+    }
+
+
 def create_api_router() -> Any:
     """Factory function creating FastAPI APIRouter instance if FastAPI is installed."""
     if not HAS_FASTAPI:
@@ -204,5 +285,65 @@ def create_api_router() -> Any:
             date_filter=date_filter,
             daynight=daynight,
         )
+
+    @router.get("/fire-trajectories")
+    def get_fire_trajectories(
+        max_time_gap_hours: float = Query(36.0, ge=1.0, le=168.0, description="Max hours gap between linked passes"),
+        base_spatial_eps_km: float = Query(1.5, ge=0.5, le=10.0, description="Base footprint margin in km"),
+        max_spread_velocity_kmh: float = Query(3.5, ge=0.5, le=10.0, description="Max physical spread velocity in km/h"),
+        vietnam_only: bool = Query(False, description="Filter strictly to Vietnam"),
+        enrich_weather: bool = Query(True, description="Query Open-Meteo for ambient wind & weather"),
+    ):
+        """Builds multi-pass Spatio-Temporal DAG, tracking fire duration and propagation vectors."""
+        return compute_live_fire_trajectories(
+            max_time_gap_hours=max_time_gap_hours,
+            base_spatial_eps_km=base_spatial_eps_km,
+            max_spread_velocity_kmh=max_spread_velocity_kmh,
+            vietnam_only=vietnam_only,
+            enrich_weather=enrich_weather,
+        )
+
+    @router.get("/fire-analysis")
+    def get_fire_analysis(
+        event_id: Optional[str] = Query(None, description="Fire event ID (e.g. FE-0001)"),
+        provider: Optional[str] = Query(None, description="LLM provider: gemini, openai, local, or heuristic fallback"),
+    ):
+        """Generates tactical wildfire SITREP using provider-agnostic LLM with weather alignment."""
+        try:
+            return compute_fire_llm_analysis(event_id=event_id, provider=provider)
+        except ValueError as err:
+            raise HTTPException(status_code=404, detail=str(err))
+
+    @router.post("/fire-analysis")
+    def post_fire_analysis(
+        payload: Dict[str, Any],
+        provider: Optional[str] = Query(None, description="LLM provider override"),
+    ):
+        """Generates tactical wildfire SITREP from custom telemetry JSON payload."""
+        try:
+            event_id = payload.get("event_id")
+            custom_telemetry = payload.get("telemetry") or payload
+            return compute_fire_llm_analysis(event_id=event_id, custom_telemetry=custom_telemetry, provider=provider)
+        except Exception as err:
+            raise HTTPException(status_code=400, detail=str(err))
+
+    @router.get("/vegetation-fires")
+    def get_vegetation_fires():
+        """Returns global active fire hotspots classified on MCD12Q1 vegetation biomes."""
+        try:
+            return compute_global_vegetation()
+        except LandCoverUnavailable as err:
+            raise HTTPException(status_code=503, detail=str(err))
+
+    @router.get("/live-experimental-grid")
+    def get_live_experimental_grid(
+        latitude: float = Query(..., description="Hotspot latitude"),
+        longitude: float = Query(..., description="Hotspot longitude"),
+    ):
+        """Simulates 1-km directional fire risk grid across 6h, 12h, 24h horizons."""
+        try:
+            return predict_live_grid(latitude, longitude)
+        except Exception as err:
+            raise HTTPException(status_code=503, detail=str(err))
 
     return router
