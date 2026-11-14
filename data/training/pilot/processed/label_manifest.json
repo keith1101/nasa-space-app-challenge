@@ -1,0 +1,18 @@
+{
+  "source": "VIIRS_NOAA20_SP",
+  "events": 40,
+  "detections": 81,
+  "positive_neighbor_observations": 17,
+  "verified_negative_labels": 0,
+  "verified_extinction_times": 0,
+  "association_km": 2.0,
+  "association_max_gap_h": 36,
+  "grid_degrees": 0.02,
+  "horizons_h": [
+    6,
+    12,
+    24
+  ],
+  "training_ready": false,
+  "reason": "No observation coverage, verified perimeters, or extinction labels."
+}

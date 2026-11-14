@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Header } from './components/Header';
 import { MapViewer } from './components/MapViewer';
+import type { RiskCell } from './components/MapViewer';
 import { MethodologyModal } from './components/MethodologyModal';
 import { FireCalendarCard } from './components/FireCalendarCard';
 import {
@@ -34,22 +35,91 @@ import type {
 
 type FilterType = 'all' | 'dual' | 'high_frp';
 type SortOrder = 'frp_desc' | 'confidence_desc';
+const apiUrl = (path: string): string => {
+  const base = (window as Window & { __NASA_API_BASE__?: string }).__NASA_API_BASE__ || '';
+  return `${base.replace(/\/$/, '')}${path}`;
+};
+type GlobalLiveResult = {
+  data_mode: string; fetched_at: string; last_error: string | null;
+  raster_files_count: number; land_cover_year: string;
+  counts: { total: number; covered: number; vegetation: number; outside: number; unknown: number };
+  points: GlobalHarmonizedPoint[];
+};
+type FireRisk = {
+  mode: string; fetched_at: string; observed_at_utc: string | null; weather_first_hour: string;
+  observation_age_hours: number | null; observation_status: string; firms_snapshot_last_error: string | null;
+  limitations: string; remaining_burn_hours: null; model_status: string;
+  grid: { covered_cells: number; total_cells: number; cell_km: number };
+  persistence_index: Record<string, number>; cells: RiskCell[];
+};
+type VegetationResult = {
+  data_mode: string;
+  raster_files: string[];
+  saved_labels: number;
+  land_cover_year: string;
+  counts: { total: number; covered: number; vegetation: number; nonvegetation: number; unknown: number; outside: number };
+  regions: Record<string, { total: number; covered: number; vegetation: number; outside: number; unknown: number; source: string }>;
+  points: GlobalHarmonizedPoint[];
+};
 
 export default function App() {
   const { state: datasetState, reload } = useDatasets();
   const [liveRegion, setLiveRegion] = useState<GlobalHarmonizedPoint[] | null>(null);
   const [liveStatus, setLiveStatus] = useState('Đang kiểm tra dữ liệu FIRMS…');
+  const [vegetationOnly, setVegetationOnly] = useState(false);
+  const [globalLiveMode, setGlobalLiveMode] = useState(false);
+  const [globalLiveData, setGlobalLiveData] = useState<GlobalLiveResult | null>(null);
+  const [globalLiveError, setGlobalLiveError] = useState('');
+  const [fireRisk, setFireRisk] = useState<FireRisk | null>(null);
+  const [riskError, setRiskError] = useState('');
+  const [riskHorizon, setRiskHorizon] = useState<6 | 12 | 24>(24);
+  useEffect(() => {
+    if (!globalLiveMode) return;
+    let active = true;
+    async function refreshGlobal() {
+      try {
+        const response = await fetch(apiUrl('/api/live-global-vegetation'));
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || 'Global FIRMS unavailable');
+        if (active) { setGlobalLiveData(data); setGlobalLiveError(''); }
+      } catch (error) {
+        if (active) { setGlobalLiveData(null); setGlobalLiveError(error instanceof Error ? error.message : String(error)); }
+      }
+    }
+    void refreshGlobal();
+    const timer = window.setInterval(() => void refreshGlobal(), 15 * 60 * 1000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [globalLiveMode]);
+  const [vegetationData, setVegetationData] = useState<VegetationResult | null>(null);
+  const [vegetationError, setVegetationError] = useState('');
+  useEffect(() => {
+    if (!vegetationOnly) return;
+    let active = true;
+    async function refreshVegetation() {
+      try {
+        const response = await fetch(apiUrl('/api/vegetation-fires'));
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || 'Không tải được dữ liệu thảm thực vật');
+        if (active) { setVegetationData(data); setVegetationError(''); }
+      } catch (error) {
+        if (active) { setVegetationData(null); setVegetationError(error instanceof Error ? error.message : String(error)); }
+      }
+    }
+    void refreshVegetation();
+    const timer = window.setInterval(() => void refreshVegetation(), 15 * 60 * 1000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [vegetationOnly]);
   useEffect(() => {
     let active = true;
     async function refresh() {
       try {
-        const status = await fetch('/api/data-status').then((r) => r.json());
+        const status = await fetch(apiUrl('/api/data-status')).then((r) => r.json());
         if (!active) return;
         if (status.mode !== 'live') {
           setLiveStatus(status.last_error ? `FIRMS lỗi cập nhật · đang dùng dữ liệu cũ` : 'Đang dùng dữ liệu mẫu · đặt FIRMS_MAP_KEY để bật FIRMS');
           return;
         }
-        const response = await fetch('/api/harmonize');
+        const response = await fetch(apiUrl('/api/harmonize'));
         if (!response.ok) throw new Error('FIRMS API unavailable');
         const data = await response.json();
         const points: GlobalHarmonizedPoint[] = data.harmonized_geojson.features.map((feature: any) => [
@@ -101,6 +171,25 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<SortOrder>('frp_desc');
   const [selectedGlobalPoint, setSelectedGlobalPoint] = useState<GlobalHarmonizedPoint | null>(null);
+  useEffect(() => {
+    if (!globalLiveMode || !selectedGlobalPoint) { setFireRisk(null); setRiskError(''); return; }
+    let active = true;
+    const [lat, lon] = selectedGlobalPoint;
+    async function refreshRisk() {
+      try {
+        const response = await fetch(apiUrl(`/api/live-experimental-grid?latitude=${encodeURIComponent(lat)}&longitude=${encodeURIComponent(lon)}`));
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.detail || 'Forecast unavailable');
+        if (active) { setFireRisk(data); setRiskError(''); }
+      } catch (error) {
+        if (active) { setFireRisk(null); setRiskError(error instanceof Error ? error.message : String(error)); }
+      }
+    }
+    setFireRisk(null);
+    void refreshRisk();
+    const timer = window.setInterval(() => void refreshRisk(), 15 * 60 * 1000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [globalLiveMode, selectedGlobalPoint]);
   const [basemapStyle, setBasemapStyle] = useState<'dark' | 'satellite'>('dark');
   const [isMethodologyOpen, setIsMethodologyOpen] = useState<boolean>(false);
 
@@ -136,11 +225,17 @@ export default function App() {
     return bundled.filter((point) => !(point[0] >= 8.2 && point[0] <= 23.5 && point[1] >= 102.1 && point[1] <= 109.8)).concat(liveRegion);
   }, [datasetState, liveRegion]);
 
+  const mapPoints = useMemo<GlobalHarmonizedPoint[]>(() => {
+    if (globalLiveMode) return globalLiveData?.points ?? [];
+    if (!vegetationOnly) return allPoints;
+    return vegetationData?.points ?? [];
+  }, [allPoints, vegetationOnly, vegetationData, globalLiveMode, globalLiveData]);
+
   // Filtered Points
   const filteredPoints = useMemo<GlobalHarmonizedPoint[]>(() => {
-    if (allPoints.length === 0) return [];
+    if (mapPoints.length === 0) return [];
 
-    let list = allPoints.filter((pt) => {
+    let list = mapPoints.filter((pt) => {
       const frp = pt[2];
       const conf = pt[3];
       const isDual = pt[4] === 1;
@@ -182,7 +277,7 @@ export default function App() {
     });
 
     return list;
-  }, [allPoints, minConfidence, selectedCountryId, selectedContinent, filterType, searchQuery, sortBy, countryMap]);
+  }, [mapPoints, minConfidence, selectedCountryId, selectedContinent, filterType, searchQuery, sortBy, countryMap]);
 
   // Dynamic KPI Metrics
   const totalEvents = filteredPoints.length;
@@ -254,7 +349,9 @@ export default function App() {
                     {selectedCountry
                       ? `${selectedCountry.name} · ${selectedCountry.continent}`
                       : minConfidence > 0
-                      ? `${t.kpiConfFilterActive(minConfidence)} (${fmtInt(totalEvents)} / ${fmtInt(allPoints.length)})`
+                      ? `${t.kpiConfFilterActive(minConfidence)} (${fmtInt(totalEvents)} / ${fmtInt(mapPoints.length)})`
+                      : globalLiveMode ? (lang === 'vi' ? 'FIRMS live toàn cầu · có nhãn phủ đất' : 'Global live FIRMS · labeled')
+                      : vegetationOnly ? (lang === 'vi' ? 'FIRMS live · lớp phủ thực vật' : 'Live FIRMS · vegetation land cover')
                       : liveRegion ? "FIRMS vùng Việt Nam + dữ liệu toàn cầu đã lưu" : t.kpiTotalSub(rawScans)}
                   </span>
                 }
@@ -285,14 +382,14 @@ export default function App() {
               />
               <StatCard
                 label={t.kpiHighResLabel}
-                value={liveRegion ? "—" : "87.0%"}
+                value={liveRegion || vegetationOnly || globalLiveMode ? "—" : "87.0%"}
                 tone="blue"
                 icon={Sparkles}
                 sub={t.kpiHighResSub}
               />
               <StatCard
                 label={t.kpiDedupLabel}
-                value={liveRegion ? "—" : "−43.3%"}
+                value={liveRegion || vegetationOnly || globalLiveMode ? "—" : "−43.3%"}
                 tone="emerald"
                 icon={TrendingDown}
                 sub={t.kpiDedupSub}
@@ -309,6 +406,7 @@ export default function App() {
                   countries={countries}
                   selectedCountryId={selectedCountryId}
                   onSelectCountry={(cid) => {
+                    if (vegetationOnly || globalLiveMode) return;
                     setSelectedCountryId(cid);
                     setSelectedGlobalPoint(null);
                   }}
@@ -316,13 +414,67 @@ export default function App() {
                   globalPoints={filteredPoints}
                   selectedGlobalPoint={selectedGlobalPoint}
                   onSelectGlobalPoint={(pt) => setSelectedGlobalPoint(pt)}
+                  riskCells={globalLiveMode ? fireRisk?.cells : undefined}
+                  riskHorizon={riskHorizon}
                 />
               </div>
 
               {/* Right Column: Clean Sidebar Controls & Event List */}
               <div className="flex flex-col gap-3 lg:col-span-4 h-[720px]">
+                {globalLiveMode && selectedGlobalPoint && <Card className="p-3 space-y-2 text-xs">
+                  <div className="font-bold text-white">{lang === 'vi' ? 'Chỉ số thử nghiệm theo ô' : 'Experimental grid indices'}</div>
+                  <div className="flex gap-2">{([6, 12, 24] as const).map((h) =>
+                    <button key={h} type="button" onClick={() => setRiskHorizon(h)}
+                      className={cx('rounded px-2 py-1', riskHorizon === h ? 'bg-orange-400 text-ink-950' : 'border border-line')}>{h}h</button>)}</div>
+                  {riskError ? <p role="alert" className="text-rose-300">{riskError}</p> : !fireRisk ?
+                    <p>{lang === 'vi' ? 'Đang tính từ thời tiết dự báo…' : 'Calculating from forecast weather…'}</p> : <>
+                      <p>{lang === 'vi' ? 'Chỉ số điều kiện duy trì' : 'Persistence conditions index'} {riskHorizon}h: {fireRisk.persistence_index[String(riskHorizon)] ?? '—'}</p>
+                      <p>{lang === 'vi' ? 'Ô 1 km: màu đậm hơn = chỉ số lan tương đối cao hơn; không phải xác suất.' : '1 km cells: darker means higher relative spread index, not a probability.'}</p>
+                      <p>{lang === 'vi' ? 'FIRMS quan sát' : 'FIRMS observed'}: {fireRisk.observed_at_utc ? new Date(fireRisk.observed_at_utc).toLocaleString() : '—'} · {lang === 'vi' ? 'cách đây' : 'age'} {fireRisk.observation_age_hours ?? '—'}h · {lang === 'vi' ? 'mốc dự báo' : 'forecast from'} {fireRisk.weather_first_hour} UTC</p>
+                      {fireRisk.observation_status !== 'recent_detection' && <p className="text-amber-300">{lang === 'vi' ? 'Điểm quan sát cũ/chưa rõ giờ: ô màu là kịch bản nếu đám cháy còn hoạt động, không xác nhận đang cháy.' : 'Older/unknown detection: colored cells are conditional on the fire still being active.'}</p>}
+                      {fireRisk.firms_snapshot_last_error && <p className="text-amber-300">FIRMS: {fireRisk.firms_snapshot_last_error}</p>}
+                      <p>{lang === 'vi' ? 'Ô có raster' : 'Raster-covered cells'}: {fireRisk.grid.covered_cells}/{fireRisk.grid.total_cells} · XGBoost: {lang === 'vi' ? 'chưa kiểm định, không dùng' : 'not validated, not used'}</p>
+                      <p className="text-amber-300">{lang === 'vi' ? 'Ước lượng thử nghiệm, chưa hiệu chuẩn; không phải thời điểm tắt lửa hay ranh giới an toàn.' : fireRisk.limitations}</p>
+                    </>}
+                </Card>}
                 {/* Search & Filter Card */}
                 <Card className="p-3.5 space-y-3 shrink-0">
+                  <div className="space-y-2 border-b border-line pb-3">
+                    <div className="grid grid-cols-2 gap-2">
+                      <button type="button" aria-pressed={!vegetationOnly && !globalLiveMode} onClick={() => { setVegetationOnly(false); setGlobalLiveMode(false); setSelectedGlobalPoint(null); }}
+                        className={cx('rounded-md px-2 py-1.5 text-xs font-semibold', !vegetationOnly && !globalLiveMode ? 'bg-cyan-400 text-ink-950' : 'border border-line text-slate-300')}>
+                        {lang === 'vi' ? 'Tất cả điểm cháy' : 'All fires'}
+                      </button>
+                      <button type="button" aria-pressed={vegetationOnly} onClick={() => {
+                        setVegetationOnly(true); setGlobalLiveMode(false); setSelectedCountryId(null); setSelectedContinent('all');
+                        setSearchQuery(''); setSelectedGlobalPoint(null);
+                      }} className={cx('rounded-md px-2 py-1.5 text-xs font-semibold', vegetationOnly && !globalLiveMode ? 'bg-emerald-400 text-ink-950' : 'border border-line text-slate-300')}>
+                        {lang === 'vi' ? 'Cháy trên thảm thực vật' : 'Vegetation fires'}
+                      </button>
+                    </div>
+                    <button type="button" aria-pressed={globalLiveMode} onClick={() => {
+                      setGlobalLiveMode(true); setVegetationOnly(false); setSelectedCountryId(null);
+                      setSelectedContinent('all'); setSearchQuery(''); setSelectedGlobalPoint(null);
+                    }} className={cx('w-full rounded-md px-2 py-1.5 text-xs font-semibold', globalLiveMode ? 'bg-emerald-400 text-ink-950' : 'border border-line text-slate-300')}>
+                      {lang === 'vi' ? 'FIRMS live toàn cầu · thảm thực vật' : 'Global live FIRMS · vegetation'}
+                    </button>
+                    {globalLiveMode && <p role="status" className="text-[11px] text-slate-300">
+                      {globalLiveError || (!globalLiveData ? (lang === 'vi' ? 'Đang tải FIRMS toàn cầu…' : 'Loading global FIRMS…') :
+                        `${globalLiveData.counts.vegetation}/${globalLiveData.counts.total} labeled vegetation · ${globalLiveData.counts.outside} outside raster · ${globalLiveData.raster_files_count} rasters · ${new Date(globalLiveData.fetched_at).toLocaleString()}${globalLiveData.last_error ? ' · stale: ' + globalLiveData.last_error : ''}`)}
+                    </p>}
+                    {vegetationOnly && <p role="status" className="text-[11px] text-slate-300">
+                      {vegetationError || (!vegetationData
+                        ? (lang === 'vi' ? 'Đang đối chiếu FIRMS với MCD12Q1…' : 'Matching FIRMS with MCD12Q1…')
+                        : lang === 'vi'
+                          ? `${vegetationData.counts.vegetation} điểm thảm thực vật / ${vegetationData.counts.covered} có nhãn; ${vegetationData.counts.outside} chưa được phủ, ${vegetationData.counts.unknown} chưa rõ. ${vegetationData.saved_labels} nhãn lưu sẵn; ${vegetationData.raster_files.length} raster đang dùng (${vegetationData.land_cover_year}).`
+                          : `${vegetationData.counts.vegetation} vegetation / ${vegetationData.counts.covered} labeled; ${vegetationData.counts.outside} uncovered, ${vegetationData.counts.unknown} unknown. ${vegetationData.saved_labels} saved labels; ${vegetationData.raster_files.length} active rasters (${vegetationData.land_cover_year}).`)}
+                    </p>}
+                    {vegetationOnly && vegetationData && <div className="max-h-28 overflow-auto text-[10px] text-slate-300">
+                      <p>{vegetationData.data_mode === 'saved_global' ? (lang === 'vi' ? 'Toàn cầu: dữ liệu đã lưu' : 'Global: saved data') : (lang === 'vi' ? 'Việt Nam: live · nơi khác: đã lưu' : 'Vietnam: live · elsewhere: saved')}</p>
+                      {Object.entries(vegetationData.regions).map(([name, region]) =>
+                        <p key={name}>{name} · {region.source} · {region.vegetation}/{region.covered} · {region.outside} {lang === 'vi' ? 'ngoài raster' : 'outside'}</p>)}
+                    </div>}
+                  </div>
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-white flex items-center gap-1.5">
                       <Filter className="h-3.5 w-3.5 text-cyan-300" aria-hidden="true" />
@@ -351,7 +503,7 @@ export default function App() {
                   </div>
 
                   {/* Search by country */}
-                  <div className="relative">
+                  {!vegetationOnly && !globalLiveMode && <div className="relative">
                     <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" aria-hidden="true" />
                     <input
                       type="text"
@@ -360,9 +512,10 @@ export default function App() {
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="w-full rounded-lg border border-line-strong bg-ink-900 py-1.5 pl-8 pr-3 text-xs text-white placeholder-slate-400 outline-none focus:border-cyan-400"
                     />
-                  </div>
+                  </div>}
 
                   {/* Country & Continent Selectors */}
+                  {!vegetationOnly && !globalLiveMode &&
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <label htmlFor="country-select" className="mb-1 block text-[11px] font-semibold text-slate-300">
@@ -413,6 +566,7 @@ export default function App() {
                       </select>
                     </div>
                   </div>
+                  }
 
                   {/* Quick Category Filter Pills */}
                   <div className="flex flex-wrap gap-1.5 pt-1">

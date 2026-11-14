@@ -1,0 +1,17 @@
+{
+  "missing_inputs": [],
+  "pilot_detections": 81,
+  "linked_events": 0,
+  "duration_rows": 0,
+  "duration_events": 0,
+  "spread_rows": 0,
+  "spread_events": 0,
+  "spread_positive": 0,
+  "spread_negative": 0,
+  "skipped": {
+    "unlinked": 81
+  },
+  "training_ready": false,
+  "policy": "at least 30 independent verified events per task and both spread classes",
+  "note": "Readiness permits experimental training only; performance requires holdout evaluation."
+}

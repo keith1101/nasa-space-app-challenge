@@ -23,6 +23,8 @@ const BASEMAPS: Record<'dark' | 'satellite', { url: string; attribution: string;
   },
 };
 
+export type RiskCell = { latitude: number; longitude: number; lat_half_size: number; lon_half_size: number; horizon_hours: number; relative_risk: number };
+
 export interface MapViewerProps {
   lang: Language;
   worldCountriesGeojson?: any;
@@ -33,6 +35,8 @@ export interface MapViewerProps {
   globalPoints: GlobalHarmonizedPoint[];
   selectedGlobalPoint: GlobalHarmonizedPoint | null;
   onSelectGlobalPoint: (pt: GlobalHarmonizedPoint | null) => void;
+  riskCells?: RiskCell[];
+  riskHorizon?: number;
 }
 
 export function MapViewer({
@@ -45,6 +49,8 @@ export function MapViewer({
   globalPoints,
   selectedGlobalPoint,
   onSelectGlobalPoint,
+  riskCells = [],
+  riskHorizon = 24,
 }: MapViewerProps) {
   const t = TRANSLATIONS[lang];
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -57,6 +63,7 @@ export function MapViewer({
   const popupRef = useRef<L.Popup | null>(null);
   const hoverTooltipRef = useRef<L.Tooltip | null>(null);
   const countryLayerRef = useRef<L.GeoJSON | null>(null);
+  const riskLayerRef = useRef<L.LayerGroup | null>(null);
   const hoveredPointRef = useRef<GlobalHarmonizedPoint | null>(null);
 
   // Country lookup map by id
@@ -89,6 +96,9 @@ export function MapViewer({
     tileLayerRef.current = tileLayer;
     L.control.zoom({ position: 'bottomright' }).addTo(map);
     mapInstanceRef.current = map;
+    const riskPane = map.createPane('riskGridPane');
+    riskPane.style.zIndex = '450';
+    riskPane.style.pointerEvents = 'none';
 
     return () => {
       map.remove();
@@ -113,6 +123,27 @@ export function MapViewer({
 
     tileLayerRef.current.bringToBack();
   }, [basemapStyle]);
+
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+    riskLayerRef.current?.remove();
+    const layer = L.layerGroup();
+    for (const cell of riskCells) {
+      if (cell.horizon_hours !== riskHorizon || cell.relative_risk <= 0.001) continue;
+      const r = cell.relative_risk;
+      L.rectangle([
+        [cell.latitude - cell.lat_half_size, cell.longitude - cell.lon_half_size],
+        [cell.latitude + cell.lat_half_size, cell.longitude + cell.lon_half_size],
+      ], {
+        pane: 'riskGridPane', stroke: false, fillColor: r > .55 ? '#ef4444' : r > .25 ? '#f97316' : '#facc15',
+        fillOpacity: Math.max(.12, Math.min(.82, .12 + r * 1.8)), interactive: false,
+      }).addTo(layer);
+    }
+    layer.addTo(map);
+    riskLayerRef.current = layer;
+    return () => { layer.remove(); riskLayerRef.current = null; };
+  }, [riskCells, riskHorizon]);
 
   // Update World Countries Boundary Polygons
   useEffect(() => {

@@ -7,6 +7,7 @@ ThreadingHTTPServer when running in a zero-dependency standard-library environme
 """
 
 import json
+import hashlib
 import math
 import mimetypes
 import sys
@@ -23,6 +24,16 @@ if str(ROOT_DIR) not in sys.path:
 from backend.harmonizer import FireHarmonizer
 from backend.build_dataset import load_data, assign_province
 from backend import firms_live
+from backend.global_live import vegetation_global
+try:
+    from backend.fire_risk import predict as predict_fire_risk
+except ModuleNotFoundError as exc:
+    if exc.name != 'backend.fire_risk':
+        raise
+    predict_fire_risk = None
+from backend.live_prediction_input import get_live_prediction_input
+from backend.live_experimental_grid import predict as predict_live_grid
+from backend.landcover import LandCoverUnavailable, vegetation_catalog, _paths
 
 try:
     from fastapi import FastAPI, Query, HTTPException
@@ -38,6 +49,9 @@ DATA_DIR = ROOT_DIR / "frontend" / "public" / "data"
 DIST_DIR = ROOT_DIR / "frontend" / "dist"
 
 _CACHE_LOCK = threading.Lock()
+_VEG_LOCK = threading.Lock()
+_VEG_CACHE: Dict[str, Any] = {}
+LABELS_PATH = ROOT_DIR / 'data' / 'landcover' / 'saved_catalog_labels.json'
 
 # Cached in-memory datasets for sub-100ms live harmonization
 _CACHE: Dict[str, Any] = {
@@ -72,6 +86,34 @@ def load_json_file(filename: str) -> Any:
         raise FileNotFoundError(f"File {filename} not found.")
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def compute_global_vegetation():
+    _ensure_raw_cache()
+    paths = _paths()
+    signature = (_CACHE['stamp'], tuple((str(p), p.stat().st_mtime_ns, p.stat().st_size) for p in paths),
+                 LABELS_PATH.stat().st_mtime_ns if LABELS_PATH.exists() else None,
+                 __import__('os').getenv('MCD12_YEAR', 'unknown'))
+    with _VEG_LOCK:
+        if _VEG_CACHE.get('signature') != signature:
+            live = _CACHE['stamp'] != 'local'
+            features = compute_live_harmonization()['harmonized_geojson']['features'] if live else []
+            catalog_path = DATA_DIR / 'fires_global_harmonized.json'
+            catalog = load_json_file('fires_global_harmonized.json')
+            labels = None
+            if LABELS_PATH.exists():
+                snapshot = json.loads(LABELS_PATH.read_text(encoding='utf-8'))
+                digest = hashlib.sha256(catalog_path.read_bytes()).hexdigest()
+                if snapshot.get('catalog_sha256') != digest:
+                    raise LandCoverUnavailable('Nhãn đã lưu không khớp catalog; tạo lại saved_catalog_labels.json.')
+                if snapshot.get('year') != __import__('os').getenv('MCD12_YEAR', 'unknown'):
+                    raise LandCoverUnavailable('Năm raster khác năm nhãn đã lưu; kiểm tra MCD12_YEAR.')
+                labels = {int(i): int(code) for i, code in snapshot['labels']}
+            result = vegetation_catalog(catalog, features, live, labels)
+            result['saved_labels'] = len(labels) if labels else 0
+            _VEG_CACHE['result'] = result
+            _VEG_CACHE['signature'] = signature
+        return _VEG_CACHE['result']
 
 
 def compute_live_harmonization(
@@ -175,7 +217,7 @@ if HAS_FASTAPI:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
-        allow_credentials=True,
+        allow_credentials=False,
         allow_methods=["*"],
         allow_headers=["*"],
     )
@@ -242,6 +284,49 @@ if HAS_FASTAPI:
             date_filter=date_filter,
             daynight=daynight,
         )
+
+    @app.get("/api/vegetation-fires")
+    def get_vegetation_fires():
+        try:
+            return compute_global_vegetation()
+        except (LandCoverUnavailable, FileNotFoundError) as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    @app.get('/api/live-global-vegetation')
+    def get_live_global_vegetation():
+        try:
+            return vegetation_global()
+        except LandCoverUnavailable as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    @app.get('/api/fire-risk')
+    def get_fire_risk(latitude: float, longitude: float):
+        if predict_fire_risk is None:
+            raise HTTPException(status_code=503, detail='Experimental fire-risk module is not installed.')
+        try:
+            return predict_fire_risk(latitude, longitude)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        except (LandCoverUnavailable, OSError, KeyError, TypeError) as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    @app.get('/api/live-prediction-input')
+    def live_prediction_input(latitude: float, longitude: float):
+        try:
+            return get_live_prediction_input(latitude, longitude)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        except (LandCoverUnavailable, OSError, KeyError, TypeError, TimeoutError) as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    @app.get('/api/live-experimental-grid')
+    def live_experimental_grid(latitude: float, longitude: float):
+        try:
+            return predict_live_grid(latitude, longitude)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        except (LandCoverUnavailable, OSError, KeyError, TypeError, TimeoutError) as exc:
+            raise HTTPException(status_code=503, detail=str(exc)) from exc
 
     if DIST_DIR.exists():
         assets_dir = DIST_DIR / "assets"
@@ -350,6 +435,56 @@ class FallbackHTTPHandler(BaseHTTPRequestHandler):
                 daynight=daynight,
             )
             self._send_json(res)
+            return
+
+        if path == "/api/vegetation-fires":
+            try:
+                self._send_json(compute_global_vegetation())
+            except (LandCoverUnavailable, FileNotFoundError) as exc:
+                self._send_json({"detail": str(exc)}, status=503)
+            return
+
+        if path == '/api/live-global-vegetation':
+            try:
+                self._send_json(vegetation_global())
+            except LandCoverUnavailable as exc:
+                self._send_json({'detail': str(exc)}, status=503)
+            return
+
+        if path == '/api/fire-risk':
+            if predict_fire_risk is None:
+                self._send_json({'detail': 'Experimental fire-risk module is not installed.'}, status=503)
+                return
+            try:
+                lat = float(qs.get('latitude', [''])[0])
+                lon = float(qs.get('longitude', [''])[0])
+                self._send_json(predict_fire_risk(lat, lon))
+            except ValueError as exc:
+                self._send_json({'detail': str(exc)}, status=400)
+            except (LandCoverUnavailable, OSError, KeyError, TypeError) as exc:
+                self._send_json({'detail': str(exc)}, status=503)
+            return
+
+        if path == '/api/live-prediction-input':
+            try:
+                lat = float(qs.get('latitude', [''])[0])
+                lon = float(qs.get('longitude', [''])[0])
+                self._send_json(get_live_prediction_input(lat, lon))
+            except ValueError as exc:
+                self._send_json({'detail': str(exc)}, status=400)
+            except (LandCoverUnavailable, OSError, KeyError, TypeError, TimeoutError) as exc:
+                self._send_json({'detail': str(exc)}, status=503)
+            return
+
+        if path == '/api/live-experimental-grid':
+            try:
+                lat = float(qs.get('latitude', [''])[0])
+                lon = float(qs.get('longitude', [''])[0])
+                self._send_json(predict_live_grid(lat, lon))
+            except ValueError as exc:
+                self._send_json({'detail': str(exc)}, status=400)
+            except (LandCoverUnavailable, OSError, KeyError, TypeError, TimeoutError) as exc:
+                self._send_json({'detail': str(exc)}, status=503)
             return
 
         # Serve static files from frontend/public/data or frontend/dist with path-traversal protection
