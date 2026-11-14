@@ -10,6 +10,7 @@ import type {
   HarmonizationMetrics,
   HarmonizeApiResponse,
   ProvinceCollection,
+  WorldCountriesCollection,
 } from '../types/harmonization';
 
 export function isRecord(v: unknown): v is Record<string, unknown> {
@@ -33,7 +34,7 @@ export function isPointCollection<P>(v: unknown): v is GeoJsonFeatureCollection<
   });
 }
 
-export function isWorldCountriesCollection(v: unknown): boolean {
+export function isWorldCountriesCollection(v: unknown): v is WorldCountriesCollection {
   if (!isRecord(v) || v.type !== 'FeatureCollection' || !Array.isArray(v.features)) return false;
   return v.features.slice(0, 10).every(
     (f) =>

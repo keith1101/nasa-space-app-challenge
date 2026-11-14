@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { BookOpen, Cpu, Flame, Layers, ShieldCheck, TrendingUp, X } from 'lucide-react';
 import type { Language } from '../lib/i18n';
 import { Badge, buttonPrimary } from './ui';
@@ -10,30 +10,44 @@ export interface MethodologyModalProps {
 }
 
 export function MethodologyModal({ isOpen, onClose, lang }: MethodologyModalProps) {
+  const dialogRef = useRef<HTMLDialogElement | null>(null);
+
   useEffect(() => {
-    if (!isOpen) return;
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, [isOpen, onClose]);
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+
+    if (isOpen) {
+      if (!dialog.open) {
+        dialog.showModal();
+      }
+    } else {
+      if (dialog.open) {
+        dialog.close();
+      }
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
   const isVi = lang === 'vi';
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="methodology-modal-title"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+    <dialog
+      ref={dialogRef}
+      onClose={onClose}
+      onCancel={(e) => {
+        e.preventDefault();
+        onClose();
       }}
+      onClick={(e) => {
+        if (e.target === dialogRef.current) {
+          onClose();
+        }
+      }}
+      aria-labelledby="methodology-modal-title"
+      className="fixed inset-0 m-auto flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-line-strong bg-ink-900 p-0 text-slate-200 shadow-pop"
     >
-      <div className="flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-line-strong bg-ink-900 shadow-pop">
+      <div className="flex h-full w-full flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-line bg-ink-850 px-6 py-4">
           <div className="flex items-center gap-3">
@@ -197,6 +211,6 @@ P_fused = 1 - prod_s(1 - p_sat,s)  (>=0.92 floor if dual confirmed)`}
           </button>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 }

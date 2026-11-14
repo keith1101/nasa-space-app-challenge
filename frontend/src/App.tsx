@@ -3,8 +3,6 @@ import {
   Activity,
   Filter,
   Flame,
-  Globe2,
-  MapPin,
   RefreshCw,
   Search,
   ShieldCheck,
@@ -13,6 +11,7 @@ import {
 } from 'lucide-react';
 import { Header } from './components/Header';
 import { MapViewer } from './components/MapViewer';
+import type { RiskCell } from './components/MapViewer';
 import { MethodologyModal } from './components/MethodologyModal';
 import { FireCalendarCard } from './components/FireCalendarCard';
 import {
@@ -33,12 +32,60 @@ import type {
 } from './types/harmonization';
 
 type FilterType = 'all' | 'dual' | 'high_frp';
-type SortOrder = 'frp_desc' | 'confidence_desc';
+
+type VegetationResult = {
+  data_mode: string;
+  raster_files: string[];
+  saved_labels: number;
+  land_cover_year: string;
+  counts: { total: number; covered: number; vegetation: number; nonvegetation: number; unknown: number; outside: number };
+  regions: Record<string, { total: number; covered: number; vegetation: number; outside: number; unknown: number; source: string }>;
+  points: GlobalHarmonizedPoint[];
+};
+
+type FireRisk = {
+  mode: string;
+  fetched_at: string;
+  latitude: number;
+  longitude: number;
+  grid: { side: number; cell_km: number; horizons_hours: number[]; covered_cells: number; total_cells: number };
+  persistence_index: Record<string, number>;
+  cells: RiskCell[];
+  limitations: string;
+};
 
 export default function App() {
   const { state: datasetState, reload } = useDatasets();
   const [liveRegion, setLiveRegion] = useState<GlobalHarmonizedPoint[] | null>(null);
   const [liveStatus, setLiveStatus] = useState('Đang kiểm tra dữ liệu FIRMS…');
+  const [vegetationOnly, setVegetationOnly] = useState(false);
+  const [vegetationData, setVegetationData] = useState<VegetationResult | null>(null);
+  const [vegetationError, setVegetationError] = useState('');
+  const [fireRisk, setFireRisk] = useState<FireRisk | null>(null);
+  const [riskHorizon, setRiskHorizon] = useState<6 | 12 | 24>(24);
+
+  useEffect(() => {
+    if (!vegetationOnly) return;
+    let active = true;
+    async function loadVegetation() {
+      try {
+        const res = await fetch('/api/vegetation-fires');
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Không tải được thảm thực vật');
+        if (active) {
+          setVegetationData(data);
+          setVegetationError('');
+        }
+      } catch (err: any) {
+        if (active) {
+          setVegetationData(null);
+          setVegetationError(err.message || 'Lỗi thảm thực vật');
+        }
+      }
+    }
+    void loadVegetation();
+    return () => { active = false; };
+  }, [vegetationOnly]);
   useEffect(() => {
     let active = true;
     async function refresh() {
@@ -99,7 +146,6 @@ export default function App() {
   const [selectedContinent, setSelectedContinent] = useState<string>('all');
   const [filterType, setFilterType] = useState<FilterType>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [sortBy, setSortBy] = useState<SortOrder>('frp_desc');
   const [selectedGlobalPoint, setSelectedGlobalPoint] = useState<GlobalHarmonizedPoint | null>(null);
   const [basemapStyle, setBasemapStyle] = useState<'dark' | 'satellite'>('dark');
   const [isMethodologyOpen, setIsMethodologyOpen] = useState<boolean>(false);
@@ -110,14 +156,58 @@ export default function App() {
   // Active countries list
   const countries = useMemo<GlobalCountryInfo[]>(() => {
     if (datasetState.status !== 'ready') return [];
-    return datasetState.data.globalCatalog.countries;
+    if (Array.isArray(datasetState.data.globalCatalog.countries) && datasetState.data.globalCatalog.countries.length > 0) {
+      return datasetState.data.globalCatalog.countries;
+    }
+    if (datasetState.data.worldCountries?.features) {
+      return datasetState.data.worldCountries.features.map((f: any, idx: number) => {
+        const p = f.properties || {};
+        let minLat = 90, maxLat = -90, minLon = 180, maxLon = -180;
+        const walk = (coords: any) => {
+          if (!coords) return;
+          if (typeof coords[0] === 'number' && typeof coords[1] === 'number') {
+            const lon = coords[0];
+            const lat = coords[1];
+            if (lat < minLat) minLat = lat;
+            if (lat > maxLat) maxLat = lat;
+            if (lon < minLon) minLon = lon;
+            if (lon > maxLon) maxLon = lon;
+          } else if (Array.isArray(coords)) {
+            for (const item of coords) walk(item);
+          }
+        };
+        walk(f.geometry?.coordinates);
+        const hasValidBounds = minLat <= maxLat && minLon <= maxLon;
+        const bounds: [[number, number], [number, number]] = hasValidBounds
+          ? [[minLat, minLon], [maxLat, maxLon]]
+          : [[-60, -170], [75, 170]];
+        const center: [number, number] = hasValidBounds
+          ? [(minLat + maxLat) / 2, (minLon + maxLon) / 2]
+          : [20, 0];
+
+        return {
+          id: idx,
+          name: p.NAME || p.ADMIN || p.shapeName || 'Unknown',
+          code: p.ISO_A3 || '',
+          continent: p.CONTINENT || 'Other',
+          center,
+          bounds,
+          fires: p.harmonized_fires || 0,
+          frp: p.total_frp_mw || 0,
+          dual: p.dual_confirmed || 0,
+        };
+      });
+    }
+    return [];
   }, [datasetState]);
 
   // Countries lookup map by ID
   const countryMap = useMemo(() => {
     const map = new Map<number, GlobalCountryInfo>();
-    for (const c of countries) {
-      map.set(c.id, c);
+    if (Array.isArray(countries)) {
+      for (const c of countries) {
+        map.set(c.id, c);
+      }
     }
     return map;
   }, [countries]);
@@ -128,75 +218,117 @@ export default function App() {
     return countryMap.get(selectedCountryId) || null;
   }, [selectedCountryId, countryMap]);
 
-  // All 87,311 Harmonized Points
+  // Fetch live experimental risk grid when point is selected
+  useEffect(() => {
+    if (!selectedGlobalPoint) {
+      setFireRisk(null);
+      return;
+    }
+    const lat = selectedGlobalPoint[0];
+    const lon = selectedGlobalPoint[1];
+    let active = true;
+    async function loadRisk() {
+      try {
+        const res = await fetch(`/api/live-experimental-grid?latitude=${lat}&longitude=${lon}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || 'Lỗi tải lưới');
+        if (active) setFireRisk(data);
+      } catch {
+        if (active) setFireRisk(null);
+      }
+    }
+    void loadRisk();
+    return () => { active = false; };
+  }, [selectedGlobalPoint]);
+
+  // All 87,311 Harmonized Points (or filtered by vegetation)
   const allPoints = useMemo<GlobalHarmonizedPoint[]>(() => {
     if (datasetState.status !== 'ready') return [];
+    if (vegetationOnly && vegetationData?.points) {
+      return vegetationData.points;
+    }
     const bundled = datasetState.data.globalCatalog.harmonized_points;
     if (!liveRegion) return bundled;
     return bundled.filter((point) => !(point[0] >= 8.2 && point[0] <= 23.5 && point[1] >= 102.1 && point[1] <= 109.8)).concat(liveRegion);
-  }, [datasetState, liveRegion]);
+  }, [datasetState, liveRegion, vegetationOnly, vegetationData]);
 
-  // Filtered Points
-  const filteredPoints = useMemo<GlobalHarmonizedPoint[]>(() => {
-    if (allPoints.length === 0) return [];
+  // High-performance single-pass filtering & metric aggregation (O(N) without redundant passes or array sorts)
+  const { filteredPoints, totalHarmonizedFrp, dualConfirmed } = useMemo(() => {
+    if (allPoints.length === 0) {
+      return { filteredPoints: [], totalHarmonizedFrp: 0, dualConfirmed: 0 };
+    }
 
-    let list = allPoints.filter((pt) => {
+    const trimmedQuery = searchQuery.toLowerCase().trim();
+    const hasQuery = trimmedQuery.length > 0;
+    const isDualFilter = filterType === 'dual';
+    const isHighFrpFilter = filterType === 'high_frp';
+    const hasContinentFilter = selectedContinent !== 'all';
+    const hasCountryFilter = selectedCountryId != null;
+
+    const result: GlobalHarmonizedPoint[] = [];
+    let frpSum = 0;
+    let dualCount = 0;
+
+    for (let i = 0; i < allPoints.length; i++) {
+      const pt = allPoints[i];
       const frp = pt[2];
       const conf = pt[3];
       const isDual = pt[4] === 1;
       const countryId = pt[6];
-      const country = countryId >= 0 ? countryMap.get(countryId) : null;
 
-      // Filter by confidence threshold (e.g. >= 80%)
-      if (minConfidence > 0 && conf < minConfidence) {
-        return false;
+      // 1. Confidence threshold check (fastest numerical guard)
+      if (minConfidence > 0 && conf < minConfidence) continue;
+
+      // 2. Selected country ID check (fallback to geographic bounding box if countryId unassigned)
+      if (hasCountryFilter) {
+        if (countryId != null && countryId >= 0) {
+          if (countryId !== selectedCountryId) continue;
+        } else if (selectedCountry) {
+          const [[minLat, minLon], [maxLat, maxLon]] = selectedCountry.bounds;
+          if (pt[0] < minLat || pt[0] > maxLat || pt[1] < minLon || pt[1] > maxLon) continue;
+        }
       }
 
-      // Filter by selected country
-      if (selectedCountryId != null) {
-        if (countryId !== selectedCountryId) return false;
+      // 3. Category flag check
+      if (isDualFilter && !isDual) continue;
+      if (isHighFrpFilter && frp < 25) continue;
+
+      // 4. Continent and/or search query checks (look up country only when needed)
+      if (hasContinentFilter || hasQuery) {
+        const country = (countryId != null && countryId >= 0)
+          ? countryMap.get(countryId)
+          : countries.find(
+              (c) =>
+                pt[0] >= c.bounds[0][0] &&
+                pt[0] <= c.bounds[1][0] &&
+                pt[1] >= c.bounds[0][1] &&
+                pt[1] <= c.bounds[1][1],
+            );
+
+        if (hasContinentFilter && (!country || country.continent !== selectedContinent)) {
+          continue;
+        }
+        if (hasQuery) {
+          const cName = (country ? country.name : 'Offshore').toLowerCase();
+          if (!cName.includes(trimmedQuery)) continue;
+        }
       }
 
-      // Filter by continent
-      if (selectedContinent !== 'all') {
-        if (!country || country.continent !== selectedContinent) return false;
-      }
+      result.push(pt);
+      frpSum += frp;
+      if (isDual) dualCount++;
+    }
 
-      // Filter by category
-      if (filterType === 'dual' && !isDual) return false;
-      if (filterType === 'high_frp' && frp < 25) return false;
-
-      // Filter by search query
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase().trim();
-        const cName = (country ? country.name : 'Offshore').toLowerCase();
-        if (!cName.includes(q)) return false;
-      }
-
-      return true;
-    });
-
-    list = [...list].sort((a, b) => {
-      if (sortBy === 'frp_desc') return b[2] - a[2];
-      return b[3] - a[3]; // confidence
-    });
-
-    return list;
-  }, [allPoints, minConfidence, selectedCountryId, selectedContinent, filterType, searchQuery, sortBy, countryMap]);
+    return {
+      filteredPoints: result,
+      totalHarmonizedFrp: frpSum,
+      dualConfirmed: dualCount,
+    };
+  }, [allPoints, minConfidence, selectedCountryId, selectedCountry, selectedContinent, filterType, searchQuery, countries, countryMap]);
 
   // Dynamic KPI Metrics
   const totalEvents = filteredPoints.length;
   const rawScans = datasetState.status === 'ready' ? datasetState.data.globalCatalog.total_raw : 153948;
-
-  const dualConfirmed = useMemo(
-    () => filteredPoints.filter((pt) => pt[4] === 1).length,
-    [filteredPoints],
-  );
-
-  const totalHarmonizedFrp = useMemo(
-    () => filteredPoints.reduce((acc, pt) => acc + pt[2], 0),
-    [filteredPoints],
-  );
 
   return (
     <div className="min-h-screen flex flex-col bg-ink-950 text-slate-100">
@@ -316,6 +448,8 @@ export default function App() {
                   globalPoints={filteredPoints}
                   selectedGlobalPoint={selectedGlobalPoint}
                   onSelectGlobalPoint={(pt) => setSelectedGlobalPoint(pt)}
+                  riskCells={fireRisk?.cells || []}
+                  riskHorizon={riskHorizon}
                 />
               </div>
 
@@ -454,7 +588,66 @@ export default function App() {
                       <Flame className="h-3 w-3" aria-hidden="true" />
                       <span>{t.pillHighFrp}</span>
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => setVegetationOnly((v) => !v)}
+                      className={cx(
+                        'rounded-md px-2 py-1 text-[11px] font-semibold transition-colors flex items-center gap-1',
+                        vegetationOnly
+                          ? 'bg-emerald-400 text-ink-950 font-bold'
+                          : 'border border-line bg-ink-900 text-slate-300 hover:text-white',
+                      )}
+                    >
+                      <span>🌱 {lang === 'vi' ? 'Thảm thực vật' : 'Vegetation'}</span>
+                    </button>
                   </div>
+
+                  {/* Experimental Fire Risk Grid Horizon Controls */}
+                  {fireRisk && fireRisk.cells && fireRisk.cells.length > 0 && (
+                    <div className="pt-2 border-t border-line space-y-1.5">
+                      <div className="flex items-center justify-between text-[11px]">
+                        <span className="font-semibold text-amber-300 flex items-center gap-1">
+                          <Activity className="h-3 w-3" />
+                          {lang === 'vi' ? 'Lưới lan truyền' : 'Spread Grid'}
+                        </span>
+                        <div className="flex gap-1">
+                          {([6, 12, 24] as const).map((h) => (
+                            <button
+                              key={h}
+                              type="button"
+                              onClick={() => setRiskHorizon(h)}
+                              className={cx(
+                                'px-1.5 py-0.5 rounded text-[10px] font-bold font-mono transition-colors',
+                                riskHorizon === h
+                                  ? 'bg-amber-400 text-ink-950'
+                                  : 'bg-ink-900 border border-line text-slate-300 hover:text-white',
+                              )}
+                            >
+                              {h}h
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-slate-400">
+                        {lang === 'vi'
+                          ? `Hiển thị ${fireRisk.cells.filter((c) => c.horizon_hours === riskHorizon).length} ô lưới 1-km xung quanh điểm cháy.`
+                          : `Displaying ${fireRisk.cells.filter((c) => c.horizon_hours === riskHorizon).length} 1-km grid cells around hotspot.`}
+                      </p>
+                    </div>
+                  )}
+
+                  {vegetationOnly && vegetationData && (
+                    <div className="text-[10px] text-emerald-400 font-medium">
+                      ✓ {lang === 'vi' ? 'Đã lọc theo thảm thực vật MCD12Q1:' : 'Filtered by MCD12Q1 vegetation:'}{' '}
+                      {vegetationData.counts.vegetation.toLocaleString()} / {vegetationData.counts.total.toLocaleString()}
+                    </div>
+                  )}
+
+                  {vegetationOnly && vegetationError && (
+                    <div className="text-[10px] text-rose-400 font-medium">
+                      ⚠ {vegetationError}
+                    </div>
+                  )}
 
                   {/* Fused Confidence Filter (User Request: > 80% default filter) */}
                   <div className="pt-2.5 border-t border-line space-y-2">

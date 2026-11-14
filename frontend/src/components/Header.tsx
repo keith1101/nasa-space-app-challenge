@@ -1,4 +1,4 @@
-import { BookOpen, Flame, Globe2, Layers } from 'lucide-react';
+import { BookOpen, Globe2, Layers } from 'lucide-react';
 import type { Language } from '../lib/i18n';
 import { TRANSLATIONS } from '../lib/i18n';
 import { Badge, buttonSecondary, cx } from './ui';

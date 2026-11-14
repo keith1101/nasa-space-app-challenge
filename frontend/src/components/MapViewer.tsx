@@ -23,6 +23,15 @@ const BASEMAPS: Record<'dark' | 'satellite', { url: string; attribution: string;
   },
 };
 
+export type RiskCell = {
+  latitude: number;
+  longitude: number;
+  lat_half_size: number;
+  lon_half_size: number;
+  horizon_hours: number;
+  relative_risk: number;
+};
+
 export interface MapViewerProps {
   lang: Language;
   worldCountriesGeojson?: any;
@@ -33,6 +42,8 @@ export interface MapViewerProps {
   globalPoints: GlobalHarmonizedPoint[];
   selectedGlobalPoint: GlobalHarmonizedPoint | null;
   onSelectGlobalPoint: (pt: GlobalHarmonizedPoint | null) => void;
+  riskCells?: RiskCell[];
+  riskHorizon?: number;
 }
 
 export function MapViewer({
@@ -45,6 +56,8 @@ export function MapViewer({
   globalPoints,
   selectedGlobalPoint,
   onSelectGlobalPoint,
+  riskCells = [],
+  riskHorizon = 24,
 }: MapViewerProps) {
   const t = TRANSLATIONS[lang];
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -57,6 +70,7 @@ export function MapViewer({
   const popupRef = useRef<L.Popup | null>(null);
   const hoverTooltipRef = useRef<L.Tooltip | null>(null);
   const countryLayerRef = useRef<L.GeoJSON | null>(null);
+  const riskLayerRef = useRef<L.LayerGroup | null>(null);
   const hoveredPointRef = useRef<GlobalHarmonizedPoint | null>(null);
 
   // Country lookup map by id
@@ -89,12 +103,46 @@ export function MapViewer({
     tileLayerRef.current = tileLayer;
     L.control.zoom({ position: 'bottomright' }).addTo(map);
     mapInstanceRef.current = map;
+    const riskPane = map.createPane('riskGridPane');
+    riskPane.style.zIndex = '450';
+    riskPane.style.pointerEvents = 'none';
 
     return () => {
       map.remove();
       mapInstanceRef.current = null;
     };
   }, []);
+
+  // Update Risk Grid Layer
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+    riskLayerRef.current?.remove();
+    const layer = L.layerGroup();
+    for (const cell of riskCells) {
+      if (cell.horizon_hours !== riskHorizon || cell.relative_risk <= 0.001) continue;
+      const r = cell.relative_risk;
+      L.rectangle(
+        [
+          [cell.latitude - cell.lat_half_size, cell.longitude - cell.lon_half_size],
+          [cell.latitude + cell.lat_half_size, cell.longitude + cell.lon_half_size],
+        ],
+        {
+          pane: 'riskGridPane',
+          stroke: false,
+          fillColor: r > 0.55 ? '#ef4444' : r > 0.25 ? '#f97316' : '#facc15',
+          fillOpacity: Math.max(0.12, Math.min(0.82, 0.12 + r * 1.8)),
+          interactive: false,
+        }
+      ).addTo(layer);
+    }
+    layer.addTo(map);
+    riskLayerRef.current = layer;
+    return () => {
+      layer.remove();
+      riskLayerRef.current = null;
+    };
+  }, [riskCells, riskHorizon]);
 
   // Update Basemap Layer
   useEffect(() => {
@@ -218,6 +266,8 @@ export function MapViewer({
 
     let animFrameId: number | null = null;
 
+    let mouseMoveFrameId: number | null = null;
+
     const renderCanvas = () => {
       if (!canvas || !map) return;
       const size = map.getSize();
@@ -248,32 +298,59 @@ export function MapViewer({
       const metersPerPixel =
         zoom >= 8 ? (156543.03392 * Math.cos((bounds.getCenter().lat * Math.PI) / 180)) / Math.pow(2, zoom) : 1000;
 
+      // Fast bounding box culling without allocating LatLng/array objects
+      const south = bounds.getSouth();
+      const north = bounds.getNorth();
+      const west = bounds.getWest();
+      const east = bounds.getEast();
+      const isCrossAntimeridian = west > east;
+
+      // Pre-cull visible points in single pass and pre-project pixel coordinates
+      interface RenderablePoint {
+        pt: GlobalHarmonizedPoint;
+        cx: number;
+        cy: number;
+        r: number;
+        isDual: boolean;
+        frp: number;
+      }
+
+      const visible: RenderablePoint[] = [];
+      const totalLen = globalPoints.length;
+      for (let i = 0; i < totalLen; i++) {
+        const pt = globalPoints[i];
+        const lat = pt[0];
+        const lon = pt[1];
+
+        // Numerical boundary check
+        if (lat < south || lat > north) continue;
+        if (isCrossAntimeridian ? (lon < west && lon > east) : (lon < west || lon > east)) continue;
+
+        const containerPt = map.latLngToContainerPoint([lat, lon]);
+        const frp = pt[2];
+        const isDual = pt[4] === 1;
+        const frpScale = Math.min(2.1, 0.95 + Math.log10(Math.max(1, frp)) * 0.28);
+        const r = Math.min(24, baseRadius * frpScale);
+
+        visible.push({ pt, cx: containerPt.x, cy: containerPt.y, r, isDual, frp });
+      }
+
+      const visibleCount = visible.length;
+
       // Pass 1: Render Outer Glow Bloom (zoom >= 4)
       if (zoom >= 4) {
         ctx.globalCompositeOperation = 'screen';
-        for (let i = 0; i < globalPoints.length; i++) {
-          const pt = globalPoints[i];
-          const lat = pt[0];
-          const lon = pt[1];
-          if (!bounds.contains([lat, lon])) continue;
-
-          const containerPt = map.latLngToContainerPoint([lat, lon]);
-          const frp = pt[2];
-          const isDual = pt[4] === 1;
-
-          const frpScale = Math.min(2.1, 0.95 + Math.log10(Math.max(1, frp)) * 0.28);
-          const r = Math.min(24, baseRadius * frpScale);
-
-          // Bloom halo radius
-          const haloRadius = r * (zoom >= 8 ? 1.7 : 1.45);
+        for (let i = 0; i < visibleCount; i++) {
+          const item = visible[i];
+          const haloRadius = item.r * (zoom >= 8 ? 1.7 : 1.45);
           ctx.beginPath();
-          ctx.arc(containerPt.x, containerPt.y, haloRadius, 0, Math.PI * 2);
+          ctx.arc(item.cx, item.cy, haloRadius, 0, Math.PI * 2);
 
-          if (isDual) {
+          if (item.isDual) {
             ctx.fillStyle = 'rgba(16, 185, 129, 0.28)';
-          } else if (frp >= 25) {
+          } else if (item.frp >= 25) {
             ctx.fillStyle = 'rgba(244, 63, 94, 0.24)';
-          } else if (frp >= 10) {
+          } else if (item.frp >= 10) {
             ctx.fillStyle = 'rgba(245, 158, 11, 0.20)';
           } else {
             ctx.fillStyle = 'rgba(251, 191, 36, 0.14)';
@@ -287,49 +364,31 @@ export function MapViewer({
       if (zoom >= 9 && metersPerPixel > 0) {
         ctx.lineWidth = 1;
         ctx.setLineDash([3, 3]);
-        for (let i = 0; i < globalPoints.length; i++) {
-          const pt = globalPoints[i];
-          const lat = pt[0];
-          const lon = pt[1];
-          if (!bounds.contains([lat, lon])) continue;
-
-          const containerPt = map.latLngToContainerPoint([lat, lon]);
-          const isDual = pt[4] === 1;
-
-          // 375m ground radius in screen pixels
+        for (let i = 0; i < visibleCount; i++) {
+          const item = visible[i];
           const footprintPx = Math.max(baseRadius * 1.8, (375.0 / metersPerPixel) * 0.5);
 
           ctx.beginPath();
-          ctx.arc(containerPt.x, containerPt.y, footprintPx, 0, Math.PI * 2);
-          ctx.strokeStyle = isDual ? 'rgba(52, 211, 153, 0.5)' : 'rgba(251, 191, 36, 0.35)';
+          ctx.arc(item.cx, item.cy, footprintPx, 0, Math.PI * 2);
+          ctx.strokeStyle = item.isDual ? 'rgba(52, 211, 153, 0.5)' : 'rgba(251, 191, 36, 0.35)';
           ctx.stroke();
         }
         ctx.setLineDash([]);
       }
 
       // Pass 3: Solid Sharp Core Hotspots with Contrast Outlines
-      for (let i = 0; i < globalPoints.length; i++) {
-        const pt = globalPoints[i];
-        const lat = pt[0];
-        const lon = pt[1];
-        if (!bounds.contains([lat, lon])) continue;
-
-        const containerPt = map.latLngToContainerPoint([lat, lon]);
-        const frp = pt[2];
-        const isDual = pt[4] === 1;
-
-        const frpScale = Math.min(2.1, 0.95 + Math.log10(Math.max(1, frp)) * 0.28);
-        const r = Math.min(24, baseRadius * frpScale);
+      for (let i = 0; i < visibleCount; i++) {
+        const item = visible[i];
 
         ctx.beginPath();
-        ctx.arc(containerPt.x, containerPt.y, r, 0, Math.PI * 2);
+        ctx.arc(item.cx, item.cy, item.r, 0, Math.PI * 2);
 
         // Core fill colors
-        if (isDual) {
+        if (item.isDual) {
           ctx.fillStyle = '#10b981'; // Glowing Emerald
-        } else if (frp >= 25) {
+        } else if (item.frp >= 25) {
           ctx.fillStyle = '#f43f5e'; // High FRP Rose
-        } else if (frp >= 10) {
+        } else if (item.frp >= 10) {
           ctx.fillStyle = '#f59e0b'; // Amber
         } else {
           ctx.fillStyle = '#fbbf24'; // Warm Gold
@@ -339,14 +398,14 @@ export function MapViewer({
         // Sharp contrast stroke
         if (zoom >= 5) {
           ctx.lineWidth = zoom >= 9 ? 1.8 : 1.0;
-          ctx.strokeStyle = isDual ? '#ffffff' : 'rgba(255, 255, 255, 0.85)';
+          ctx.strokeStyle = item.isDual ? '#ffffff' : 'rgba(255, 255, 255, 0.85)';
           ctx.stroke();
         }
 
         // Inner specular white heat core for high FRP or dual verified
-        if (zoom >= 7 && (isDual || frp >= 25)) {
+        if (zoom >= 7 && (item.isDual || item.frp >= 25)) {
           ctx.beginPath();
-          ctx.arc(containerPt.x, containerPt.y, Math.max(1.5, r * 0.42), 0, Math.PI * 2);
+          ctx.arc(item.cx, item.cy, Math.max(1.5, item.r * 0.42), 0, Math.PI * 2);
           ctx.fillStyle = '#ffffff';
           ctx.fill();
         }
@@ -385,14 +444,30 @@ export function MapViewer({
       animFrameId = requestAnimationFrame(renderCanvas);
     };
 
-    // Helper: Find closest hotspot near (clickX, clickY)
+    // Helper: High-performance spatial search using bounding box pre-cull
     const findClosestPoint = (clickX: number, clickY: number, maxDistPx = 16): GlobalHarmonizedPoint | null => {
+      if (!map || globalPoints.length === 0) return null;
+
+      // 1. Calculate geographic bounding box for the search pixel radius
+      const pMin = map.containerPointToLatLng([clickX - maxDistPx, clickY + maxDistPx]);
+      const pMax = map.containerPointToLatLng([clickX + maxDistPx, clickY - maxDistPx]);
+      const minLat = Math.min(pMin.lat, pMax.lat);
+      const maxLat = Math.max(pMin.lat, pMax.lat);
+      const minLon = Math.min(pMin.lng, pMax.lng);
+      const maxLon = Math.max(pMin.lng, pMax.lng);
+
       let nearest: GlobalHarmonizedPoint | null = null;
       let minDistSq = maxDistPx * maxDistPx;
 
+      // 2. Screen candidates with fast numerical comparison
       for (let i = 0; i < globalPoints.length; i++) {
         const pt = globalPoints[i];
-        const cPt = map.latLngToContainerPoint([pt[0], pt[1]]);
+        const lat = pt[0];
+        const lon = pt[1];
+        if (lat < minLat || lat > maxLat || lon < minLon || lon > maxLon) continue;
+
+        // Compute exact pixel distance only for candidates (0-3 points typical)
+        const cPt = map.latLngToContainerPoint([lat, lon]);
         const dx = cPt.x - clickX;
         const dy = cPt.y - clickY;
         const distSq = dx * dx + dy * dy;
@@ -423,7 +498,15 @@ export function MapViewer({
         const isDual = nearestPt[4] === 1;
         const rawCount = nearestPt[5];
         const countryId = nearestPt[6];
-        const country = countryId >= 0 ? countryMap.current.get(countryId) : null;
+        const country = (countryId != null && countryId >= 0)
+          ? countryMap.current.get(countryId)
+          : countries.find(
+              (c) =>
+                lat >= c.bounds[0][0] &&
+                lat <= c.bounds[1][0] &&
+                lon >= c.bounds[0][1] &&
+                lon <= c.bounds[1][1],
+            );
         const countryName = country ? country.name : t.borderZone;
         const continent = country ? country.continent : '';
 
@@ -477,49 +560,60 @@ export function MapViewer({
       }
     };
 
-    // Mousemove handler: Interactive hover cursor and tooltip
+    // Mousemove handler: Interactive hover cursor and tooltip with RAF throttling
     const handleCanvasMouseMove = (e: MouseEvent) => {
       if (!map || !canvas) return;
       const rect = canvas.getBoundingClientRect();
       const clickX = e.clientX - rect.left;
       const clickY = e.clientY - rect.top;
 
-      const nearest = findClosestPoint(clickX, clickY, 14);
+      if (mouseMoveFrameId) cancelAnimationFrame(mouseMoveFrameId);
+      mouseMoveFrameId = requestAnimationFrame(() => {
+        const nearest = findClosestPoint(clickX, clickY, 14);
 
-      if (nearest) {
-        canvas.style.cursor = 'pointer';
-        hoveredPointRef.current = nearest;
+        if (nearest) {
+          canvas.style.cursor = 'pointer';
+          hoveredPointRef.current = nearest;
 
-        const countryId = nearest[6];
-        const country = countryId >= 0 ? countryMap.current.get(countryId) : null;
-        const countryName = country ? country.name : t.borderZone;
+          const countryId = nearest[6];
+          const country = (countryId != null && countryId >= 0)
+            ? countryMap.current.get(countryId)
+            : countries.find(
+                (c) =>
+                  nearest[0] >= c.bounds[0][0] &&
+                  nearest[0] <= c.bounds[1][0] &&
+                  nearest[1] >= c.bounds[0][1] &&
+                  nearest[1] <= c.bounds[1][1],
+              );
+          const countryName = country ? country.name : t.borderZone;
 
-        if (!hoverTooltipRef.current) {
-          hoverTooltipRef.current = L.tooltip({
-            className: 'fm-tooltip',
-            sticky: true,
-            direction: 'top',
-            offset: [0, -8],
-          });
+          if (!hoverTooltipRef.current) {
+            hoverTooltipRef.current = L.tooltip({
+              className: 'fm-tooltip',
+              sticky: true,
+              direction: 'top',
+              offset: [0, -8],
+            });
+          }
+
+          hoverTooltipRef.current
+            .setLatLng([nearest[0], nearest[1]])
+            .setContent(
+              `<div class="text-xs font-sans">
+                <div class="font-bold text-white">${escapeHtml(countryName)}</div>
+                <div class="text-amber-300 font-mono">${t.tooltipFRP(fmtNum(nearest[2], 1))}</div>
+                <div class="text-cyan-300 text-[11px]">${t.tooltipConf(String(nearest[3]))}</div>
+              </div>`,
+            )
+            .openOn(map);
+        } else {
+          canvas.style.cursor = 'default';
+          if (hoveredPointRef.current && hoverTooltipRef.current) {
+            hoveredPointRef.current = null;
+            map.closeTooltip(hoverTooltipRef.current);
+          }
         }
-
-        hoverTooltipRef.current
-          .setLatLng([nearest[0], nearest[1]])
-          .setContent(
-            `<div class="text-xs font-sans">
-              <div class="font-bold text-white">${escapeHtml(countryName)}</div>
-              <div class="text-amber-300 font-mono">${t.tooltipFRP(fmtNum(nearest[2], 1))}</div>
-              <div class="text-cyan-300 text-[11px]">${t.tooltipConf(String(nearest[3]))}</div>
-            </div>`,
-          )
-          .openOn(map);
-      } else {
-        canvas.style.cursor = 'default';
-        if (hoveredPointRef.current && hoverTooltipRef.current) {
-          hoveredPointRef.current = null;
-          map.closeTooltip(hoverTooltipRef.current);
-        }
-      }
+      });
     };
 
     renderCanvas();
@@ -531,6 +625,7 @@ export function MapViewer({
 
     return () => {
       if (animFrameId) cancelAnimationFrame(animFrameId);
+      if (mouseMoveFrameId) cancelAnimationFrame(mouseMoveFrameId);
       map.off('move viewreset zoom moveend zoomend resize', scheduleRender);
       if (canvas) {
         canvas.removeEventListener('click', handleCanvasClick);

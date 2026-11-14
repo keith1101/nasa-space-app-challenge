@@ -10,14 +10,14 @@ import type {
   AnalyticsSummary,
   CalendarData,
   GlobalCatalog,
-  ProvinceCollection,
+  WorldCountriesCollection,
 } from '../types/harmonization';
 
 export interface GlobalAllCountriesDatasets {
   globalCatalog: GlobalCatalog;
-  worldCountries: ProvinceCollection;
+  worldCountries: WorldCountriesCollection;
   analytics: AnalyticsSummary;
-  calendar: CalendarData;
+  calendar: CalendarData | null;
 }
 
 export type DatasetState =
@@ -40,6 +40,7 @@ export function useDatasets(): { state: DatasetState; reload: () => void } {
     const ctrl = new AbortController();
     setState({ status: 'loading' });
 
+    // 1. Critical path: Load Catalog, Country Boundaries, and Analytics
     Promise.all([
       fetchJson(
         '/data/fires_global_harmonized.json',
@@ -59,18 +60,32 @@ export function useDatasets(): { state: DatasetState; reload: () => void } {
         'NASA FIRMS analytics summary',
         ctrl.signal,
       ),
-      fetchJson(
-        '/data/calendar_matrix.json',
-        isCalendar,
-        'Fire regime calendar matrix',
-        ctrl.signal,
-      ),
     ])
-      .then(([globalCatalog, worldCountries, analytics, calendar]) => {
+      .then(([globalCatalog, worldCountries, analytics]) => {
+        // App is interactive immediately with Map & KPIs
         setState({
           status: 'ready',
-          data: { globalCatalog, worldCountries, analytics, calendar },
+          data: { globalCatalog, worldCountries, analytics, calendar: null },
         });
+
+        // 2. Non-blocking Deferred Path: Load heavy calendar matrix (2.7MB) in the background
+        fetchJson(
+          '/data/calendar_matrix.json',
+          isCalendar,
+          'Fire regime calendar matrix',
+          ctrl.signal,
+        )
+          .then((calendar) => {
+            setState((curr) =>
+              curr.status === 'ready'
+                ? { ...curr, data: { ...curr.data, calendar } }
+                : curr,
+            );
+          })
+          .catch((e: unknown) => {
+            if (isAbortError(e)) return;
+            console.warn('Deferred calendar data load warning:', describeError(e));
+          });
       })
       .catch((e: unknown) => {
         if (isAbortError(e)) return;
@@ -82,4 +97,17 @@ export function useDatasets(): { state: DatasetState; reload: () => void } {
 
   const reload = useCallback(() => setAttempt((a) => a + 1), []);
   return { state, reload };
+}
+
+export type GlobalCatalogState =
+  | { status: 'loading' }
+  | { status: 'error'; message: string }
+  | { status: 'ready'; data: GlobalCatalog };
+
+/** Legacy backwards-compatible hook for OverviewPage */
+export function useGlobalCatalog(_arg?: unknown): GlobalCatalogState {
+  const { state } = useDatasets();
+  if (state.status === 'ready') return { status: 'ready', data: state.data.globalCatalog };
+  if (state.status === 'error') return { status: 'error', message: state.message };
+  return { status: 'loading' };
 }

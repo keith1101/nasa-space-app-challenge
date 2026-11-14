@@ -102,6 +102,24 @@ export interface ProvinceCollection {
   features: ProvinceFeature[];
 }
 
+export interface WorldCountryProperties {
+  NAME?: string;
+  shapeName?: string;
+  CONTINENT?: string;
+  [key: string]: unknown;
+}
+
+export interface WorldCountryFeature {
+  type: 'Feature';
+  geometry: { type: string; coordinates: unknown };
+  properties: WorldCountryProperties;
+}
+
+export interface WorldCountriesCollection {
+  type: 'FeatureCollection';
+  features: WorldCountryFeature[];
+}
+
 export interface HarmonizationMetrics {
   total_raw_detections: number;
   raw_modis_count: number;
@@ -255,4 +273,6 @@ export interface Datasets {
   harmonized: GeoJsonFeatureCollection<HarmonizedFireProperties>;
   provinces: ProvinceCollection;
   analytics: AnalyticsSummary;
+  modis?: GeoJsonFeatureCollection<RawFireProperties>;
+  viirs?: GeoJsonFeatureCollection<RawFireProperties>;
 }

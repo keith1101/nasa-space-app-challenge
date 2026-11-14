@@ -27,15 +27,17 @@ export function isDefaultParams(p: AnalysisParams): boolean {
 }
 
 function runBrowserEngine(datasets: Datasets, p: AnalysisParams): HarmonizationResult {
-  const keep = (props: { in_vietnam: boolean; acq_date: string; daynight: string }): boolean => {
+  const keep = (props: { in_vietnam?: boolean; acq_date?: string; daynight?: string }): boolean => {
     if (p.vietnamOnly && !props.in_vietnam) return false;
     if (p.dateFilter !== 'all' && props.acq_date !== p.dateFilter) return false;
     if (p.dayNight !== 'all' && props.daynight && props.daynight !== p.dayNight) return false;
     return true;
   };
+  const modisFeatures = datasets.modis?.features.filter((f) => keep(f.properties as { in_vietnam?: boolean; acq_date?: string; daynight?: string })) || [];
+  const viirsFeatures = datasets.viirs?.features.filter((f) => keep(f.properties as { in_vietnam?: boolean; acq_date?: string; daynight?: string })) || [];
   const result = harmonizeClientSide(
-    datasets.modis.features.filter((f) => keep(f.properties)),
-    datasets.viirs.features.filter((f) => keep(f.properties)),
+    modisFeatures,
+    viirsFeatures,
     { epsKm: p.epsKm, timeWindowHours: p.timeWindowHours, useFootprint: p.useFootprint },
   );
   return { geojson: result.harmonizedGeojson, metrics: result.metrics, source: 'browser' };
