@@ -1,50 +1,50 @@
 {
   "metadata": {
-    "verification_timestamp_utc": "2026-11-15T11:12:56.518350+00:00",
+    "verification_timestamp_utc": "2026-11-15T11:14:24.284628+00:00",
     "target_model": "gpt-4o",
     "api_endpoint": "https://api.openai.com/v1",
-    "total_samples": 2,
+    "total_samples": 50,
     "concurrency_workers": 4,
-    "enrichment_duration_sec": 2.55,
-    "inference_duration_sec": 4.63,
-    "total_pipeline_duration_sec": 7.18
+    "enrichment_duration_sec": 19.05,
+    "inference_duration_sec": 59.92,
+    "total_pipeline_duration_sec": 78.97
   },
   "system_reliability_kpis": {
     "kpi1_mission_success_and_json_validity": {
-      "passed_count": 2,
-      "total_count": 2,
+      "passed_count": 50,
+      "total_count": 50,
       "percentage": 100.0,
       "benchmark_target": ">= 95.0%",
       "status": "PASS",
       "description": "100% valid schema compliance and zero JSON parse failures."
     },
     "kpi2_kinematic_fidelity_and_zero_hallucination": {
-      "passed_count": 2,
-      "total_count": 2,
+      "passed_count": 50,
+      "total_count": 50,
       "percentage": 100.0,
       "benchmark_target": ">= 90.0%",
       "status": "PASS",
       "description": "Direction prediction matches ground-truth bearing; mechanism matches wind/terrain dynamics."
     },
     "kpi3_6h_spread_distance_feasibility": {
-      "passed_count": 2,
-      "total_count": 2,
+      "passed_count": 50,
+      "total_count": 50,
       "percentage": 100.0,
       "benchmark_target": ">= 85.0%",
       "status": "PASS",
       "description": "Predicted 6h spread distance is within physical bounds (ROS * 6h * slope multiplier)."
     },
     "kpi4_risk_stratification_calibration": {
-      "passed_count": 2,
-      "total_count": 2,
+      "passed_count": 50,
+      "total_count": 50,
       "percentage": 100.0,
       "benchmark_target": ">= 90.0%",
       "status": "PASS",
       "description": "High FRP (>100 MW) mapped to HIGH/EXTREME; Low FRP (<15 MW) mapped to LOW/MODERATE."
     },
     "kpi5_tactical_actionability": {
-      "passed_count": 2,
-      "total_count": 2,
+      "passed_count": 50,
+      "total_count": 50,
       "percentage": 100.0,
       "benchmark_target": ">= 90.0%",
       "status": "PASS",
@@ -55,19 +55,19 @@
     "system_reliability_score": 100.0,
     "overall_status": "EXCELLENT",
     "latency_metrics": {
-      "avg_ms": 4587.3,
-      "p50_ms": 4608.1,
-      "p90_ms": 4566.5,
-      "p95_ms": 4566.5,
-      "min_ms": 4566.5,
-      "max_ms": 4608.1
+      "avg_ms": 4651.5,
+      "p50_ms": 4468.9,
+      "p90_ms": 5244.2,
+      "p95_ms": 5906.3,
+      "min_ms": 3915.6,
+      "max_ms": 6306.4
     }
   },
   "per_sample_evaluations": [
     {
       "sample_id": "SAMPLE-001",
       "event_id": "FE-0186",
-      "latency_ms": 4566.5,
+      "latency_ms": 4625.8,
       "kpi1_valid_schema": 1,
       "kpi2_kinematic_fidelity": 1,
       "kpi3_distance_feasible": 1,
@@ -83,28 +83,28 @@
         "kpi5_reasons": []
       },
       "response": {
-        "summary_vi": "Đám cháy tại Quảng Nam đang diễn ra với cường độ mạnh, lan truyền chủ yếu theo thảm thực vật và địa hình. Điều kiện thời tiết hiện tại không có mưa, độ ẩm cao và gió yếu.",
+        "summary_vi": "Đám cháy tại Quảng Nam đang diễn ra với tốc độ lan truyền ổn định và FRP tổng cộng 245.34 MW. Đám cháy chủ yếu lan theo thảm thực vật và địa hình sườn dốc nhẹ.",
         "risk_level": "EXTREME",
         "spread_mechanism": "FUEL_DRIVEN",
         "threat_zone": "Khu vực rừng lá rộng thường xanh tại Quảng Nam",
-        "forecast_6h": "Dự báo đám cháy sẽ lan truyền theo hướng Tây Bắc với diện tích khoảng 8 ha trong 6 giờ tới.",
+        "forecast_6h": "Dự báo lan truyền theo hướng Tây Bắc với diện tích 8 ha trong 6 giờ tới.",
         "multi_horizon_assessment": {
-          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ diện tích 8 ha với độ tin cậy duy trì cao.",
-          "h12_summary": "Trong 12 giờ tới, diện tích bao phủ vẫn duy trì ở mức 8 ha, nguy cơ không tăng cao.",
-          "h24_summary": "Trong 24 giờ tới, diện tích bao phủ có thể tăng lên 35 ha, với nguy cơ chuyển thành trung hỏa hoạn."
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 8 ha với độ tin cậy duy trì 92.3%.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy dự kiến vẫn bao phủ 8 ha với độ tin cậy duy trì 85.3%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích bao phủ dự kiến tăng lên 35 ha với độ tin cậy duy trì 71.8%."
         },
         "tactical_recommendations": [
           "Thiết lập đường băng cản lửa theo hướng Tây Bắc để đón đầu mũi cháy chính.",
-          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, thời gian bay tiếp cận khoảng 5.1 phút.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận 5.1 phút.",
           "Bố trí lực lượng chữa cháy mặt đất để kiểm soát đám cháy tại các khu vực có nguy cơ cao."
         ],
-        "sitrep_markdown": "# Tactical SITREP for Wildfire Event FE-0186\n\n## Summary\nThe wildfire in Quảng Nam is currently classified as an extreme risk event, primarily spreading through vegetation and terrain. The current weather conditions are dry with high humidity and weak winds.\n\n## Risk Level\n**EXTREME**\n\n## Spread Mechanism\n**FUEL_DRIVEN**\n\n## Threat Zone\nThe main affected area is the evergreen broadleaf forest in Quảng Nam.\n\n## Forecast 6h\nThe fire is expected to spread northwest, covering approximately 8 hectares in the next 6 hours.\n\n## Multi-Horizon Assessment\n- **6h:** The fire is expected to cover an area of 8 hectares with high persistence confidence.\n- **12h:** The area remains at 8 hectares, with no significant increase in risk.\n- **24h:** The area may increase to 35 hectares, with the potential to escalate to a medium-scale fire.\n\n## Tactical Recommendations\n1. Establish a firebreak towards the northwest to intercept the main fire front.\n2. Deploy firefighting aircraft from VNFOB, with an estimated flight time of 5.1 minutes.\n3. Position ground firefighting forces to control the fire in high-risk areas."
+        "sitrep_markdown": "### Báo cáo Tình huống Chiến thuật\n\n**Địa điểm:** Quảng Nam, Việt Nam  \n**Thời gian cháy:** 73.7 giờ  \n**Tọa độ trung tâm:** 15.45842°N, 108.35375°E  \n\n#### Tình hình hiện tại\nĐám cháy đang diễn ra với tốc độ lan truyền ổn định 4.491 km/h và tổng FRP là 245.34 MW. Đám cháy chủ yếu lan theo thảm thực vật và địa hình sườn dốc nhẹ (0.6 độ).\n\n#### Điều kiện thời tiết\n- Nhiệt độ: 25.5°C  \n- Độ ẩm tương đối: 97%  \n- Tốc độ gió: 3.5 km/h  \n- Hướng gió: 24° (từ Bắc Đông Bắc)  \n\n#### Dự báo\n- **6 giờ tới:** Diện tích bao phủ dự kiến 8 ha với độ tin cậy 92.3%.  \n- **12 giờ tới:** Diện tích bao phủ dự kiến 8 ha với độ tin cậy 85.3%.  \n- **24 giờ tới:** Diện tích bao phủ dự kiến 35 ha với độ tin cậy 71.8%.\n\n#### Khuyến nghị tác chiến\n1. Thiết lập đường băng cản lửa theo hướng Tây Bắc để đón đầu mũi cháy chính.  \n2. Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận 5.1 phút.  \n3. Bố trí lực lượng chữa cháy mặt đất để kiểm soát đám cháy tại các khu vực có nguy cơ cao."
       }
     },
     {
       "sample_id": "SAMPLE-002",
       "event_id": "FE-0131",
-      "latency_ms": 4608.1,
+      "latency_ms": 4384.6,
       "kpi1_valid_schema": 1,
       "kpi2_kinematic_fidelity": 1,
       "kpi3_distance_feasible": 1,
@@ -120,22 +120,1798 @@
         "kpi5_reasons": []
       },
       "response": {
-        "summary_vi": "Đám cháy tại Quảng Ngãi đang lan rộng với tốc độ ổn định, chủ yếu do thảm thực vật và địa hình. Tổng công suất phát xạ (FRP) cao, cần có biện pháp ứng phó khẩn cấp.",
+        "summary_vi": "Đám cháy tại Quảng Ngãi đang lan rộng với tốc độ ổn định, chủ yếu do địa hình dốc và thảm thực vật. Nguy cơ cháy tán và bắn tàn lửa ở mức trung bình.",
         "risk_level": "EXTREME",
-        "spread_mechanism": "FUEL_DRIVEN",
-        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Quảng Ngãi",
-        "forecast_6h": "Dự báo lan truyền về hướng Tây với diện tích 8 ha trong 6 giờ tới.",
+        "spread_mechanism": "SLOPE_DRIVEN",
+        "threat_zone": "Vùng rừng lá rộng thường xanh tại Quảng Ngãi",
+        "forecast_6h": "Dự báo đám cháy sẽ lan về hướng Tây với diện tích bao phủ khoảng 175 ha trong 6 giờ tới.",
         "multi_horizon_assessment": {
-          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 8 ha với độ tin cậy duy trì 92.7%.",
-          "h12_summary": "Trong 12 giờ tới, đám cháy có thể mở rộng lên 105 ha, với nguy cơ cao hơn và độ tin cậy duy trì 86.2%.",
-          "h24_summary": "Trong 24 giờ tới, đám cháy có thể đạt diện tích 210 ha, trở thành thảm họa khẩn cấp với độ tin cậy duy trì 72.6%."
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 175 ha với độ tin cậy duy trì 92.7%.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy có thể mở rộng lên 280 ha với độ tin cậy duy trì 86.2%.",
+          "h24_summary": "Trong 24 giờ tới, đám cháy có thể bao phủ 475 ha với độ tin cậy duy trì 72.6%."
         },
         "tactical_recommendations": [
-          "Thiết lập đường băng cản lửa theo hướng Tây để đón đầu mũi cháy chính.",
+          "Thiết lập đường băng cản lửa ở phía Tây để đón đầu mũi cháy chính.",
           "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, cách 23.2 km, với thời gian bay tiếp cận 3.1 phút.",
           "Bố trí lực lượng chữa cháy mặt đất tại các điểm chiến lược để ngăn chặn lan truyền."
         ],
-        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật (Tactical SITREP)\n\n## Tổng quan\n- **Địa điểm:** Quảng Ngãi, Việt Nam\n- **Thời gian cháy:** 95.5 giờ\n- **Tọa độ trung tâm:** 15.24451, 108.56965\n- **Tình trạng:** Đám cháy đa ngày với công suất phát xạ cao.\n\n## Phân tích\n- **Cơ chế lan truyền:** Chủ yếu do thảm thực vật và địa hình (FUEL_DRIVEN).\n- **Độ dốc địa hình:** 2.6 độ, ảnh hưởng nhẹ đến tốc độ lan truyền.\n- **Thảm thực vật:** Rừng lá rộng thường xanh với tiềm năng cháy tán ở mức trung bình.\n\n## Dự báo\n- **6 giờ tới:** Diện tích dự kiến 8 ha, hướng Tây.\n- **12 giờ tới:** Diện tích dự kiến 105 ha.\n- **24 giờ tới:** Diện tích dự kiến 210 ha.\n\n## Khuyến nghị\n1. **Đường băng cản lửa:** Thiết lập theo hướng Tây.\n2. **Hỗ trợ trên không:** Xuất kích từ căn cứ VNFOB.\n3. **Lực lượng mặt đất:** Bố trí tại các điểm chiến lược.\n\n## Kết luận\nĐám cháy tại Quảng Ngãi đang ở mức nguy hiểm cực độ, cần có biện pháp ứng phó khẩn cấp để kiểm soát tình hình."
+        "sitrep_markdown": "# Tactical SITREP for Wildfire Event FE-0131\n\n## Summary\nThe wildfire in Quảng Ngãi is spreading primarily due to steep terrain and vegetation. The potential for crown fire and spotting is moderate.\n\n## Risk Level\n**EXTREME**\n\n## Spread Mechanism\n**SLOPE_DRIVEN**\n\n## Threat Zone\nThe main affected area is the evergreen broadleaf forest in Quảng Ngãi.\n\n## Forecast 6h\nThe fire is expected to spread westward, covering approximately 175 hectares in the next 6 hours.\n\n## Multi-Horizon Assessment\n- **6h:** Expected coverage of 175 ha with a persistence confidence of 92.7%.\n- **12h:** Expected coverage of 280 ha with a persistence confidence of 86.2%.\n- **24h:** Expected coverage of 475 ha with a persistence confidence of 72.6%.\n\n## Tactical Recommendations\n1. Establish firebreaks to the west to intercept the main fire front.\n2. Deploy aerial firefighting units from VNFOB, 23.2 km away, with a flight time of 3.1 minutes.\n3. Position ground firefighting teams at strategic points to prevent further spread."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-003",
+      "event_id": "FE-0342",
+      "latency_ms": 4623.3,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Ratanakiri, Campuchia đang diễn biến phức tạp với tổng công suất phát xạ 189.11 MW và xu hướng gia tăng. Đám cháy chủ yếu lan theo thảm thực vật rừng thường xanh và địa hình sườn dốc nhẹ.",
+        "risk_level": "EXTREME",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng thường xanh tại Ratanakiri, Campuchia",
+        "forecast_6h": "Dự kiến lan truyền về phía Nam với diện tích bao phủ 35 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy có thể mở rộng diện tích lên 35 ha với độ tin cậy duy trì 94.2%.",
+          "h12_summary": "Trong 12 giờ tới, diện tích có thể tăng lên 280 ha, đạt mức thảm họa khẩn cấp với độ tin cậy 88.9%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích có thể đạt 345 ha, tiếp tục ở mức thảm họa khẩn cấp với độ tin cậy 76.7%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng Nam để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, dự kiến tiếp cận trong 26.2 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các điểm chiến lược để kiểm soát đám cháy."
+        ],
+        "sitrep_markdown": "# Tactical SITREP\n\n## Summary\nThe wildfire in Ratanakiri, Cambodia is intensifying with a total fire radiative power (FRP) of 189.11 MW. The fire is primarily spreading through evergreen broadleaf forests and is influenced by gentle slopes.\n\n## Risk Level\n**EXTREME**\n\n## Spread Mechanism\n**FUEL_DRIVEN**\n\n## Threat Zone\nThe main affected area is the evergreen broadleaf forest region in Ratanakiri, Cambodia.\n\n## Forecast 6h\nThe fire is expected to spread southward, covering an area of 35 hectares in the next 6 hours.\n\n## Multi-Horizon Assessment\n- **6h:** The fire could expand to 35 hectares with a persistence confidence of 94.2%.\n- **12h:** The area might increase to 280 hectares, reaching an emergency disaster level with a confidence of 88.9%.\n- **24h:** The area could reach 345 hectares, maintaining an emergency disaster level with a confidence of 76.7%.\n\n## Tactical Recommendations\n1. Establish a firebreak towards the south to intercept the main fire front.\n2. Deploy firefighting aircraft from VNFOB base, estimated to reach the site in 26.2 minutes.\n3. Position ground firefighting forces at strategic points to control the fire."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-004",
+      "event_id": "FE-0183",
+      "latency_ms": 4028.2,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Quảng Ngãi đang lan rộng với tổng công suất phát xạ 177.41 MW. Đám cháy chủ yếu lan theo thảm thực vật rừng lá rộng thường xanh và địa hình bằng phẳng.",
+        "risk_level": "EXTREME",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Quảng Ngãi",
+        "forecast_6h": "Dự báo lan truyền về hướng Tây Bắc với diện tích 8 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 8 ha với độ tin cậy duy trì 93.2%.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy có thể mở rộng lên 70 ha, đạt cấp độ Đại Hỏa Hoạn với độ tin cậy 87%.",
+          "h24_summary": "Trong 24 giờ tới, đám cháy có thể lan rộng tới 210 ha, trở thành Thảm Họa Khẩn Cấp với độ tin cậy 73.6%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng Tây Bắc để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, thời gian bay tiếp cận 7 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các điểm chiến lược để ngăn chặn đám cháy lan rộng."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật\n\n## Tình hình hiện tại\nĐám cháy tại Quảng Ngãi đang diễn ra với tổng công suất phát xạ 177.41 MW. Đám cháy chủ yếu lan theo thảm thực vật rừng lá rộng thường xanh và địa hình bằng phẳng.\n\n## Đánh giá Nguy cơ\n- **Mức độ Nguy cơ:** EXTREME\n- **Cơ chế Lan truyền:** FUEL_DRIVEN\n- **Vùng Nguy cơ:** Khu vực rừng lá rộng thường xanh tại Quảng Ngãi\n\n## Dự báo\n- **6 giờ tới:** Dự kiến lan truyền về hướng Tây Bắc với diện tích 8 ha.\n- **12 giờ tới:** Mở rộng lên 70 ha, đạt cấp độ Đại Hỏa Hoạn.\n- **24 giờ tới:** Lan rộng tới 210 ha, trở thành Thảm Họa Khẩn Cấp.\n\n## Khuyến nghị Tác chiến\n1. Thiết lập đường băng cản lửa theo hướng Tây Bắc để đón đầu mũi cháy chính.\n2. Xuất kích máy bay chữa cháy từ căn cứ VNFOB, thời gian bay tiếp cận 7 phút.\n3. Bố trí lực lượng chữa cháy mặt đất tại các điểm chiến lược để ngăn chặn đám cháy lan rộng."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-005",
+      "event_id": "FE-0238",
+      "latency_ms": 4092.7,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Quảng Nam đang lan rộng với tốc độ ổn định, chủ yếu do thảm thực vật và địa hình dốc. Nguy cơ cháy tán và bắn tàn lửa ở mức trung bình.",
+        "risk_level": "EXTREME",
+        "spread_mechanism": "SLOPE_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Quảng Nam, Việt Nam",
+        "forecast_6h": "Dự kiến lan truyền về hướng Tây Bắc với diện tích bao phủ khoảng 70 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy có thể bao phủ diện tích 70 ha với độ tin cậy duy trì 92.5%.",
+          "h12_summary": "Trong 12 giờ tới, diện tích bao phủ có thể tăng lên 280 ha với độ tin cậy duy trì 85.7%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích bao phủ dự kiến vẫn là 280 ha với độ tin cậy duy trì 72.2%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng Tây Bắc để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận 6.4 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các điểm chiến lược để ngăn chặn đám cháy lan rộng."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật\n\n## Tổng quan\nĐám cháy tại Quảng Nam, Việt Nam đang diễn ra với cường độ mạnh và lan rộng chủ yếu do địa hình dốc và thảm thực vật rừng lá rộng thường xanh. Nguy cơ cháy tán và bắn tàn lửa ở mức trung bình.\n\n## Đánh giá Nguy cơ\n- **Mức độ Nguy cơ:** EXTREME\n- **Cơ chế Lan truyền:** SLOPE_DRIVEN\n- **Vùng Nguy cơ:** Khu vực rừng lá rộng thường xanh tại Quảng Nam\n\n## Dự báo Lan truyền\n- **6 giờ tới:** Diện tích bao phủ dự kiến 70 ha, hướng Tây Bắc\n- **12 giờ tới:** Diện tích bao phủ dự kiến 280 ha\n- **24 giờ tới:** Diện tích bao phủ dự kiến 280 ha\n\n## Khuyến nghị Tác chiến\n1. Thiết lập đường băng cản lửa theo hướng Tây Bắc để đón đầu mũi cháy chính.\n2. Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận 6.4 phút.\n3. Bố trí lực lượng chữa cháy mặt đất tại các điểm chiến lược để ngăn chặn đám cháy lan rộng."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-006",
+      "event_id": "FE-0237",
+      "latency_ms": 4432.6,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Quảng Nam đang có xu hướng giảm dần với tốc độ lan truyền chậm và diện tích dự kiến nhỏ. Điều kiện thời tiết ẩm ướt và gió yếu giúp hạn chế sự lan rộng của đám cháy.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Quảng Nam",
+        "forecast_6h": "Đám cháy dự kiến lan truyền về hướng Đông Bắc với diện tích bao phủ khoảng 8 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 8 ha với độ tin cậy duy trì cao (0.922).",
+          "h12_summary": "Trong 12 giờ tới, diện tích bao phủ vẫn giữ nguyên ở mức 8 ha với độ tin cậy duy trì giảm nhẹ (0.852).",
+          "h24_summary": "Trong 24 giờ tới, diện tích bao phủ vẫn duy trì ở mức 8 ha với độ tin cậy duy trì giảm xuống (0.717)."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng Đông Bắc để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận 10.3 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các vị trí chiến lược để ngăn chặn sự lan rộng của đám cháy."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật\n\n## Tổng quan\nĐám cháy tại Quảng Nam đang có xu hướng giảm dần với tốc độ lan truyền chậm và diện tích dự kiến nhỏ. Điều kiện thời tiết ẩm ướt và gió yếu giúp hạn chế sự lan rộng của đám cháy.\n\n## Đánh giá Nguy cơ\n- **Mức độ Nguy cơ:** MODERATE\n- **Cơ chế Lan truyền:** FUEL_DRIVEN\n- **Vùng Nguy cơ:** Khu vực rừng lá rộng thường xanh tại Quảng Nam\n\n## Dự báo 6 giờ\nĐám cháy dự kiến lan truyền về hướng Đông Bắc với diện tích bao phủ khoảng 8 ha trong 6 giờ tới.\n\n## Đánh giá Đa Chân trời\n- **6 giờ:** Diện tích bao phủ 8 ha với độ tin cậy duy trì cao (0.922).\n- **12 giờ:** Diện tích bao phủ 8 ha với độ tin cậy duy trì giảm nhẹ (0.852).\n- **24 giờ:** Diện tích bao phủ 8 ha với độ tin cậy duy trì giảm xuống (0.717).\n\n## Khuyến nghị Tác chiến\n1. Thiết lập đường băng cản lửa theo hướng Đông Bắc để đón đầu mũi cháy chính.\n2. Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận 10.3 phút.\n3. Bố trí lực lượng chữa cháy mặt đất tại các vị trí chiến lược để ngăn chặn sự lan rộng của đám cháy."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-007",
+      "event_id": "FE-0461",
+      "latency_ms": 4617.3,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Bình Thuận đang diễn ra với cường độ FRP tổng 87.98 MW và đang có xu hướng giảm. Đám cháy lan theo hướng Đông Nam với tốc độ 0.185 km/h, chủ yếu bị ảnh hưởng bởi thảm thực vật rừng lá rộng thường xanh.",
+        "risk_level": "HIGH",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Bình Thuận",
+        "forecast_6h": "Dự báo đám cháy sẽ lan về hướng Đông Nam, bao phủ diện tích khoảng 175 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến sẽ bao phủ diện tích 175 ha với độ tin cậy duy trì 94.1%.",
+          "h12_summary": "Trong 12 giờ tới, diện tích cháy có thể tăng lên 345 ha với độ tin cậy duy trì 88.7%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích cháy có thể đạt 675 ha với độ tin cậy duy trì 76.3%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa ở phía Đông Nam để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, thời gian bay tiếp cận 8.3 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất để hỗ trợ kiểm soát đám cháy."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật\n\n## Tổng quan\n- **Vị trí:** Bình Thuận, Việt Nam\n- **Thời gian cháy:** 72.28 giờ\n- **Cường độ cháy:** Tổng FRP 87.98 MW, xu hướng giảm\n- **Hướng lan truyền:** Đông Nam (135.3°)\n- **Tốc độ lan truyền:** 0.185 km/h\n\n## Điều kiện Thời tiết\n- **Nhiệt độ:** 27.5°C\n- **Độ ẩm tương đối:** 81%\n- **Tốc độ gió:** 15.3 km/h từ hướng 99°\n- **Lượng mưa:** 0 mm\n\n## Địa hình và Thảm thực vật\n- **Độ cao trung bình:** 47 m trên mực nước biển\n- **Độ dốc:** -0.7° (không ảnh hưởng lớn)\n- **Loại thảm thực vật:** Rừng lá rộng thường xanh\n- **Tiềm năng cháy tán:** Trung bình\n\n## Dự báo và Đánh giá\n- **6 giờ tới:** Diện tích dự kiến 175 ha, độ tin cậy 94.1%\n- **12 giờ tới:** Diện tích dự kiến 345 ha, độ tin cậy 88.7%\n- **24 giờ tới:** Diện tích dự kiến 675 ha, độ tin cậy 76.3%\n\n## Khuyến nghị Tác chiến\n1. **Đường băng cản lửa:** Thiết lập ở phía Đông Nam.\n2. **Hỗ trợ trên không:** Xuất kích từ căn cứ VNFOB, thời gian bay 8.3 phút.\n3. **Lực lượng mặt đất:** Bố trí để hỗ trợ kiểm soát đám cháy."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-008",
+      "event_id": "FE-0243",
+      "latency_ms": 4456.2,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Quảng Nam đang diễn ra trong rừng lá rộng thường xanh với tiềm năng cháy tán trung bình và lan truyền chủ yếu theo thảm thực vật. Điều kiện thời tiết ổn định với gió yếu và độ ẩm cao.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Rừng lá rộng thường xanh tại Quảng Nam",
+        "forecast_6h": "Dự báo đám cháy sẽ lan truyền theo hướng ENE với diện tích bao phủ khoảng 8 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 8 ha với độ tin cậy duy trì 92%, được phân loại là tiểu hỏa hoạn.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy vẫn duy trì diện tích 8 ha với độ tin cậy duy trì 84.8%, tiếp tục là tiểu hỏa hoạn.",
+          "h24_summary": "Trong 24 giờ tới, đám cháy có thể mở rộng lên 35 ha với độ tin cậy duy trì 71.4%, được phân loại là trung hỏa hoạn."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng ENE để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, cách 27.7 km, với thời gian bay tiếp cận 3.7 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất để kiểm soát và dập tắt các điểm cháy nhỏ."
+        ],
+        "sitrep_markdown": "# Tactical SITREP for Wildfire Event FE-0243\n\n## Summary\nThe wildfire in Quảng Nam is currently burning in evergreen broadleaf forests with moderate crown fire potential. The fire is primarily fuel-driven due to weak winds and high humidity.\n\n## Risk Assessment\n- **Risk Level:** MODERATE\n- **Spread Mechanism:** FUEL_DRIVEN\n- **Threat Zone:** Evergreen broadleaf forests in Quảng Nam\n\n## Forecast\n- **6-Hour Forecast:** The fire is expected to spread ENE, covering approximately 8 hectares.\n- **12-Hour Forecast:** The fire will likely maintain its area at 8 hectares.\n- **24-Hour Forecast:** The fire may expand to 35 hectares.\n\n## Tactical Recommendations\n1. Establish a firebreak towards the ENE direction to intercept the main fire front.\n2. Deploy aerial firefighting units from VNFOB airbase, 27.7 km away, with an estimated flight time of 3.7 minutes.\n3. Position ground firefighting teams to control and extinguish spot fires.\n\n## Detailed Analysis\n- **Weather Conditions:** Stable with weak winds (4.9 km/h) and 100% relative humidity.\n- **Terrain and Vegetation:** Gentle slope (1.7 degrees) with hardwood litter fuel category.\n- **Fire Behavior:** Moderate crown fire potential with a spotting distance of 0.5 km.\n\n## Conclusion\nThe current conditions suggest a moderate risk level with a fuel-driven spread mechanism. Tactical measures should focus on containment and suppression using both aerial and ground resources."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-009",
+      "event_id": "FE-0110",
+      "latency_ms": 4355.4,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Tây Ninh đang lan rộng với tốc độ chậm, chủ yếu do thảm thực vật và địa hình bằng phẳng. Nguy cơ cháy tán và bắn tàn lửa ở mức trung bình.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Tây Ninh",
+        "forecast_6h": "Dự báo lan truyền về hướng SSE với diện tích 8 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 8 ha với độ tin cậy duy trì 93.4%.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy có thể mở rộng lên 140 ha với độ tin cậy duy trì 87.4%.",
+          "h24_summary": "Trong 24 giờ tới, đám cháy có thể đạt diện tích 245 ha với độ tin cậy duy trì 74.1%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng SSE để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận 11 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các điểm chiến lược xung quanh khu vực cháy."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật\n\n## Tổng quan\nĐám cháy tại Tây Ninh đang lan rộng với tốc độ chậm, chủ yếu do thảm thực vật và địa hình bằng phẳng. Nguy cơ cháy tán và bắn tàn lửa ở mức trung bình.\n\n## Đánh giá Nguy cơ\n- **Mức độ Nguy cơ:** MODERATE\n- **Cơ chế Lan truyền:** FUEL_DRIVEN\n- **Vùng Nguy cơ:** Khu vực rừng lá rộng thường xanh tại Tây Ninh\n\n## Dự báo Lan truyền\n- **6 giờ tới:** Dự kiến lan truyền về hướng SSE với diện tích 8 ha.\n- **12 giờ tới:** Dự kiến mở rộng lên 140 ha.\n- **24 giờ tới:** Dự kiến đạt diện tích 245 ha.\n\n## Khuyến nghị Tác chiến\n1. Thiết lập đường băng cản lửa theo hướng SSE để đón đầu mũi cháy chính.\n2. Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận 11 phút.\n3. Bố trí lực lượng chữa cháy mặt đất tại các điểm chiến lược xung quanh khu vực cháy."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-010",
+      "event_id": "FE-0202",
+      "latency_ms": 4423.1,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Đắk Lắk đang lan rộng với tốc độ ổn định và có tiềm năng cháy tán trung bình. Thời tiết khô ráo và gió nhẹ có thể ảnh hưởng đến khả năng kiểm soát đám cháy.",
+        "risk_level": "HIGH",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Đắk Lắk",
+        "forecast_6h": "Đám cháy dự kiến lan về hướng Tây Nam với diện tích bao phủ khoảng 245 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy có thể mở rộng đến 245 ha với độ tin cậy duy trì cao (96.2%).",
+          "h12_summary": "Trong 12 giờ tới, diện tích cháy có thể đạt 475 ha với độ tin cậy duy trì 92.7%.",
+          "h24_summary": "Trong 24 giờ tới, đám cháy có thể lan rộng đến 1050 ha với độ tin cậy duy trì 83.3%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng Tây Nam để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận 7.7 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các điểm dễ cháy để ngăn chặn sự lan rộng."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật\n\n## Tổng quan\nĐám cháy tại Đắk Lắk đang diễn ra trong khu vực rừng lá rộng thường xanh với tiềm năng cháy tán trung bình. Thời tiết hiện tại khô ráo và gió nhẹ có thể ảnh hưởng đến khả năng kiểm soát đám cháy.\n\n## Đánh giá Nguy cơ\n- **Mức độ Nguy cơ:** Cao\n- **Cơ chế Lan truyền:** Chủ yếu do thảm thực vật (FUEL_DRIVEN)\n- **Vùng Nguy cơ:** Khu vực rừng lá rộng thường xanh tại Đắk Lắk\n\n## Dự báo\n- **6 giờ tới:** Đám cháy dự kiến lan về hướng Tây Nam với diện tích bao phủ khoảng 245 ha.\n- **12 giờ tới:** Diện tích cháy có thể đạt 475 ha.\n- **24 giờ tới:** Đám cháy có thể lan rộng đến 1050 ha.\n\n## Khuyến nghị Tác chiến\n1. **Thiết lập đường băng cản lửa** theo hướng Tây Nam để đón đầu mũi cháy chính.\n2. **Xuất kích máy bay chữa cháy** từ căn cứ VNFOB với thời gian bay tiếp cận 7.7 phút.\n3. **Bố trí lực lượng chữa cháy mặt đất** tại các điểm dễ cháy để ngăn chặn sự lan rộng."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-011",
+      "event_id": "FE-0247",
+      "latency_ms": 4156.4,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Quảng Bình đang lan truyền theo hướng Tây Bắc với tốc độ 1.143 km/h, chủ yếu do gió mạnh. Diện tích dự kiến trong 6 giờ tới là 105 ha.",
+        "risk_level": "HIGH",
+        "spread_mechanism": "WIND_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Quảng Bình",
+        "forecast_6h": "Dự báo đám cháy sẽ lan truyền về hướng Tây Bắc với diện tích bao phủ 105 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 105 ha với độ tin cậy duy trì 94%.",
+          "h12_summary": "Trong 12 giờ tới, diện tích cháy có thể mở rộng lên 245 ha với độ tin cậy duy trì 88.5%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích cháy có thể đạt 510 ha với độ tin cậy duy trì 75.9%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng Tây Bắc để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, cách 49 km, với thời gian bay tiếp cận 6.5 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các điểm có nguy cơ cao để ngăn chặn sự lan rộng."
+        ],
+        "sitrep_markdown": "# Tactical SITREP for Wildfire Event FE-0247\n\n## Summary\nThe wildfire in Quảng Bình is spreading northwest at a rate of 1.143 km/h, primarily driven by strong winds. The expected coverage area in the next 6 hours is 105 hectares.\n\n## Risk Level\n- **Current Risk Level:** HIGH\n\n## Spread Mechanism\n- **Mechanism:** WIND_DRIVEN\n- **Description:** The fire is spreading in alignment with strong wind directions.\n\n## Threat Zone\n- **Affected Area:** Evergreen Broadleaf Forests in Quảng Bình\n\n## Forecast\n- **6-Hour Forecast:** The fire is expected to spread northwest covering an area of 105 hectares.\n\n## Multi-Horizon Assessment\n- **6 Hours:** Expected area coverage of 105 ha with a persistence confidence of 94%.\n- **12 Hours:** Potential expansion to 245 ha with a persistence confidence of 88.5%.\n- **24 Hours:** Potential expansion to 510 ha with a persistence confidence of 75.9%.\n\n## Tactical Recommendations\n1. Establish firebreaks in the northwest direction to intercept the main fire front.\n2. Deploy aerial firefighting units from VNFOB airbase, 49 km away, with an estimated flight time of 6.5 minutes.\n3. Position ground firefighting teams at high-risk points to prevent further spread."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-012",
+      "event_id": "FE-0265",
+      "latency_ms": 4468.9,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Thanh Hóa đang diễn biến phức tạp với tổng công suất phát xạ 63.28 MW và xu hướng gia tăng. Địa hình dốc xuống và thảm thực vật rừng lá rộng thường xanh có tiềm năng cháy tán trung bình.",
+        "risk_level": "HIGH",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Thanh Hóa",
+        "forecast_6h": "Dự báo lan truyền về phía Tây Nam với diện tích 8 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến lan rộng 8 ha với độ tin cậy duy trì 93.5%.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy có thể mở rộng lên 105 ha, đạt cấp độ đại hỏa hoạn với độ tin cậy 87.6%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích cháy có thể đạt 245 ha, trở thành thảm họa khẩn cấp với độ tin cậy 74.5%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng Tây Nam để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, cách 27.6 km, với thời gian bay tiếp cận 3.7 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các vị trí chiến lược để ngăn chặn đám cháy lan rộng."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật\n\n## Tổng quan\nĐám cháy tại Thanh Hóa đang diễn biến phức tạp với tổng công suất phát xạ 63.28 MW và xu hướng gia tăng. Địa hình dốc xuống và thảm thực vật rừng lá rộng thường xanh có tiềm năng cháy tán trung bình.\n\n## Đánh giá Nguy cơ\n- **Mức độ Nguy cơ:** HIGH\n- **Cơ chế Lan truyền:** FUEL_DRIVEN\n- **Vùng Nguy cơ:** Khu vực rừng lá rộng thường xanh tại Thanh Hóa\n\n## Dự báo Lan truyền\n- **6 giờ tới:** Dự báo lan truyền về phía Tây Nam với diện tích 8 ha.\n- **12 giờ tới:** Diện tích cháy có thể mở rộng lên 105 ha.\n- **24 giờ tới:** Diện tích cháy có thể đạt 245 ha.\n\n## Khuyến nghị Tác chiến\n1. Thiết lập đường băng cản lửa theo hướng Tây Nam để đón đầu mũi cháy chính.\n2. Xuất kích máy bay chữa cháy từ căn cứ VNFOB, cách 27.6 km, với thời gian bay tiếp cận 3.7 phút.\n3. Bố trí lực lượng chữa cháy mặt đất tại các vị trí chiến lược để ngăn chặn đám cháy lan rộng."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-013",
+      "event_id": "FE-0148",
+      "latency_ms": 4895.4,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Nghệ An đang lan truyền với tốc độ trung bình 0.717 km/h theo hướng Đông Bắc. Đám cháy chủ yếu lan theo thảm thực vật và địa hình sườn dốc, với tiềm năng cháy tán ở mức độ trung bình.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Nghệ An",
+        "forecast_6h": "Dự báo đám cháy sẽ lan truyền theo hướng Đông Bắc với diện tích bao phủ khoảng 8 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ diện tích 8 ha với độ tin cậy duy trì 93.1%.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy dự kiến bao phủ diện tích 70 ha với độ tin cậy duy trì 86.8%.",
+          "h24_summary": "Trong 24 giờ tới, đám cháy dự kiến bao phủ diện tích 140 ha với độ tin cậy duy trì 73.3%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng Đông Bắc để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, cách 53.2 km, với thời gian bay tiếp cận 7.1 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các điểm chiến lược để ngăn chặn đám cháy lan rộng."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật\n\n## Tình hình hiện tại\n- **Vị trí:** Nghệ An, Việt Nam\n- **Thời gian cháy:** 26.02 giờ\n- **Hướng lan truyền:** Đông Bắc (45.5 độ)\n- **Tốc độ lan truyền hiện tại:** 0.717 km/h\n- **Tổng công suất phát xạ:** 54.29 MW\n- **Công suất phát xạ đỉnh:** 33.72 MW\n\n## Điều kiện thời tiết\n- **Nhiệt độ:** 24.3°C\n- **Độ ẩm tương đối:** 90%\n- **Tốc độ gió:** 6.9 km/h\n- **Hướng gió:** 133.0 độ\n\n## Địa hình và thảm thực vật\n- **Độ cao trung bình:** 197 m\n- **Độ dốc địa hình:** -6.3 độ (xuống dốc)\n- **Loại thảm thực vật:** Rừng lá rộng thường xanh\n- **Tiềm năng cháy tán:** Trung bình\n\n## Dự báo và Đánh giá\n- **6 giờ tới:** Dự kiến bao phủ 8 ha\n- **12 giờ tới:** Dự kiến bao phủ 70 ha\n- **24 giờ tới:** Dự kiến bao phủ 140 ha\n\n## Khuyến nghị tác chiến\n1. **Đường băng cản lửa:** Thiết lập theo hướng Đông Bắc.\n2. **Hỗ trợ từ trên không:** Xuất kích từ căn cứ VNFOB.\n3. **Lực lượng mặt đất:** Bố trí tại các điểm chiến lược."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-014",
+      "event_id": "FE-0180",
+      "latency_ms": 5244.2,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Đắk Lắk đang lan rộng với tốc độ ổn định, chủ yếu do thảm thực vật và địa hình. Nguy cơ cháy tán và bắn tàn lửa ở mức trung bình.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Rừng lá rộng thường xanh tại Đắk Lắk",
+        "forecast_6h": "Đám cháy dự kiến lan theo hướng Nam Tây Nam (SSW) với diện tích bao phủ khoảng 70 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy có thể bao phủ diện tích 70 ha với độ tin cậy duy trì 93.5%.",
+          "h12_summary": "Trong 12 giờ tới, diện tích cháy có thể mở rộng lên 280 ha, với độ tin cậy duy trì 87.6%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích cháy có thể đạt 345 ha, với độ tin cậy duy trì 74.5%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng Nam Tây Nam để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, cách đám cháy 49.7 km, với thời gian bay tiếp cận 6.6 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các điểm chiến lược để kiểm soát đám cháy."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật\n\n## Tình hình hiện tại\n- **Vị trí:** Đắk Lắk, Việt Nam\n- **Thời gian cháy:** 25.32 giờ\n- **Tọa độ trung tâm:** 12.57692°N, 108.56866°E\n- **Tốc độ lan truyền hiện tại:** 0.989 km/h\n- **Tổng FRP:** 43.68 MW\n- **Đỉnh FRP:** 19.85 MW\n- **Xu hướng FRP:** Ổn định\n\n## Điều kiện thời tiết\n- **Nhiệt độ:** 24.4°C\n- **Độ ẩm tương đối:** 86%\n- **Tốc độ gió:** 7.3 km/h\n- **Hướng gió:** 73°\n- **Lượng mưa:** 0 mm\n\n## Địa hình và thảm thực vật\n- **Độ cao so với mực nước biển:** 520 m\n- **Độ dốc phía trước:** 4.9°\n- **Loại thảm thực vật:** Rừng lá rộng thường xanh\n- **Tiềm năng cháy tán:** Trung bình\n- **Khoảng cách bắn tàn lửa:** 0.5 km\n\n## Dự báo và đánh giá\n- **6 giờ tới:** Diện tích cháy dự kiến 70 ha, độ tin cậy 93.5%\n- **12 giờ tới:** Diện tích cháy dự kiến 280 ha, độ tin cậy 87.6%\n- **24 giờ tới:** Diện tích cháy dự kiến 345 ha, độ tin cậy 74.5%\n\n## Khuyến nghị tác chiến\n1. **Đường băng cản lửa:** Thiết lập theo hướng Nam Tây Nam.\n2. **Hỗ trợ từ không quân:** Xuất kích từ căn cứ VNFOB.\n3. **Lực lượng mặt đất:** Bố trí tại các điểm chiến lược."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-015",
+      "event_id": "FE-0219",
+      "latency_ms": 6306.4,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Bình Định đang diễn ra với tốc độ lan truyền chậm và chủ yếu bị chi phối bởi thảm thực vật và địa hình. Tổng công suất bức xạ lửa là 41.41 MW và xu hướng đang giảm.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Bình Định",
+        "forecast_6h": "Dự kiến đám cháy sẽ lan truyền theo hướng Bắc Đông Bắc với diện tích khoảng 8 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 8 ha với độ tin cậy duy trì 93.1%, không có ô nguy cơ cao.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy có thể mở rộng lên 210 ha, đạt mức thảm họa khẩn cấp với độ tin cậy duy trì 86.8%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích bao phủ có thể đạt 280 ha, tiếp tục ở mức thảm họa khẩn cấp với độ tin cậy duy trì 73.3%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng Bắc Đông Bắc để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận khoảng 7.5 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các khu vực có nguy cơ cao để ngăn chặn sự lan rộng của đám cháy."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật (SITREP)\n\n## Tổng quan\n- **Địa điểm:** Bình Định, Việt Nam\n- **Thời gian cháy:** 24.43 giờ\n- **Tọa độ trung tâm:** 14.45527°N, 108.96204°E\n- **Tình trạng:** Đám cháy đa ngày\n\n## Đánh giá Nguy cơ\n- **Công suất bức xạ lửa (FRP):** Tổng 41.41 MW, đỉnh 19.36 MW\n- **Xu hướng FRP:** Giảm\n- **Cơ chế lan truyền:** Chủ yếu do thảm thực vật\n- **Nguy cơ cháy tán:** Trung bình\n- **Nguy cơ bắn tàn lửa:** 0.5 km\n\n## Dự báo Lan truyền\n- **6 giờ tới:** Diện tích 8 ha, hướng lan truyền NNE\n- **12 giờ tới:** Diện tích 210 ha, mức thảm họa khẩn cấp\n- **24 giờ tới:** Diện tích 280 ha, mức thảm họa khẩn cấp\n\n## Khuyến nghị Tác chiến\n1. **Đường băng cản lửa:** Thiết lập theo hướng Bắc Đông Bắc\n2. **Hỗ trợ từ trên không:** Xuất kích từ căn cứ VNFOB\n3. **Lực lượng mặt đất:** Bố trí tại các khu vực nguy cơ cao\n\n## Điều kiện Thời tiết\n- **Nhiệt độ:** 25.6°C\n- **Độ ẩm tương đối:** 90%\n- **Tốc độ gió:** 4.9 km/h\n- **Hướng gió:** Từ 73°\n- **Lượng mưa:** 0 mm\n\n## Địa hình và Thảm thực vật\n- **Độ cao trung bình:** 58 m MSL\n- **Độ dốc:** 4.8° (leo dốc)\n- **Loại thảm thực vật:** Rừng lá rộng thường xanh\n\n## Căn cứ Không quân Gần nhất\n- **Tên:** Forward Operating Base\n- **Khoảng cách:** 56.3 km\n- **Thời gian bay:** 7.5 phút"
+      }
+    },
+    {
+      "sample_id": "SAMPLE-016",
+      "event_id": "FE-0179",
+      "latency_ms": 4526.0,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Khánh Hòa đang hoạt động mạnh với FRP tổng 64.23 MW và có xu hướng gia tăng. Đám cháy lan chủ yếu theo thảm thực vật và địa hình với tốc độ 2.722 km/h.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Khánh Hòa",
+        "forecast_6h": "Dự báo đám cháy lan về hướng Tây Tây Bắc trong 6 giờ tới, bao phủ diện tích khoảng 8 ha.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 8 ha với độ tin cậy duy trì 93.2%.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy có thể mở rộng lên 175 ha, đạt cấp độ Đại Hỏa Hoạn với độ tin cậy 87%.",
+          "h24_summary": "Trong 24 giờ tới, đám cháy có thể đạt 245 ha, trở thành Thảm Họa Khẩn Cấp với độ tin cậy 73.6%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa ở phía Tây Tây Bắc để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, thời gian bay tiếp cận khoảng 8 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các điểm chiến lược để hỗ trợ kiểm soát đám cháy."
+        ],
+        "sitrep_markdown": "# Tactical SITREP for Wildfire FE-0179\n\n## Summary\nThe wildfire in Khánh Hòa is currently active with a total FRP of 64.23 MW and is intensifying. The fire is spreading primarily due to vegetation and terrain influences at a rate of 2.722 km/h.\n\n## Risk Level\n- **MODERATE**\n\n## Spread Mechanism\n- **FUEL_DRIVEN**\n\n## Threat Zone\n- The main affected area is the Evergreen Broadleaf Forests in Khánh Hòa.\n\n## Forecast for Next 6 Hours\n- The fire is expected to spread towards the WNW, covering approximately 8 hectares.\n\n## Multi-Horizon Assessment\n- **6 Hours:** Expected area coverage of 8 ha with a persistence confidence of 93.2%.\n- **12 Hours:** Potential expansion to 175 ha, reaching Major Fire status with 87% confidence.\n- **24 Hours:** Possible escalation to 245 ha, becoming an Emergency Disaster with 73.6% confidence.\n\n## Tactical Recommendations\n1. Establish a firebreak towards the WNW to intercept the main fire front.\n2. Deploy aerial firefighting units from VNFOB, with an estimated flight time of 8 minutes.\n3. Position ground firefighting teams at strategic locations to assist in controlling the fire."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-017",
+      "event_id": "FE-0054",
+      "latency_ms": 5225.4,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Bình Thuận đang hoạt động mạnh với diện tích dự kiến lan rộng đáng kể trong 24 giờ tới. Điều kiện thời tiết và địa hình có thể thúc đẩy sự lan truyền của đám cháy.",
+        "risk_level": "HIGH",
+        "spread_mechanism": "SLOPE_DRIVEN",
+        "threat_zone": "Vùng rừng lá rộng thường xanh tại Bình Thuận, Việt Nam",
+        "forecast_6h": "Dự kiến lan truyền về hướng Đông với diện tích bao phủ 175 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy có khả năng bao phủ 175 ha với độ tin cậy duy trì 94.2%.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy có thể mở rộng lên 345 ha với một số khu vực nguy cơ cao.",
+          "h24_summary": "Trong 24 giờ tới, diện tích cháy có thể đạt 745 ha, trở thành thảm họa khẩn cấp với nhiều khu vực nguy cơ cao."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa ở phía Đông để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, ước tính thời gian bay tiếp cận 9.4 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các khu vực có nguy cơ cao để kiểm soát đám cháy."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật (Tactical SITREP)\n\n## Tình hình chung\nĐám cháy tại Bình Thuận, Việt Nam đang hoạt động mạnh với tổng công suất bức xạ lửa (FRP) là 56.96 MW. Đám cháy hiện đang lan truyền theo hướng Đông với tốc độ 1.045 km/h.\n\n## Điều kiện Địa hình và Thảm thực vật\n- **Địa hình:** Độ dốc nhẹ 1.2 độ, có khả năng thúc đẩy sự lan truyền của đám cháy.\n- **Thảm thực vật:** Rừng lá rộng thường xanh với tiềm năng cháy tán ở mức độ trung bình.\n\n## Dự báo và Đánh giá\n- **6 giờ tới:** Dự kiến diện tích cháy đạt 175 ha với độ tin cậy duy trì 94.2%.\n- **12 giờ tới:** Diện tích cháy có thể mở rộng lên 345 ha.\n- **24 giờ tới:** Diện tích cháy có thể đạt 745 ha, trở thành thảm họa khẩn cấp.\n\n## Khuyến nghị Tác chiến\n1. **Đường băng cản lửa:** Thiết lập ở phía Đông để đón đầu mũi cháy chính.\n2. **Hỗ trợ từ trên không:** Xuất kích máy bay chữa cháy từ căn cứ VNFOB, thời gian bay tiếp cận 9.4 phút.\n3. **Lực lượng mặt đất:** Bố trí tại các khu vực có nguy cơ cao để kiểm soát đám cháy."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-018",
+      "event_id": "FE-0288",
+      "latency_ms": 4771.2,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Gia Lai đang hoạt động với cường độ giảm dần, chủ yếu lan truyền theo thảm thực vật và địa hình. Dự báo trong 24 giờ tới, diện tích cháy có thể mở rộng lên đến 70 ha.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Gia Lai",
+        "forecast_6h": "Dự báo lan truyền theo hướng NNE với diện tích mở rộng thêm 8 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến mở rộng lên 8 ha với độ tin cậy duy trì cao.",
+          "h12_summary": "Trong 12 giờ tới, diện tích cháy có thể đạt 35 ha, nguy cơ lan rộng ở mức trung bình.",
+          "h24_summary": "Trong 24 giờ tới, diện tích cháy có thể mở rộng lên 70 ha, nguy cơ lan rộng ở mức cao hơn nhưng cường độ cháy giảm dần."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng NNE để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận 4.8 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất để kiểm soát đám cháy tại các khu vực có nguy cơ cao."
+        ],
+        "sitrep_markdown": "# Tactical SITREP for Event FE-0288\n\n## Summary\nThe wildfire in Gia Lai is currently active with a decaying intensity, primarily spreading through vegetation and terrain. It is expected to expand up to 70 hectares within the next 24 hours.\n\n## Risk Level\n- **MODERATE**\n\n## Spread Mechanism\n- **FUEL_DRIVEN**\n\n## Threat Zone\n- Evergreen Broadleaf Forests in Gia Lai\n\n## Forecast 6h\n- Spread direction: NNE\n- Expected area increase: 8 hectares\n\n## Multi-Horizon Assessment\n- **6h:** Expected area: 8 ha, high persistence confidence.\n- **12h:** Expected area: 35 ha, moderate risk of spread.\n- **24h:** Expected area: 70 ha, higher risk of spread but with decaying intensity.\n\n## Tactical Recommendations\n1. Establish a firebreak towards the NNE direction to intercept the main fire front.\n2. Deploy aerial firefighting units from VNFOB airbase with an estimated flight time of 4.8 minutes.\n3. Position ground firefighting forces to control the fire in high-risk areas."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-019",
+      "event_id": "FE-0282",
+      "latency_ms": 4658.9,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Khánh Hòa đang hoạt động với tốc độ lan truyền chậm và tiềm năng cháy tán trung bình. Dự báo đám cháy sẽ mở rộng diện tích trong 24 giờ tới.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Khánh Hòa",
+        "forecast_6h": "Đám cháy dự kiến lan truyền theo hướng Đông Bắc với diện tích khoảng 8 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ diện tích 8 ha với độ tin cậy duy trì 93.2%.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy có thể mở rộng lên 105 ha với độ tin cậy duy trì 87%.",
+          "h24_summary": "Trong 24 giờ tới, đám cháy có thể đạt diện tích 210 ha với độ tin cậy duy trì 73.6%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng Đông Bắc để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, thời gian bay tiếp cận 7.2 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các điểm có nguy cơ cao để ngăn chặn sự lan truyền."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật\n\n## Tình hình hiện tại\n- **Địa điểm:** Khánh Hòa, Việt Nam\n- **Trạng thái:** Đám cháy đang hoạt động\n- **Thời gian cháy:** 23.65 giờ\n- **Tọa độ trung tâm:** 12.37927, 108.90668\n\n## Phân tích\n- **Tốc độ lan truyền hiện tại:** 1.258 km/h\n- **Tổng FRP:** 31.11 MW\n- **Hướng lan truyền:** Đông Bắc (NNE)\n- **Địa hình:** Độ dốc nhẹ (1.2 độ)\n- **Thảm thực vật:** Rừng lá rộng thường xanh\n- **Tiềm năng cháy tán:** Trung bình\n\n## Dự báo\n- **6 giờ tới:** Diện tích dự kiến 8 ha\n- **12 giờ tới:** Diện tích dự kiến 105 ha\n- **24 giờ tới:** Diện tích dự kiến 210 ha\n\n## Khuyến nghị tác chiến\n1. **Đường băng cản lửa:** Thiết lập theo hướng Đông Bắc.\n2. **Hỗ trợ từ không quân:** Xuất kích từ căn cứ VNFOB.\n3. **Lực lượng mặt đất:** Bố trí tại các điểm nguy cơ cao."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-020",
+      "event_id": "FE-0420",
+      "latency_ms": 5932.4,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Đồng Tháp đang hoạt động với cường độ FRP trung bình và có xu hướng gia tăng. Đám cháy lan chủ yếu theo thảm thực vật rừng lá rộng thường xanh với tiềm năng cháy tán trung bình.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Đồng Tháp",
+        "forecast_6h": "Dự báo đám cháy sẽ lan theo hướng Tây Tây Bắc với diện tích bao phủ khoảng 70 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 70 ha với độ tin cậy duy trì 94.5%.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy có thể mở rộng lên 280 ha với độ tin cậy duy trì 89.6%.",
+          "h24_summary": "Trong 24 giờ tới, đám cháy có thể mở rộng lên 410 ha với độ tin cậy duy trì 77.8%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng Tây Tây Bắc để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận khoảng 10.7 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các điểm chiến lược quanh khu vực rừng lá rộng thường xanh."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật\n\n## Tổng quan\nĐám cháy tại Đồng Tháp đang hoạt động với cường độ FRP trung bình (28.35 MW) và có xu hướng gia tăng. Đám cháy lan chủ yếu theo thảm thực vật rừng lá rộng thường xanh với tiềm năng cháy tán trung bình và nguy cơ bắn tàn lửa trong phạm vi 0.5 km.\n\n## Đánh giá Nguy cơ\n- **Mức độ Nguy cơ:** MODERATE\n- **Cơ chế Lan truyền:** FUEL_DRIVEN\n- **Vùng Nguy cơ:** Khu vực rừng lá rộng thường xanh tại Đồng Tháp\n\n## Dự báo Lan truyền\n- **6 giờ tới:** Diện tích bao phủ dự kiến 70 ha với độ tin cậy duy trì 94.5%.\n- **12 giờ tới:** Diện tích bao phủ dự kiến 280 ha với độ tin cậy duy trì 89.6%.\n- **24 giờ tới:** Diện tích bao phủ dự kiến 410 ha với độ tin cậy duy trì 77.8%.\n\n## Khuyến nghị Tác chiến\n1. Thiết lập đường băng cản lửa theo hướng Tây Tây Bắc để đón đầu mũi cháy chính.\n2. Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận khoảng 10.7 phút.\n3. Bố trí lực lượng chữa cháy mặt đất tại các điểm chiến lược quanh khu vực rừng lá rộng thường xanh."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-021",
+      "event_id": "FE-0182",
+      "latency_ms": 4931.9,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Bình Định đang hoạt động với cường độ FRP tăng dần và lan truyền chủ yếu do thảm thực vật. Dự báo trong 24 giờ tới, diện tích cháy có thể mở rộng lên đến 280 ha.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Bình Định",
+        "forecast_6h": "Dự báo đám cháy sẽ lan truyền về hướng Tây Nam với diện tích khoảng 8 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ diện tích 8 ha với độ tin cậy duy trì 93.5%.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy có thể mở rộng lên 210 ha, đạt mức thảm họa khẩn cấp với độ tin cậy 87.6%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích cháy có thể đạt 280 ha, tiếp tục ở mức thảm họa khẩn cấp với độ tin cậy 74.5%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng Tây Nam để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, dự kiến tiếp cận trong 5.9 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các điểm chiến lược quanh khu vực rừng lá rộng thường xanh."
+        ],
+        "sitrep_markdown": "# Tactical SITREP for Wildfire Event FE-0182\n\n## Summary\nThe wildfire in Bình Định is currently active with an intensifying FRP trend and is primarily spreading due to vegetation. Over the next 24 hours, the fire is expected to expand up to 280 hectares.\n\n## Risk Level\n- **Moderate**\n\n## Spread Mechanism\n- **Fuel Driven**\n\n## Threat Zone\n- Evergreen Broadleaf Forests in Bình Định\n\n## Forecast 6h\n- The fire is expected to spread southwest, covering approximately 8 hectares in the next 6 hours.\n\n## Multi-Horizon Assessment\n- **6h Summary:** The fire is expected to cover 8 hectares with a persistence confidence of 93.5%.\n- **12h Summary:** The fire could expand to 210 hectares, reaching an emergency disaster level with a confidence of 87.6%.\n- **24h Summary:** The fire area could reach 280 hectares, maintaining an emergency disaster level with a confidence of 74.5%.\n\n## Tactical Recommendations\n1. Establish a firebreak towards the southwest to intercept the main fire front.\n2. Deploy firefighting aircraft from VNFOB base, estimated to reach the site in 5.9 minutes.\n3. Position ground firefighting forces at strategic points around the evergreen broadleaf forest area."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-022",
+      "event_id": "FE-0002",
+      "latency_ms": 4424.5,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại khu vực TP. Hồ Chí Minh đang hoạt động với cường độ FRP tổng 23.7 MW và có xu hướng giảm. Đám cháy lan chủ yếu theo thảm thực vật và địa hình bằng phẳng.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh gần TP. Hồ Chí Minh",
+        "forecast_6h": "Dự báo đám cháy lan truyền về hướng Tây Bắc với diện tích khoảng 8 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ diện tích 8 ha với độ tin cậy duy trì 93.9%.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy có thể mở rộng lên 210 ha, đạt mức Thảm họa Khẩn cấp cấp 4 với độ tin cậy 88.3%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích đám cháy có thể tăng lên 280 ha, tiếp tục duy trì mức Thảm họa Khẩn cấp cấp 4 với độ tin cậy 75.6%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng Tây Bắc để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận 2.3 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các điểm chiến lược gần khu vực cháy."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật\n\n## Tổng quan\nĐám cháy tại khu vực TP. Hồ Chí Minh hiện đang hoạt động với cường độ tổng FRP là 23.7 MW và có xu hướng giảm. Đám cháy lan chủ yếu theo thảm thực vật và địa hình bằng phẳng.\n\n## Đánh giá Nguy cơ\n- **Mức độ Nguy cơ:** Vừa phải (MODERATE)\n- **Cơ chế Lan truyền:** Chủ yếu do thảm thực vật (FUEL_DRIVEN)\n- **Vùng Nguy cơ:** Khu vực rừng lá rộng thường xanh gần TP. Hồ Chí Minh\n\n## Dự báo Lan truyền\n- **6 giờ tới:** Dự kiến lan truyền về hướng Tây Bắc với diện tích khoảng 8 ha.\n- **12 giờ tới:** Diện tích có thể mở rộng lên 210 ha.\n- **24 giờ tới:** Diện tích có thể tăng lên 280 ha.\n\n## Khuyến nghị Tác chiến\n1. Thiết lập đường băng cản lửa theo hướng Tây Bắc để đón đầu mũi cháy chính.\n2. Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận 2.3 phút.\n3. Bố trí lực lượng chữa cháy mặt đất tại các điểm chiến lược gần khu vực cháy."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-023",
+      "event_id": "FE-0137",
+      "latency_ms": 5246.3,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Khánh Hòa đang hoạt động ổn định với tổng công suất bức xạ 23.47 MW, lan truyền chủ yếu theo thảm thực vật và địa hình. Dự báo đám cháy sẽ mở rộng diện tích trong 24 giờ tới.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Vùng rừng lá rộng thường xanh tại Khánh Hòa",
+        "forecast_6h": "Dự báo đám cháy sẽ lan truyền theo hướng SSE với diện tích khoảng 8 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 8 ha với độ tin cậy duy trì 93%, được đánh giá là tiểu hỏa hoạn.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy có thể mở rộng lên 70 ha, với độ tin cậy duy trì 86.6%, đạt mức đại hỏa hoạn cấp 3.",
+          "h24_summary": "Trong 24 giờ tới, đám cháy có thể mở rộng lên 175 ha, với độ tin cậy duy trì 73%, tiếp tục ở mức đại hỏa hoạn cấp 3."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng SSE để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, dự kiến tiếp cận trong 8.2 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các điểm chiến lược để kiểm soát đám cháy."
+        ],
+        "sitrep_markdown": "# Tactical SITREP for Wildfire FE-0137\n\n## Summary\nThe wildfire in Khánh Hòa is currently stable with a total fire radiative power (FRP) of 23.47 MW. It is primarily spreading through vegetation and terrain influences.\n\n## Risk Level\n- **MODERATE**\n\n## Spread Mechanism\n- **FUEL_DRIVEN**\n\n## Threat Zone\n- Evergreen Broadleaf Forests in Khánh Hòa\n\n## Forecast 6h\n- Expected to spread SSE covering approximately 8 hectares in the next 6 hours.\n\n## Multi-Horizon Assessment\n- **6h:** Expected area coverage of 8 ha with a persistence confidence of 93%, classified as a minor fire.\n- **12h:** Expected area coverage of 70 ha with a persistence confidence of 86.6%, reaching major fire level 3.\n- **24h:** Expected area coverage of 175 ha with a persistence confidence of 73%, continuing at major fire level 3.\n\n## Tactical Recommendations\n1. Establish firebreaks towards SSE to intercept the main fire front.\n2. Deploy firefighting aircraft from VNFOB base, estimated to reach in 8.2 minutes.\n3. Position ground firefighting teams at strategic points to control the fire."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-024",
+      "event_id": "FE-0308",
+      "latency_ms": 4812.5,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Nghệ An đang hoạt động ổn định với tốc độ lan truyền chậm và chủ yếu bị chi phối bởi thảm thực vật. Nguy cơ cháy tán và bắn tàn lửa ở mức vừa phải.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Nghệ An",
+        "forecast_6h": "Dự báo lan truyền theo hướng Tây Tây Bắc với diện tích khoảng 8 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 8 ha với độ tin cậy duy trì 93.3%.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy có thể mở rộng lên 105 ha, đạt cấp độ Đại Hỏa Hoạn với độ tin cậy 87.2%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích cháy có thể đạt 245 ha, trở thành Thảm Họa Khẩn Cấp với độ tin cậy 73.8%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng Tây Tây Bắc để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, thời gian bay tiếp cận khoảng 6.2 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các khu vực có nguy cơ cao để ngăn chặn lan truyền."
+        ],
+        "sitrep_markdown": "# Báo Cáo Tình Huống Chiến Thuật\n\n## Tóm tắt\nĐám cháy tại Nghệ An đang hoạt động ổn định với tốc độ lan truyền chậm và chủ yếu bị chi phối bởi thảm thực vật. Nguy cơ cháy tán và bắn tàn lửa ở mức vừa phải.\n\n## Đánh giá Nguy cơ\n- **Mức độ Nguy cơ:** MODERATE\n- **Cơ chế Lan truyền:** FUEL_DRIVEN\n- **Vùng Nguy cơ:** Khu vực rừng lá rộng thường xanh tại Nghệ An\n\n## Dự báo 6 giờ\n- **Hướng Lan truyền:** Tây Tây Bắc\n- **Diện tích Dự kiến:** 8 ha\n\n## Đánh giá Đa Chân trời\n- **6 giờ:** Bao phủ 8 ha, độ tin cậy 93.3%\n- **12 giờ:** Mở rộng lên 105 ha, cấp độ Đại Hỏa Hoạn, độ tin cậy 87.2%\n- **24 giờ:** Đạt 245 ha, Thảm Họa Khẩn Cấp, độ tin cậy 73.8%\n\n## Khuyến nghị Tác chiến\n1. Thiết lập đường băng cản lửa theo hướng Tây Tây Bắc để đón đầu mũi cháy chính.\n2. Xuất kích máy bay chữa cháy từ căn cứ VNFOB, thời gian bay tiếp cận khoảng 6.2 phút.\n3. Bố trí lực lượng chữa cháy mặt đất tại các khu vực có nguy cơ cao để ngăn chặn lan truyền."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-025",
+      "event_id": "FE-0355",
+      "latency_ms": 4411.8,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Tây Ninh đang hoạt động ổn định với tốc độ lan truyền chậm do gió yếu và địa hình bằng phẳng. Nguy cơ cháy tán ở mức trung bình và không có bắn tàn lửa xa.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Tây Ninh",
+        "forecast_6h": "Dự báo đám cháy sẽ lan truyền về hướng Tây Bắc với diện tích bao phủ 8 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 8 ha với độ tin cậy duy trì 93.3%.",
+          "h12_summary": "Trong 12 giờ tới, diện tích cháy vẫn duy trì ở mức 8 ha với độ tin cậy 87.2%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích cháy có thể mở rộng lên 140 ha với độ tin cậy 73.8%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa ở phía Tây Bắc để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, thời gian bay tiếp cận 9.7 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất để kiểm soát và dập tắt các điểm cháy nhỏ."
+        ],
+        "sitrep_markdown": "# Tactical SITREP for Fire Event FE-0355\n\n## Summary\nThe wildfire in Tây Ninh is currently stable with a slow spread rate due to weak winds and flat terrain. The crown fire potential is moderate, and spotting distance is limited to 0.5 km.\n\n## Risk Level\n- **MODERATE**\n\n## Spread Mechanism\n- **FUEL_DRIVEN**: The fire is primarily spreading through the available vegetation fuel.\n\n## Threat Zone\n- The main affected area is the Evergreen Broadleaf Forests in Tây Ninh.\n\n## Forecast 6h\n- The fire is expected to spread northwest covering an area of 8 hectares in the next 6 hours.\n\n## Multi-Horizon Assessment\n- **6h:** Expected area coverage of 8 ha with a persistence confidence of 93.3%.\n- **12h:** Area remains at 8 ha with a confidence of 87.2%.\n- **24h:** Potential expansion to 140 ha with a confidence of 73.8%.\n\n## Tactical Recommendations\n1. Establish a firebreak to the northwest to intercept the main fire front.\n2. Deploy aerial firefighting units from VNFOB, with an estimated flight time of 9.7 minutes.\n3. Position ground firefighting teams to control and extinguish smaller fire spots."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-026",
+      "event_id": "FE-0482",
+      "latency_ms": 4392.8,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại khu vực TP. Hồ Chí Minh đang hoạt động với cường độ giảm dần, chủ yếu lan theo thảm thực vật rừng lá rộng thường xanh. Dự báo diện tích cháy sẽ tăng lên trong 24 giờ tới.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh gần TP. Hồ Chí Minh",
+        "forecast_6h": "Dự báo đám cháy sẽ lan truyền theo hướng Đông Đông Nam với diện tích khoảng 8 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 8 ha với độ tin cậy duy trì cao (0.939).",
+          "h12_summary": "Trong 12 giờ tới, diện tích cháy có thể mở rộng lên đến 245 ha, đạt mức thảm họa khẩn cấp.",
+          "h24_summary": "Trong 24 giờ tới, diện tích cháy có thể đạt 280 ha, tiếp tục ở mức thảm họa khẩn cấp với độ tin cậy duy trì giảm (0.756)."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng Đông Đông Nam để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận 2.9 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các khu vực có nguy cơ cao để kiểm soát đám cháy."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật (Tactical SITREP)\n\n## Tổng quan\nĐám cháy tại khu vực TP. Hồ Chí Minh đang hoạt động với cường độ giảm dần, chủ yếu lan theo thảm thực vật rừng lá rộng thường xanh. Dự báo diện tích cháy sẽ tăng lên trong 24 giờ tới.\n\n## Đánh giá Nguy cơ\n- **Mức độ Nguy cơ:** MODERATE\n- **Cơ chế Lan truyền:** FUEL_DRIVEN\n- **Vùng Nguy cơ:** Khu vực rừng lá rộng thường xanh gần TP. Hồ Chí Minh\n\n## Dự báo Lan truyền\n- **6 giờ tới:** Dự báo đám cháy sẽ lan truyền theo hướng Đông Đông Nam với diện tích khoảng 8 ha.\n- **12 giờ tới:** Diện tích cháy có thể mở rộng lên đến 245 ha.\n- **24 giờ tới:** Diện tích cháy có thể đạt 280 ha.\n\n## Khuyến nghị Tác chiến\n1. Thiết lập đường băng cản lửa theo hướng Đông Đông Nam để đón đầu mũi cháy chính.\n2. Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận 2.9 phút.\n3. Bố trí lực lượng chữa cháy mặt đất tại các khu vực có nguy cơ cao để kiểm soát đám cháy."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-027",
+      "event_id": "FE-0016",
+      "latency_ms": 3915.6,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Attapeu, Lào đang hoạt động với cường độ giảm dần và chịu ảnh hưởng từ gió. Dự báo diện tích cháy sẽ tăng lên trong 24 giờ tới.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "WIND_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Attapeu, Lào",
+        "forecast_6h": "Đám cháy dự kiến lan truyền về hướng Tây Tây Nam với diện tích 35 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy có thể bao phủ diện tích 35 ha với độ tin cậy duy trì 93.6%.",
+          "h12_summary": "Trong 12 giờ tới, diện tích cháy có thể mở rộng lên 245 ha với độ tin cậy duy trì 87.9%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích cháy có thể đạt 280 ha với độ tin cậy duy trì 74.8%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa ở phía Tây Tây Nam để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận 28 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các khu vực có nguy cơ cao để ngăn chặn sự lan rộng của đám cháy."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật\n\n## Tổng quan\nĐám cháy tại Attapeu, Lào đang hoạt động với cường độ giảm dần và chịu ảnh hưởng từ gió. Dự báo diện tích cháy sẽ tăng lên trong 24 giờ tới.\n\n## Đánh giá Nguy cơ\n- **Mức độ Nguy cơ:** Vừa phải (MODERATE)\n- **Cơ chế Lan truyền:** Do gió (WIND_DRIVEN)\n- **Vùng Nguy cơ:** Khu vực rừng lá rộng thường xanh tại Attapeu, Lào\n\n## Dự báo Lan truyền\n- **6 giờ tới:** Diện tích 35 ha, hướng Tây Tây Nam\n- **12 giờ tới:** Diện tích 245 ha\n- **24 giờ tới:** Diện tích 280 ha\n\n## Khuyến nghị Tác chiến\n1. Thiết lập đường băng cản lửa ở phía Tây Tây Nam để đón đầu mũi cháy chính.\n2. Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận 28 phút.\n3. Bố trí lực lượng chữa cháy mặt đất tại các khu vực có nguy cơ cao để ngăn chặn sự lan rộng của đám cháy."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-028",
+      "event_id": "FE-0014",
+      "latency_ms": 4271.8,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Ratanakiri, Campuchia đang hoạt động ổn định với FRP tổng là 19.11 MW. Đám cháy chủ yếu lan theo thảm thực vật rừng lá rộng thường xanh với tiềm năng cháy tán trung bình.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Vùng rừng lá rộng thường xanh tại Ratanakiri, Campuchia",
+        "forecast_6h": "Dự báo đám cháy sẽ lan truyền về hướng Bắc với diện tích bao phủ 35 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ diện tích 35 ha với độ tin cậy duy trì 94.2%.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy có thể mở rộng lên 280 ha với độ tin cậy duy trì 88.9%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích bao phủ dự kiến vẫn là 280 ha, nhưng độ tin cậy duy trì giảm xuống 76.7%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng Bắc để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận 26.2 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các điểm chiến lược quanh vùng rừng lá rộng thường xanh."
+        ],
+        "sitrep_markdown": "# Tactical SITREP for Wildfire Event FE-0014\n\n## Summary\nThe wildfire in Ratanakiri, Cambodia is currently stable with a total FRP of 19.11 MW. The fire is primarily spreading through evergreen broadleaf forest vegetation with moderate crown fire potential.\n\n## Risk Level\n- **Risk Level:** MODERATE\n- **Spread Mechanism:** FUEL_DRIVEN\n\n## Threat Zone\nThe main threat zone is the evergreen broadleaf forest area in Ratanakiri, Cambodia.\n\n## Forecast 6h\nThe fire is expected to spread northward, covering an area of 35 hectares in the next 6 hours.\n\n## Multi-Horizon Assessment\n- **6h Summary:** The fire is expected to cover 35 ha with a persistence confidence of 94.2%.\n- **12h Summary:** The fire may expand to 280 ha with a persistence confidence of 88.9%.\n- **24h Summary:** The expected coverage remains 280 ha, with persistence confidence decreasing to 76.7%.\n\n## Tactical Recommendations\n1. Establish a firebreak towards the north to intercept the main fire front.\n2. Deploy firefighting aircraft from VNFOB airbase with an estimated flight time of 26.2 minutes.\n3. Position ground firefighting forces at strategic points around the evergreen broadleaf forest area."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-029",
+      "event_id": "FE-0293",
+      "latency_ms": 4261.2,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Nghệ An đang hoạt động ổn định với tốc độ lan truyền chậm và FRP thấp. Nguy cơ cháy tán và bắn tàn lửa ở mức trung bình.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Nghệ An",
+        "forecast_6h": "Đám cháy dự kiến lan truyền về hướng Tây với diện tích khoảng 8 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy có thể mở rộng lên 8 ha với độ tin cậy duy trì 93.6%.",
+          "h12_summary": "Trong 12 giờ tới, diện tích cháy có thể đạt 245 ha, nguy cơ tăng lên mức thảm họa khẩn cấp.",
+          "h24_summary": "Trong 24 giờ tới, diện tích cháy có thể đạt 280 ha, tiếp tục duy trì mức thảm họa khẩn cấp."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa ở phía Tây để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, thời gian bay tiếp cận 16.1 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các điểm chiến lược để ngăn chặn lan truyền."
+        ],
+        "sitrep_markdown": "# Tactical SITREP for Wildfire FE-0293\n\n## Summary\nThe wildfire in Nghệ An is currently stable with a slow spread rate and low FRP. The potential for crown fire and spotting is moderate.\n\n## Risk Level\n**MODERATE**\n\n## Spread Mechanism\n**FUEL_DRIVEN** - The fire is primarily spreading through the evergreen broadleaf forest fuel.\n\n## Threat Zone\nThe main affected area is the evergreen broadleaf forest in Nghệ An.\n\n## Forecast 6h\nThe fire is expected to spread westward, covering approximately 8 hectares in the next 6 hours.\n\n## Multi-Horizon Assessment\n- **6h:** The fire may expand to 8 hectares with a persistence confidence of 93.6%.\n- **12h:** The area could reach 245 hectares, escalating to an emergency disaster level.\n- **24h:** The fire may cover up to 280 hectares, maintaining the emergency disaster level.\n\n## Tactical Recommendations\n1. Establish a firebreak to the west to intercept the main fire front.\n2. Deploy aerial firefighting units from VNFOB airbase, with an estimated flight time of 16.1 minutes.\n3. Position ground firefighting teams at strategic points to prevent further spread."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-030",
+      "event_id": "FE-0567",
+      "latency_ms": 4347.2,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Vientiane, Lào đang hoạt động với cường độ giảm dần và lan truyền chủ yếu theo thảm thực vật. Điều kiện thời tiết hiện tại không thuận lợi cho việc lan rộng nhanh chóng.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Vùng rừng lá rộng thường xanh gần Vientiane, Lào",
+        "forecast_6h": "Dự báo đám cháy sẽ lan truyền về hướng Đông Bắc với diện tích bao phủ khoảng 70 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến sẽ bao phủ diện tích 70 ha với độ tin cậy duy trì cao (95.2%).",
+          "h12_summary": "Trong 12 giờ tới, diện tích bao phủ dự kiến tăng lên 280 ha với độ tin cậy duy trì 90.9%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích bao phủ có thể đạt 410 ha với độ tin cậy duy trì 80.1%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng Đông Bắc để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, cách 40.2 km, với thời gian bay tiếp cận khoảng 5.4 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất để kiểm soát đám cháy tại các khu vực có nguy cơ cao."
+        ],
+        "sitrep_markdown": "# Tactical SITREP for Wildfire Event FE-0567\n\n## Summary\nThe wildfire near Vientiane, Laos is currently active with a decaying intensity and primarily spreading through vegetation. Current weather conditions are not conducive to rapid expansion.\n\n## Risk Level\n- **MODERATE**\n\n## Spread Mechanism\n- **FUEL_DRIVEN**\n\n## Threat Zone\n- Evergreen Broadleaf Forests near Vientiane, Laos\n\n## Forecast 6h\n- The fire is expected to spread northeast covering approximately 70 hectares in the next 6 hours.\n\n## Multi-Horizon Assessment\n- **6h:** Expected area coverage of 70 ha with high persistence confidence (95.2%).\n- **12h:** Expected area coverage of 280 ha with persistence confidence of 90.9%.\n- **24h:** Expected area coverage of 410 ha with persistence confidence of 80.1%.\n\n## Tactical Recommendations\n1. Establish firebreaks towards the northeast to intercept the main fire front.\n2. Deploy aerial firefighting from VNFOB base, 40.2 km away, with an estimated flight time of 5.4 minutes.\n3. Position ground firefighting forces to manage high-risk areas."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-031",
+      "event_id": "FE-0155",
+      "latency_ms": 4283.2,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Điện Biên đang hoạt động với cường độ thấp, chủ yếu lan theo thảm thực vật và địa hình dốc xuống. Dự báo trong 24 giờ tới, diện tích cháy có thể mở rộng lên đến 280 ha.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Điện Biên",
+        "forecast_6h": "Dự báo đám cháy sẽ lan về hướng Tây Nam với diện tích khoảng 8 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 8 ha với độ tin cậy duy trì cao (94.8%).",
+          "h12_summary": "Trong 12 giờ tới, đám cháy có thể mở rộng lên 140 ha với độ tin cậy duy trì 90%.",
+          "h24_summary": "Trong 24 giờ tới, đám cháy có thể mở rộng lên 280 ha với độ tin cậy duy trì 78.6%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa ở phía Tây Nam để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, dự kiến tiếp cận trong 4.9 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các khu vực có nguy cơ cao để ngăn chặn lan rộng."
+        ],
+        "sitrep_markdown": "# Tactical SITREP for Wildfire Event FE-0155\n\n## Summary\nThe wildfire in Điện Biên is currently active with moderate intensity, primarily spreading through vegetation and moderate downslope terrain. Forecasts indicate potential expansion to 280 hectares within the next 24 hours.\n\n## Risk Level\n- **MODERATE**\n\n## Spread Mechanism\n- **FUEL_DRIVEN**: The fire is primarily driven by the available vegetation fuel.\n\n## Threat Zone\n- The main affected area is the Evergreen Broadleaf Forests in Điện Biên.\n\n## Forecast 6h\n- The fire is expected to spread southwest, covering approximately 8 hectares in the next 6 hours.\n\n## Multi-Horizon Assessment\n- **6h Summary**: Expected coverage of 8 hectares with high persistence confidence (94.8%).\n- **12h Summary**: Potential expansion to 140 hectares with 90% confidence.\n- **24h Summary**: Potential expansion to 280 hectares with 78.6% confidence.\n\n## Tactical Recommendations\n1. Establish a firebreak southwest to intercept the main fire front.\n2. Deploy aerial firefighting units from VNFOB, estimated to reach the site in 4.9 minutes.\n3. Position ground firefighting teams in high-risk areas to prevent further spread.\n"
+      }
+    },
+    {
+      "sample_id": "SAMPLE-032",
+      "event_id": "FE-0451",
+      "latency_ms": 4352.9,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Quảng Nam đang hoạt động với cường độ thấp, lan truyền chủ yếu do thảm thực vật và địa hình. Dự báo diện tích cháy sẽ tăng đáng kể trong 24 giờ tới.",
+        "risk_level": "LOW",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Quảng Nam",
+        "forecast_6h": "Dự báo đám cháy sẽ lan truyền về phía Bắc Đông Bắc với diện tích khoảng 8 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ diện tích 8 ha với độ tin cậy duy trì cao.",
+          "h12_summary": "Trong 12 giờ tới, diện tích cháy vẫn duy trì ở mức 8 ha với độ tin cậy duy trì khá cao.",
+          "h24_summary": "Trong 24 giờ tới, diện tích cháy có thể mở rộng lên tới 70 ha, chuyển sang cấp độ đại hỏa hoạn."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa ở phía Bắc Đông Bắc để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận khoảng 7.7 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các điểm chiến lược để kiểm soát đám cháy."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật\n\n## Tình hình hiện tại\n- **Vị trí:** Quảng Nam, Việt Nam\n- **Thời gian hoạt động:** 23.72 giờ\n- **Cường độ cháy:** Tổng FRP 13.99 MW, đỉnh 6.17 MW\n- **Cơ chế lan truyền:** Chủ yếu do thảm thực vật và địa hình\n\n## Điều kiện thời tiết\n- **Nhiệt độ:** 25.7°C\n- **Độ ẩm tương đối:** 98%\n- **Tốc độ gió:** 3.8 km/h từ hướng 45°\n\n## Địa hình và Thảm thực vật\n- **Độ dốc:** 1.5° (sườn dốc nhẹ)\n- **Loại thảm thực vật:** Rừng lá rộng thường xanh\n- **Tiềm năng cháy tán:** Trung bình\n\n## Dự báo và Đánh giá\n- **6 giờ tới:** Diện tích cháy dự kiến 8 ha\n- **12 giờ tới:** Diện tích cháy duy trì 8 ha\n- **24 giờ tới:** Diện tích cháy có thể mở rộng tới 70 ha\n\n## Khuyến nghị tác chiến\n1. **Đường băng cản lửa:** Thiết lập ở phía Bắc Đông Bắc\n2. **Hỗ trợ trên không:** Xuất kích từ VNFOB\n3. **Lực lượng mặt đất:** Bố trí tại các điểm chiến lược"
+      }
+    },
+    {
+      "sample_id": "SAMPLE-033",
+      "event_id": "FE-0354",
+      "latency_ms": 4240.9,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Bình Thuận đang hoạt động với cường độ thấp và có xu hướng giảm. Đám cháy lan truyền chủ yếu do nhiên liệu và địa hình, không bị ảnh hưởng nhiều bởi gió.",
+        "risk_level": "LOW",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Bình Thuận",
+        "forecast_6h": "Dự kiến đám cháy sẽ lan truyền về hướng SSE với diện tích bao phủ khoảng 175 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy có thể mở rộng lên đến 175 ha với độ tin cậy duy trì 94%.",
+          "h12_summary": "Trong 12 giờ tới, diện tích có thể tăng lên 345 ha với một số vùng nguy cơ cao xuất hiện.",
+          "h24_summary": "Trong 24 giờ tới, diện tích có thể đạt 745 ha, với nhiều vùng nguy cơ cao và độ tin cậy duy trì giảm xuống 75.9%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa ở phía SSE để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, dự kiến tiếp cận trong 4.5 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các vùng có nguy cơ cao để kiểm soát đám cháy."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật\n\n## Tổng quan\nĐám cháy tại Bình Thuận đang hoạt động với cường độ thấp và có xu hướng giảm. Đám cháy lan truyền chủ yếu do nhiên liệu và địa hình, không bị ảnh hưởng nhiều bởi gió.\n\n## Đánh giá Nguy cơ\n- **Mức độ Nguy cơ:** Thấp\n- **Cơ chế Lan truyền:** Chủ yếu do nhiên liệu\n- **Vùng Nguy cơ:** Khu vực rừng lá rộng thường xanh tại Bình Thuận\n\n## Dự báo Lan truyền\n- **6 Giờ tới:** Dự kiến đám cháy sẽ lan truyền về hướng SSE với diện tích bao phủ khoảng 175 ha.\n- **12 Giờ tới:** Diện tích có thể tăng lên 345 ha với một số vùng nguy cơ cao xuất hiện.\n- **24 Giờ tới:** Diện tích có thể đạt 745 ha, với nhiều vùng nguy cơ cao và độ tin cậy duy trì giảm xuống 75.9%.\n\n## Khuyến nghị Tác chiến\n1. Thiết lập đường băng cản lửa ở phía SSE để đón đầu mũi cháy chính.\n2. Xuất kích máy bay chữa cháy từ căn cứ VNFOB, dự kiến tiếp cận trong 4.5 phút.\n3. Bố trí lực lượng chữa cháy mặt đất tại các vùng có nguy cơ cao để kiểm soát đám cháy."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-034",
+      "event_id": "FE-0136",
+      "latency_ms": 4048.7,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Đắk Lắk đang hoạt động với cường độ thấp và có xu hướng giảm. Địa hình dốc xuống và thảm thực vật rừng lá rộng thường xanh làm giảm tốc độ lan truyền.",
+        "risk_level": "LOW",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Vùng rừng lá rộng thường xanh tại Đắk Lắk",
+        "forecast_6h": "Dự báo lan truyền về phía Tây Nam với diện tích 8 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 8 ha với độ tin cậy duy trì 92.5%.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy có thể mở rộng lên 70 ha với độ tin cậy duy trì 85.7%.",
+          "h24_summary": "Trong 24 giờ tới, đám cháy có thể mở rộng lên 105 ha với độ tin cậy duy trì 72.2%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa về phía Tây Nam để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, thời gian bay tiếp cận 9.3 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các vị trí chiến lược để ngăn chặn lan truyền."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật\n\n## Tóm tắt\nĐám cháy tại Đắk Lắk đang hoạt động với cường độ thấp và có xu hướng giảm. Địa hình dốc xuống và thảm thực vật rừng lá rộng thường xanh làm giảm tốc độ lan truyền.\n\n## Đánh giá Nguy cơ\n- **Mức độ Nguy cơ:** Thấp\n- **Cơ chế Lan truyền:** Dựa vào thảm thực vật\n- **Vùng Nguy cơ:** Vùng rừng lá rộng thường xanh tại Đắk Lắk\n\n## Dự báo 6 giờ\n- **Hướng Lan truyền:** Tây Nam\n- **Diện tích Dự kiến:** 8 ha\n\n## Đánh giá Đa Chân trời\n- **6 giờ:** Dự kiến bao phủ 8 ha với độ tin cậy duy trì 92.5%.\n- **12 giờ:** Có thể mở rộng lên 70 ha với độ tin cậy duy trì 85.7%.\n- **24 giờ:** Có thể mở rộng lên 105 ha với độ tin cậy duy trì 72.2%.\n\n## Khuyến nghị Tác chiến\n1. Thiết lập đường băng cản lửa về phía Tây Nam để đón đầu mũi cháy chính.\n2. Xuất kích máy bay chữa cháy từ căn cứ VNFOB, thời gian bay tiếp cận 9.3 phút.\n3. Bố trí lực lượng chữa cháy mặt đất tại các vị trí chiến lược để ngăn chặn lan truyền."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-035",
+      "event_id": "FE-0395",
+      "latency_ms": 4319.6,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Ratanakiri, Campuchia đang hoạt động với cường độ thấp và chủ yếu lan theo thảm thực vật. Điều kiện thời tiết và địa hình hiện tại không tạo ra nguy cơ lan rộng nhanh chóng.",
+        "risk_level": "LOW",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Ratanakiri",
+        "forecast_6h": "Dự báo đám cháy sẽ lan truyền về hướng Đông với diện tích bao phủ khoảng 105 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 105 ha với độ tin cậy duy trì cao (94.8%).",
+          "h12_summary": "Trong 12 giờ tới, diện tích bao phủ có thể tăng lên 280 ha, nhưng vẫn không có tế bào nguy cơ cao.",
+          "h24_summary": "Trong 24 giờ tới, diện tích bao phủ có thể đạt 475 ha với một số tế bào nguy cơ cao, độ tin cậy duy trì giảm xuống 78.6%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa ở phía Đông để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, thời gian bay tiếp cận khoảng 22 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất để kiểm soát và dập tắt các điểm cháy nhỏ."
+        ],
+        "sitrep_markdown": "# Tactical SITREP for Wildfire Event FE-0395\n\n## Summary\nThe wildfire in Ratanakiri, Cambodia is currently active with low intensity, primarily spreading through vegetation. Current weather and terrain conditions do not pose a significant risk for rapid spread.\n\n## Risk Level\n- **LOW**\n\n## Spread Mechanism\n- **FUEL_DRIVEN**\n\n## Threat Zone\n- Evergreen Broadleaf Forests in Ratanakiri\n\n## Forecast 6h\n- The fire is expected to spread eastward, covering approximately 105 hectares in the next 6 hours.\n\n## Multi-Horizon Assessment\n- **6h Summary:** The fire is expected to cover 105 ha with high persistence confidence (94.8%).\n- **12h Summary:** The area could increase to 280 ha with no high-risk cells.\n- **24h Summary:** The area could reach 475 ha with some high-risk cells, persistence confidence decreases to 78.6%.\n\n## Tactical Recommendations\n1. Establish a firebreak to the east to intercept the main fire front.\n2. Deploy firefighting aircraft from VNFOB base, estimated flight time is 22 minutes.\n3. Position ground firefighting forces to control and extinguish smaller fire spots."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-036",
+      "event_id": "FE-0287",
+      "latency_ms": 5109.6,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Gia Lai hiện đang đứng yên với tổng công suất phát xạ 94.49 MW. Địa hình dốc nhẹ và thảm thực vật rừng lá rộng thường xanh có tiềm năng cháy tán trung bình.",
+        "risk_level": "HIGH",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Gia Lai",
+        "forecast_6h": "Dự báo đám cháy sẽ lan rộng ra 35 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 35 ha với độ tin cậy duy trì 92.8%.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy có thể mở rộng lên 175 ha với độ tin cậy duy trì 86.4%.",
+          "h24_summary": "Trong 24 giờ tới, đám cháy có thể mở rộng lên 245 ha với độ tin cậy duy trì 72.8%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa ở phía trước đám cháy để ngăn chặn lan truyền.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận 4.8 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất để kiểm soát và dập tắt đám cháy."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật\n\n## Tóm tắt\nĐám cháy tại Gia Lai hiện đang đứng yên với tổng công suất phát xạ 94.49 MW. Địa hình dốc nhẹ và thảm thực vật rừng lá rộng thường xanh có tiềm năng cháy tán trung bình.\n\n## Đánh giá Nguy cơ\n- **Mức độ nguy cơ:** HIGH\n- **Cơ chế lan truyền:** FUEL_DRIVEN\n- **Vùng nguy cơ:** Khu vực rừng lá rộng thường xanh tại Gia Lai\n\n## Dự báo 6 giờ\nDự báo đám cháy sẽ lan rộng ra 35 ha trong 6 giờ tới.\n\n## Đánh giá Nhiều Mốc Chân Trời\n- **6 giờ:** Bao phủ 35 ha, độ tin cậy duy trì 92.8%.\n- **12 giờ:** Mở rộng lên 175 ha, độ tin cậy duy trì 86.4%.\n- **24 giờ:** Mở rộng lên 245 ha, độ tin cậy duy trì 72.8%.\n\n## Khuyến nghị Tác chiến\n1. Thiết lập đường băng cản lửa ở phía trước đám cháy để ngăn chặn lan truyền.\n2. Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận 4.8 phút.\n3. Bố trí lực lượng chữa cháy mặt đất để kiểm soát và dập tắt đám cháy."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-037",
+      "event_id": "FE-0344",
+      "latency_ms": 4329.2,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Sơn La hiện đang ở trạng thái tĩnh với tiềm năng lan rộng trong 24 giờ tới. Địa hình dốc xuống giúp giảm tốc độ lan truyền, nhưng vẫn cần cảnh giác do tiềm năng cháy tán trung bình.",
+        "risk_level": "HIGH",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Sơn La",
+        "forecast_6h": "Dự báo diện tích lan truyền trong 6 giờ tới là 8 ha, chủ yếu do thảm thực vật.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 8 ha với độ tin cậy duy trì 95%.",
+          "h12_summary": "Trong 12 giờ tới, diện tích có thể mở rộng lên 105 ha với độ tin cậy 90.4%.",
+          "h24_summary": "Trong 24 giờ tới, đám cháy có thể lan rộng tới 280 ha với độ tin cậy 79.3%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa ở phía trước đám cháy để ngăn chặn lan truyền.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, thời gian bay tiếp cận khoảng 10.6 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất để kiểm soát và dập tắt các điểm cháy nhỏ."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật\n\n## Tổng quan\nĐám cháy tại Sơn La hiện đang ở trạng thái tĩnh với tiềm năng lan rộng trong 24 giờ tới. Địa hình dốc xuống giúp giảm tốc độ lan truyền, nhưng vẫn cần cảnh giác do tiềm năng cháy tán trung bình.\n\n## Đánh giá Nguy cơ\n- **Mức độ nguy cơ:** HIGH\n- **Cơ chế lan truyền:** FUEL_DRIVEN\n- **Vùng nguy cơ:** Khu vực rừng lá rộng thường xanh tại Sơn La\n\n## Dự báo\n- **6 giờ tới:** Diện tích lan truyền dự kiến 8 ha với độ tin cậy 95%.\n- **12 giờ tới:** Diện tích có thể mở rộng lên 105 ha với độ tin cậy 90.4%.\n- **24 giờ tới:** Đám cháy có thể lan rộng tới 280 ha với độ tin cậy 79.3%.\n\n## Khuyến nghị Tác chiến\n1. Thiết lập đường băng cản lửa ở phía trước đám cháy để ngăn chặn lan truyền.\n2. Xuất kích máy bay chữa cháy từ căn cứ VNFOB, thời gian bay tiếp cận khoảng 10.6 phút.\n3. Bố trí lực lượng chữa cháy mặt đất để kiểm soát và dập tắt các điểm cháy nhỏ."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-038",
+      "event_id": "FE-0601",
+      "latency_ms": 5092.8,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Đắk Lắk hiện đang ở trạng thái tĩnh với tổng FRP là 88.16 MW. Đám cháy có tiềm năng lan rộng trong 24 giờ tới, đặc biệt là trong khu vực rừng lá rộng thường xanh.",
+        "risk_level": "HIGH",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Đắk Lắk",
+        "forecast_6h": "Dự báo đám cháy sẽ bao phủ diện tích 140 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 140 ha với độ tin cậy duy trì là 93.9%.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy có thể mở rộng lên 245 ha với độ tin cậy duy trì là 88.3%.",
+          "h24_summary": "Trong 24 giờ tới, đám cháy có thể mở rộng lên 475 ha với độ tin cậy duy trì là 75.6%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa ở phía trước khu vực rừng lá rộng thường xanh để ngăn chặn đám cháy lan rộng.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, cách 40.7 km, với thời gian bay tiếp cận 5.4 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất để hỗ trợ kiểm soát đám cháy và bảo vệ các khu vực có nguy cơ cao."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật (Tactical SITREP)\n\n## Tóm tắt\nĐám cháy tại Đắk Lắk hiện đang ở trạng thái tĩnh với tổng FRP là 88.16 MW. Đám cháy có tiềm năng lan rộng trong 24 giờ tới, đặc biệt là trong khu vực rừng lá rộng thường xanh.\n\n## Đánh giá Nguy cơ\n- **Mức độ Nguy cơ:** HIGH\n- **Cơ chế Lan truyền:** FUEL_DRIVEN\n- **Vùng Nguy cơ:** Khu vực rừng lá rộng thường xanh tại Đắk Lắk\n\n## Dự báo 6 giờ\n- **Diện tích Dự kiến:** 140 ha\n\n## Đánh giá Đa Chân trời\n- **6 giờ:** Đám cháy dự kiến bao phủ 140 ha với độ tin cậy duy trì là 93.9%.\n- **12 giờ:** Đám cháy có thể mở rộng lên 245 ha với độ tin cậy duy trì là 88.3%.\n- **24 giờ:** Đám cháy có thể mở rộng lên 475 ha với độ tin cậy duy trì là 75.6%.\n\n## Khuyến nghị Tác chiến\n1. Thiết lập đường băng cản lửa ở phía trước khu vực rừng lá rộng thường xanh để ngăn chặn đám cháy lan rộng.\n2. Xuất kích máy bay chữa cháy từ căn cứ VNFOB, cách 40.7 km, với thời gian bay tiếp cận 5.4 phút.\n3. Bố trí lực lượng chữa cháy mặt đất để hỗ trợ kiểm soát đám cháy và bảo vệ các khu vực có nguy cơ cao."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-039",
+      "event_id": "FE-0411",
+      "latency_ms": 4144.1,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Thừa Thiên Huế đang hoạt động với tốc độ lan truyền ổn định và tiềm năng cháy tán trung bình. Gió yếu và địa hình dốc nhẹ ảnh hưởng đến cơ chế lan truyền.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh với nguy cơ cháy tán trung bình.",
+        "forecast_6h": "Dự báo đám cháy sẽ lan truyền về phía Tây Tây Bắc với diện tích khoảng 8 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 8 ha với độ tin cậy duy trì cao.",
+          "h12_summary": "Trong 12 giờ tới, diện tích bao phủ vẫn duy trì ở mức 8 ha với độ tin cậy duy trì giảm nhẹ.",
+          "h24_summary": "Trong 24 giờ tới, diện tích bao phủ có thể tăng lên 35 ha với độ tin cậy duy trì trung bình."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng Tây Tây Bắc để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận 11.8 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất để kiểm soát và ngăn chặn lan truyền tại các khu vực có nguy cơ cao."
+        ],
+        "sitrep_markdown": "# Tactical SITREP for Wildfire Event FE-0411\n\n## Summary\nThe wildfire in Thừa Thiên Huế is currently active with a stable rate of spread and moderate crown fire potential. The weak wind and gentle slope terrain influence the fire's spread mechanism.\n\n## Risk Level\n- **MODERATE**\n\n## Spread Mechanism\n- **FUEL_DRIVEN**\n\n## Threat Zone\n- Evergreen Broadleaf Forests with moderate crown fire potential.\n\n## Forecast 6h\n- The fire is expected to spread towards the WNW, covering approximately 8 hectares in the next 6 hours.\n\n## Multi-Horizon Assessment\n- **6h:** Expected coverage of 8 ha with high persistence confidence.\n- **12h:** Coverage remains at 8 ha with slightly reduced persistence confidence.\n- **24h:** Coverage may increase to 35 ha with moderate persistence confidence.\n\n## Tactical Recommendations\n1. Establish a firebreak towards the WNW to intercept the main fire front.\n2. Deploy aerial firefighting from VNFOB base with an estimated flight time of 11.8 minutes.\n3. Position ground firefighting forces to control and prevent spread in high-risk areas."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-040",
+      "event_id": "FE-0200",
+      "latency_ms": 4978.5,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Phú Yên đang hoạt động với tốc độ lan truyền trung bình 4.984 km/h, chủ yếu do nhiên liệu và độ dốc địa hình. Nguy cơ cháy tán và bắn tàn lửa ở mức độ vừa phải.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Phú Yên",
+        "forecast_6h": "Dự báo đám cháy sẽ lan truyền về hướng Tây Tây Bắc (WNW) với diện tích bao phủ khoảng 70 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy có thể bao phủ diện tích 70 ha với độ tin cậy duy trì 93.7%.",
+          "h12_summary": "Trong 12 giờ tới, diện tích cháy có thể mở rộng lên 245 ha với độ tin cậy duy trì 88.1%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích cháy có thể đạt 345 ha với độ tin cậy duy trì 75.2%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa ở phía Tây Tây Bắc để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, cách 38.4 km, với thời gian bay tiếp cận 5.1 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất để hỗ trợ kiểm soát đám cháy và bảo vệ các khu vực có nguy cơ cao."
+        ],
+        "sitrep_markdown": "# Tactical SITREP for Event FE-0200\n\n## Summary\nThe wildfire in Phú Yên is currently active with an average spread rate of 4.984 km/h, primarily driven by fuel and terrain slope. The potential for crown fire and spotting is moderate.\n\n## Risk Level\n- **Risk Level:** MODERATE\n\n## Spread Mechanism\n- **Primary Spread Mechanism:** FUEL_DRIVEN\n\n## Threat Zone\n- **Affected Area:** Evergreen Broadleaf Forests in Phú Yên\n\n## Forecast 6h\n- **Direction:** WNW\n- **Projected Area:** Approximately 70 ha within the next 6 hours\n\n## Multi-Horizon Assessment\n- **6h Horizon:**\n  - Expected Area: 70 ha\n  - Persistence Confidence: 93.7%\n- **12h Horizon:**\n  - Expected Area: 245 ha\n  - Persistence Confidence: 88.1%\n- **24h Horizon:**\n  - Expected Area: 345 ha\n  - Persistence Confidence: 75.2%\n\n## Tactical Recommendations\n1. Establish a firebreak to the WNW to intercept the main fire front.\n2. Deploy aerial firefighting units from VNFOB airbase, 38.4 km away, with an estimated flight time of 5.1 minutes.\n3. Position ground firefighting teams to assist in controlling the fire and protecting high-risk areas."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-041",
+      "event_id": "FE-0466",
+      "latency_ms": 4718.8,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Đà Nẵng hiện đang ổn định và không lan rộng do điều kiện thời tiết ẩm ướt và gió yếu. Diện tích dự kiến bị ảnh hưởng trong 24 giờ tới là 8 ha.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "STATIONARY",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh gần Đà Nẵng",
+        "forecast_6h": "Đám cháy dự kiến không lan rộng trong 6 giờ tới do điều kiện thời tiết và địa hình.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến vẫn giữ nguyên diện tích 8 ha với độ tin cậy 92.2%.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy dự kiến vẫn giữ nguyên diện tích 8 ha với độ tin cậy 85.2%.",
+          "h24_summary": "Trong 24 giờ tới, đám cháy dự kiến vẫn giữ nguyên diện tích 8 ha với độ tin cậy 71.7%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa xung quanh khu vực cháy để ngăn ngừa lan rộng.",
+          "Điều động lực lượng chữa cháy mặt đất để giám sát và dập tắt các điểm cháy nhỏ.",
+          "Sẵn sàng xuất kích phi đội máy bay chữa cháy từ căn cứ VNFOB nếu tình hình thay đổi."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật\n\n## Tóm tắt\nĐám cháy tại Đà Nẵng hiện đang ổn định và không lan rộng do điều kiện thời tiết ẩm ướt và gió yếu. Diện tích dự kiến bị ảnh hưởng trong 24 giờ tới là 8 ha.\n\n## Đánh giá Nguy cơ\n- **Mức độ Nguy cơ:** Vừa phải (MODERATE)\n- **Cơ chế Lan truyền:** Đám cháy hiện tại không lan rộng (STATIONARY)\n- **Vùng Nguy cơ:** Khu vực rừng lá rộng thường xanh gần Đà Nẵng\n\n## Dự báo\n- **6 Giờ tới:** Đám cháy dự kiến không lan rộng trong 6 giờ tới do điều kiện thời tiết và địa hình.\n- **12 Giờ tới:** Đám cháy dự kiến vẫn giữ nguyên diện tích 8 ha với độ tin cậy 85.2%.\n- **24 Giờ tới:** Đám cháy dự kiến vẫn giữ nguyên diện tích 8 ha với độ tin cậy 71.7%.\n\n## Khuyến nghị Tác chiến\n1. Thiết lập đường băng cản lửa xung quanh khu vực cháy để ngăn ngừa lan rộng.\n2. Điều động lực lượng chữa cháy mặt đất để giám sát và dập tắt các điểm cháy nhỏ.\n3. Sẵn sàng xuất kích phi đội máy bay chữa cháy từ căn cứ VNFOB nếu tình hình thay đổi."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-042",
+      "event_id": "FE-0457",
+      "latency_ms": 5961.1,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Nghệ An đang lan rộng theo chiều gió với tốc độ 2.384 km/h. Nguy cơ cháy tán và bắn tàn lửa ở mức trung bình, cần có biện pháp ứng phó khẩn cấp.",
+        "risk_level": "HIGH",
+        "spread_mechanism": "WIND_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Nghệ An",
+        "forecast_6h": "Dự kiến lan truyền về hướng Tây với diện tích bao phủ 175 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy có thể bao phủ diện tích 175 ha với độ tin cậy 94.1%.",
+          "h12_summary": "Trong 12 giờ tới, diện tích cháy có thể mở rộng lên 280 ha với độ tin cậy 88.7%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích cháy có thể đạt 510 ha với độ tin cậy 76.3%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng Tây để ngăn chặn đám cháy lan rộng.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, dự kiến tiếp cận trong 7.7 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các điểm trọng yếu để kiểm soát đám cháy."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật (SITREP)\n\n## Tổng quan\nĐám cháy tại Nghệ An, Việt Nam đang trong tình trạng hoạt động mạnh với tổng công suất bức xạ lửa (FRP) là 58.79 MW và đang có xu hướng gia tăng. Đám cháy lan theo chiều gió với tốc độ 2.384 km/h.\n\n## Đánh giá Nguy cơ\n- **Mức độ Nguy cơ:** HIGH\n- **Cơ chế Lan truyền:** WIND_DRIVEN\n- **Vùng Nguy cơ:** Khu vực rừng lá rộng thường xanh tại Nghệ An\n\n## Dự báo Lan truyền\n- **6 Giờ tới:** Diện tích bao phủ dự kiến 175 ha với độ tin cậy 94.1%.\n- **12 Giờ tới:** Diện tích bao phủ dự kiến 280 ha với độ tin cậy 88.7%.\n- **24 Giờ tới:** Diện tích bao phủ dự kiến 510 ha với độ tin cậy 76.3%.\n\n## Khuyến nghị Tác chiến\n1. **Thiết lập đường băng cản lửa:** Theo hướng Tây để ngăn chặn đám cháy lan rộng.\n2. **Xuất kích máy bay chữa cháy:** Từ căn cứ VNFOB, dự kiến tiếp cận trong 7.7 phút.\n3. **Bố trí lực lượng chữa cháy mặt đất:** Tại các điểm trọng yếu để kiểm soát đám cháy.\n\n## Điều kiện Thời tiết\n- **Nhiệt độ:** 26.0°C\n- **Độ ẩm tương đối:** 81%\n- **Tốc độ gió:** 12.4 km/h\n- **Hướng gió:** Từ 106°\n\n## Địa hình và Thảm thực vật\n- **Độ dốc địa hình:** -0.7° (FLAT_OR_UNDULATING)\n- **Loại thảm thực vật:** Rừng lá rộng thường xanh\n- **Tiềm năng cháy tán:** MODERATE\n- **Khoảng cách bắn tàn lửa:** 0.5 km\n\n## Kết luận\nĐám cháy có nguy cơ lan rộng nhanh chóng và cần có các biện pháp ứng phó khẩn cấp để bảo vệ khu vực rừng và các tài sản xung quanh."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-043",
+      "event_id": "FE-0181",
+      "latency_ms": 4051.1,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Phú Yên đang hoạt động với cường độ FRP tổng 58.37 MW và có xu hướng gia tăng. Đám cháy lan chủ yếu theo địa hình dốc và thảm thực vật rừng lá rộng thường xanh.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "SLOPE_DRIVEN",
+        "threat_zone": "Vùng rừng lá rộng thường xanh tại Phú Yên",
+        "forecast_6h": "Dự kiến lan truyền về hướng Tây Bắc với diện tích bao phủ 70 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy có thể bao phủ diện tích 70 ha với độ tin cậy duy trì 92.6%.",
+          "h12_summary": "Trong 12 giờ tới, diện tích bao phủ có thể tăng lên 245 ha với độ tin cậy duy trì 86%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích bao phủ có thể đạt 280 ha với độ tin cậy duy trì 72.4%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa ở phía Tây Bắc để đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận khoảng 6.7 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các điểm có nguy cơ cao để kiểm soát đám cháy."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật\n\n## Tổng quan\nĐám cháy tại Phú Yên đang hoạt động với cường độ FRP tổng 58.37 MW và có xu hướng gia tăng. Đám cháy lan chủ yếu theo địa hình dốc và thảm thực vật rừng lá rộng thường xanh.\n\n## Đánh giá Nguy cơ\n- **Mức độ Nguy cơ:** MODERATE\n- **Cơ chế Lan truyền:** SLOPE_DRIVEN\n- **Vùng Nguy cơ:** Vùng rừng lá rộng thường xanh tại Phú Yên\n\n## Dự báo Lan truyền\n- **6 giờ tới:** Dự kiến lan truyền về hướng Tây Bắc với diện tích bao phủ 70 ha.\n- **12 giờ tới:** Diện tích bao phủ có thể tăng lên 245 ha.\n- **24 giờ tới:** Diện tích bao phủ có thể đạt 280 ha.\n\n## Khuyến nghị Tác chiến\n1. Thiết lập đường băng cản lửa ở phía Tây Bắc để đón đầu mũi cháy chính.\n2. Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận khoảng 6.7 phút.\n3. Bố trí lực lượng chữa cháy mặt đất tại các điểm có nguy cơ cao để kiểm soát đám cháy."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-044",
+      "event_id": "FE-0013",
+      "latency_ms": 4717.3,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Kratie, Campuchia hiện đang đứng yên với FRP tổng cộng 52.64 MW. Điều kiện thời tiết và địa hình không thuận lợi cho sự lan rộng nhanh chóng.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "STATIONARY",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Kratie, Campuchia",
+        "forecast_6h": "Dự kiến đám cháy sẽ bao phủ diện tích 8 ha trong 6 giờ tới, không có sự lan truyền đáng kể.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến sẽ bao phủ 8 ha với độ tin cậy duy trì 93.3%.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy có thể mở rộng lên 175 ha với độ tin cậy duy trì 87.2%.",
+          "h24_summary": "Trong 24 giờ tới, đám cháy có thể mở rộng lên 245 ha với độ tin cậy duy trì 73.8%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa xung quanh khu vực cháy để ngăn chặn sự lan rộng.",
+          "Điều động lực lượng chữa cháy mặt đất để kiểm soát đám cháy tại chỗ.",
+          "Xuất kích phi đội máy bay chữa cháy từ căn cứ VNFOB, cách 177 km, với thời gian bay tiếp cận 23.6 phút."
+        ],
+        "sitrep_markdown": "# Tactical SITREP for Wildfire Event FE-0013\n\n## Summary\nThe wildfire in Kratie, Cambodia is currently stationary with a total FRP of 52.64 MW. The conditions are not favorable for rapid spread due to gentle slope and moderate flammability index.\n\n## Risk Level\n- **MODERATE**\n\n## Spread Mechanism\n- **STATIONARY**: The fire is not expected to spread significantly in the short term.\n\n## Threat Zone\n- The primary threat zone is the Evergreen Broadleaf Forests in Kratie, Cambodia.\n\n## Forecast 6h\n- The fire is expected to cover an area of 8 hectares in the next 6 hours with no significant spread.\n\n## Multi-Horizon Assessment\n- **6h**: Expected area coverage of 8 ha with a persistence confidence of 93.3%.\n- **12h**: Potential expansion to 175 ha with a persistence confidence of 87.2%.\n- **24h**: Potential expansion to 245 ha with a persistence confidence of 73.8%.\n\n## Tactical Recommendations\n1. Establish firebreaks around the fire area to prevent further spread.\n2. Deploy ground firefighting teams to control the fire locally.\n3. Dispatch aerial firefighting units from VNFOB airbase, 177 km away, with an estimated flight time of 23.6 minutes."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-045",
+      "event_id": "FE-0163",
+      "latency_ms": 5906.3,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Nghệ An hiện đang ở trạng thái tĩnh với tổng công suất bức xạ lửa là 51.07 MW. Đám cháy có tiềm năng lan rộng trong vòng 24 giờ tới, đặc biệt là trong khu vực rừng lá rộng thường xanh.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Nghệ An",
+        "forecast_6h": "Dự báo đám cháy sẽ lan rộng đến 70 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ diện tích 70 ha với độ tin cậy duy trì 93.4%.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy có thể mở rộng lên đến 245 ha với độ tin cậy duy trì 87.4%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích bị ảnh hưởng có thể đạt 280 ha với độ tin cậy duy trì 74.1%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa ở phía trước đám cháy để ngăn chặn sự lan rộng.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, cách 58 km, với thời gian bay tiếp cận khoảng 7.7 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất để kiểm soát và dập tắt đám cháy tại các khu vực có nguy cơ cao."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật (Tactical SITREP)\n\n## Tổng quan\n- **Vị trí:** Nghệ An, Việt Nam\n- **Tọa độ:** 19.17009°N, 105.36326°E\n- **Thời gian phát hiện:** Đã xác định\n- **Tình trạng:** Đám cháy tĩnh\n\n## Đánh giá Nguy cơ\n- **Công suất bức xạ lửa (FRP):** 51.07 MW\n- **Mức độ rủi ro:** Vừa phải (MODERATE)\n- **Cơ chế lan truyền:** Chủ yếu do thảm thực vật (FUEL_DRIVEN)\n\n## Dự báo Lan truyền\n- **6 giờ tới:** Dự kiến lan rộng đến 70 ha\n- **12 giờ tới:** Dự kiến lan rộng đến 245 ha\n- **24 giờ tới:** Dự kiến lan rộng đến 280 ha\n\n## Khuyến nghị Tác chiến\n1. **Thiết lập đường băng cản lửa:** Đặt ở phía trước đám cháy để ngăn chặn sự lan rộng.\n2. **Hỗ trợ từ trên không:** Xuất kích máy bay chữa cháy từ căn cứ VNFOB, cách 58 km, với thời gian bay tiếp cận khoảng 7.7 phút.\n3. **Lực lượng mặt đất:** Bố trí lực lượng chữa cháy mặt đất để kiểm soát và dập tắt đám cháy tại các khu vực có nguy cơ cao.\n\n## Điều kiện Thời tiết\n- **Nhiệt độ:** 24.7°C\n- **Độ ẩm tương đối:** 87%\n- **Tốc độ gió:** 11.8 km/h\n- **Hướng gió:** Từ 119°\n\n## Địa hình và Thảm thực vật\n- **Độ cao so với mực nước biển:** 39 m\n- **Độ dốc:** 0.1° (GENTLE_SLOPE)\n- **Loại thảm thực vật:** Rừng lá rộng thường xanh\n- **Tiềm năng cháy tán:** Vừa phải (MODERATE)\n\n## Kết luận\nĐám cháy tại Nghệ An có khả năng lan rộng trong vòng 24 giờ tới, đặc biệt là trong khu vực rừng lá rộng thường xanh. Cần có các biện pháp ứng phó kịp thời để kiểm soát và dập tắt đám cháy."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-046",
+      "event_id": "FE-0244",
+      "latency_ms": 5129.5,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Đà Nẵng hiện đang ổn định với FRP 48.84 MW và không có dấu hiệu lan rộng. Điều kiện thời tiết ẩm ướt và gió yếu giúp hạn chế sự phát triển của đám cháy.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "STATIONARY",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh gần Đà Nẵng",
+        "forecast_6h": "Đám cháy dự kiến không lan rộng trong 6 giờ tới do điều kiện thời tiết và địa hình.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ diện tích 8 ha với độ tin cậy duy trì 92.2%.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy vẫn duy trì diện tích 8 ha với độ tin cậy duy trì 85.2%.",
+          "h24_summary": "Trong 24 giờ tới, đám cháy dự kiến vẫn giữ nguyên diện tích 8 ha với độ tin cậy duy trì 71.7%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa xung quanh khu vực cháy để ngăn ngừa lan rộng.",
+          "Điều động lực lượng chữa cháy mặt đất để giám sát và dập tắt các điểm cháy còn sót.",
+          "Sẵn sàng xuất kích phi đội máy bay chữa cháy từ căn cứ VNFOB nếu tình hình diễn biến xấu."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật\n\n## Tổng quan\n\n- **Vị trí:** Đà Nẵng, Việt Nam\n- **Tọa độ:** 15.97337, 108.06166\n- **Thời gian:** Đã phát hiện ban đầu\n- **FRP:** 48.84 MW\n- **Thảm thực vật:** Rừng lá rộng thường xanh\n\n## Điều kiện Thời tiết\n\n- **Nhiệt độ:** 25.2°C\n- **Độ ẩm tương đối:** 98%\n- **Tốc độ gió:** 1.7 km/h\n- **Hướng gió:** 122°\n- **Lượng mưa:** 0.1 mm\n\n## Địa hình và Thảm thực vật\n\n- **Độ cao so với mực nước biển:** 54 m\n- **Độ dốc địa hình:** -2.3° (không ảnh hưởng lớn)\n- **Tiềm năng cháy tán:** Trung bình\n\n## Đánh giá Nguy cơ\n\n- **Mức độ rủi ro:** Trung bình\n- **Cơ chế lan truyền:** Đứng yên\n- **Vùng nguy cơ:** Khu vực rừng gần Đà Nẵng\n\n## Dự báo\n\n- **6 giờ tới:** Không lan rộng, diện tích 8 ha\n- **12 giờ tới:** Không thay đổi, diện tích 8 ha\n- **24 giờ tới:** Không thay đổi, diện tích 8 ha\n\n## Khuyến nghị Tác chiến\n\n1. **Thiết lập đường băng cản lửa** quanh khu vực cháy.\n2. **Điều động lực lượng mặt đất** để giám sát và dập tắt các điểm cháy còn sót.\n3. **Sẵn sàng xuất kích phi đội máy bay chữa cháy** từ căn cứ VNFOB nếu cần thiết."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-047",
+      "event_id": "FE-0306",
+      "latency_ms": 4326.9,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Bolikhamsai, Lào hiện đang ở trạng thái tĩnh với tổng công suất bức xạ lửa là 46.84 MW. Đám cháy có tiềm năng lan rộng trong 24 giờ tới với diện tích dự kiến lên đến 1185 ha.",
+        "risk_level": "HIGH",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Vùng rừng lá rộng thường xanh tại Bolikhamsai, Lào",
+        "forecast_6h": "Dự báo đám cháy sẽ lan rộng với diện tích 245 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy có thể bao phủ diện tích 245 ha với độ tin cậy duy trì 96.3%.",
+          "h12_summary": "Trong 12 giờ tới, diện tích bao phủ có thể đạt 475 ha với độ tin cậy duy trì 92.9%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích bao phủ có thể đạt 1185 ha với độ tin cậy duy trì 83.7%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng đón đầu mũi cháy chính.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận 20.6 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất để kiểm soát đám cháy tại các khu vực có nguy cơ cao."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật\n\n## Tổng quan\nĐám cháy tại Bolikhamsai, Lào hiện đang ở trạng thái tĩnh với tổng công suất bức xạ lửa là 46.84 MW. Đám cháy có tiềm năng lan rộng trong 24 giờ tới với diện tích dự kiến lên đến 1185 ha.\n\n## Đánh giá Nguy cơ\n- **Mức độ Nguy cơ:** HIGH\n- **Cơ chế Lan truyền:** FUEL_DRIVEN\n- **Vùng Nguy cơ:** Vùng rừng lá rộng thường xanh tại Bolikhamsai, Lào\n\n## Dự báo Lan truyền\n- **6 giờ tới:** Dự báo đám cháy sẽ lan rộng với diện tích 245 ha.\n- **12 giờ tới:** Diện tích bao phủ có thể đạt 475 ha.\n- **24 giờ tới:** Diện tích bao phủ có thể đạt 1185 ha.\n\n## Khuyến nghị Tác chiến\n1. Thiết lập đường băng cản lửa theo hướng đón đầu mũi cháy chính.\n2. Xuất kích máy bay chữa cháy từ căn cứ VNFOB với thời gian bay tiếp cận 20.6 phút.\n3. Bố trí lực lượng chữa cháy mặt đất để kiểm soát đám cháy tại các khu vực có nguy cơ cao."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-048",
+      "event_id": "FE-0409",
+      "latency_ms": 4635.4,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Một đám cháy nhỏ đã được phát hiện tại Thừa Thiên Huế, Việt Nam với tiềm năng lan rộng hạn chế do gió yếu và địa hình dốc nhẹ. Diện tích dự kiến trong 24 giờ tới có thể đạt 35 ha.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Thừa Thiên Huế",
+        "forecast_6h": "Đám cháy dự kiến vẫn duy trì trong phạm vi 8 ha trong 6 giờ tới do không có yếu tố lan truyền mạnh.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 8 ha với độ tin cậy duy trì 92.1%.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy vẫn duy trì diện tích 8 ha với độ tin cậy duy trì 85%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích đám cháy có thể mở rộng lên 35 ha với độ tin cậy duy trì 71.5%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa ở phía trước đám cháy để ngăn chặn sự lan rộng.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, dự kiến tiếp cận trong 12.1 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất để kiểm soát và dập tắt đám cháy."
+        ],
+        "sitrep_markdown": "# Tactical SITREP for Event FE-0409\n\n## Summary\nA small wildfire has been detected in Thừa Thiên Huế, Vietnam. The fire is currently stationary with a moderate potential for crown fire spread due to the evergreen broadleaf forest fuel type.\n\n## Risk Level\n- **MODERATE**: Total FRP is 44.68 MW, which is below the threshold for high risk.\n\n## Spread Mechanism\n- **FUEL_DRIVEN**: The fire spread is primarily driven by the fuel type and gentle slope, with minimal wind influence.\n\n## Threat Zone\n- The main threat zone is the evergreen broadleaf forest area in Thừa Thiên Huế.\n\n## Forecast 6h\n- The fire is expected to remain within an 8 ha area over the next 6 hours, with no significant spread due to weak wind conditions.\n\n## Multi-Horizon Assessment\n- **6h**: Expected area coverage is 8 ha with a persistence confidence of 92.1%.\n- **12h**: Expected area coverage remains at 8 ha with a persistence confidence of 85%.\n- **24h**: Expected area coverage could expand to 35 ha with a persistence confidence of 71.5%.\n\n## Tactical Recommendations\n1. Establish a firebreak ahead of the fire to prevent further spread.\n2. Deploy aerial firefighting resources from VNFOB, with an estimated arrival time of 12.1 minutes.\n3. Position ground firefighting teams to control and extinguish the fire."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-049",
+      "event_id": "FE-0691",
+      "latency_ms": 4364.4,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Đông Bắc Thái Lan hiện đang đứng yên với FRP tổng là 43.17 MW. Thảm thực vật chủ yếu là rừng lá rộng thường xanh, tiềm năng cháy tán và bắn tàn lửa ở mức trung bình.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "STATIONARY",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Đông Bắc Thái Lan",
+        "forecast_6h": "Đám cháy dự kiến sẽ bao phủ diện tích 8 ha trong 6 giờ tới, không có hướng lan truyền rõ rệt.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy có thể mở rộng lên 8 ha với độ tin cậy duy trì 93.7%.",
+          "h12_summary": "Trong 12 giờ tới, diện tích cháy có thể đạt 245 ha, nguy cơ tăng cao với độ tin cậy duy trì 88.1%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích cháy có thể đạt 280 ha, nguy cơ vẫn ở mức cao với độ tin cậy duy trì 75.2%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng đón đầu mũi cháy chính, ưu tiên khu vực có thảm thực vật dày đặc.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, thời gian bay tiếp cận 24.2 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất để kiểm soát và ngăn chặn sự lan rộng của đám cháy."
+        ],
+        "sitrep_markdown": "# Tactical SITREP for Event FE-0691\n\n## Summary\nThe wildfire in Northeast Thailand is currently stationary with a total FRP of 43.17 MW. The primary vegetation is evergreen broadleaf forests, with moderate potential for crown fire and spotting.\n\n## Risk Level\n- **MODERATE**\n\n## Spread Mechanism\n- **STATIONARY**\n\n## Threat Zone\n- Evergreen broadleaf forest area in Northeast Thailand\n\n## Forecast 6h\n- The fire is expected to cover an area of 8 ha in the next 6 hours with no clear spread direction.\n\n## Multi-Horizon Assessment\n- **6h Summary:** The fire may expand to 8 ha with a persistence confidence of 93.7%.\n- **12h Summary:** The area could reach 245 ha, with increased risk and a persistence confidence of 88.1%.\n- **24h Summary:** The area could reach 280 ha, with high risk and a persistence confidence of 75.2%.\n\n## Tactical Recommendations\n1. Establish firebreaks ahead of the main fire front, prioritizing areas with dense vegetation.\n2. Deploy firefighting aircraft from VNFOB base, with an estimated flight time of 24.2 minutes.\n3. Deploy ground firefighting forces to control and prevent the spread of the fire."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-050",
+      "event_id": "FE-0374",
+      "latency_ms": 4626.1,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Thừa Thiên Huế đang ở trạng thái tĩnh với FRP tổng là 43.04 MW. Đám cháy chịu ảnh hưởng từ hướng gió và có tiềm năng cháy tán ở mức độ vừa phải.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "WIND_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Thừa Thiên Huế",
+        "forecast_6h": "Dự kiến diện tích lan truyền trong 6 giờ tới là 70 ha.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy có thể lan rộng đến 70 ha với độ tin cậy duy trì là 93%.",
+          "h12_summary": "Trong 12 giờ tới, diện tích có thể tăng lên 245 ha với độ tin cậy duy trì là 86.6%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích dự kiến không thay đổi so với mốc 12 giờ, duy trì ở mức 245 ha với độ tin cậy 73%."
+        },
+        "tactical_recommendations": [
+          "Thiết lập đường băng cản lửa theo hướng gió để ngăn đám cháy lan rộng.",
+          "Xuất kích máy bay chữa cháy từ căn cứ VNFOB, cách đám cháy 32 km, với thời gian bay tiếp cận 4.3 phút.",
+          "Bố trí lực lượng chữa cháy mặt đất tại các điểm có nguy cơ cao để kiểm soát đám cháy."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật (Tactical SITREP)\n\n## Tóm tắt tình hình\nĐám cháy tại Thừa Thiên Huế hiện đang ở trạng thái tĩnh với tổng công suất phát xạ nhiệt (FRP) là 43.04 MW. Đám cháy chịu ảnh hưởng từ hướng gió và có tiềm năng cháy tán ở mức độ vừa phải.\n\n## Đánh giá nguy cơ\n- **Mức độ nguy cơ:** Vừa phải (MODERATE)\n- **Cơ chế lan truyền:** Do gió (WIND_DRIVEN)\n- **Vùng nguy cơ:** Khu vực rừng lá rộng thường xanh tại Thừa Thiên Huế\n\n## Dự báo lan truyền\n- **6 giờ tới:** Diện tích lan truyền dự kiến là 70 ha.\n- **12 giờ tới:** Diện tích có thể tăng lên 245 ha.\n- **24 giờ tới:** Diện tích duy trì ở mức 245 ha.\n\n## Khuyến nghị tác chiến\n1. Thiết lập đường băng cản lửa theo hướng gió để ngăn đám cháy lan rộng.\n2. Xuất kích máy bay chữa cháy từ căn cứ VNFOB, cách đám cháy 32 km, với thời gian bay tiếp cận 4.3 phút.\n3. Bố trí lực lượng chữa cháy mặt đất tại các điểm có nguy cơ cao để kiểm soát đám cháy."
       }
     }
   ]
