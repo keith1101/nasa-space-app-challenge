@@ -712,15 +712,27 @@ export function MethodologyPage() {
                 <ul className="space-y-1 list-disc list-inside text-slate-300">
                   <li>
                     <strong>{isVi ? 'Làm trơn Laplace (+0.1):' : 'Laplace smoothing (+0.1):'}</strong>{' '}
-                    {isVi
-                      ? 'Triệt tiêu điểm kỳ dị trọng số bằng 0 khi các đám cháy âm ỉ hoặc nhỏ có FRP = 0,0 MW, bảo đảm mọi điểm phát hiện vật lý đều có đóng góp xác định vào trọng tâm.'
-                      : 'Prevents zero-weight singularities when smoldering or small fires report FRP = 0.0 MW, ensuring every confirmed physical detection contributes to centroid localization.'}
+                    {isVi ? (
+                      <>
+                        Triệt tiêu điểm kỳ dị trọng số bằng 0 khi các đám cháy âm ỉ hoặc nhỏ có <MathFormula tex="\text{FRP} = 0.0\text{ MW}" />, bảo đảm mọi điểm phát hiện vật lý đều có đóng góp xác định vào trọng tâm.
+                      </>
+                    ) : (
+                      <>
+                        Prevents zero-weight singularities when smoldering or small fires report <MathFormula tex="\text{FRP} = 0.0\text{ MW}" />, ensuring every confirmed physical detection contributes to centroid localization.
+                      </>
+                    )}
                   </li>
                   <li>
                     <strong>{isVi ? 'Ngưỡng sàn diện tích (0.05 km²):' : 'Footprint area floor (0.05 km²):'}</strong>{' '}
-                    {isVi
-                      ? 'Chặn mẫu số max(0.05, scan × track) không bị chia cho 0 hoặc lỗi số học với dữ liệu cực nhỏ, tương đương ngưỡng diện tích mặt đất tối thiểu 5 ha.'
-                      : 'Regularizes the denominator max(0.05, scan × track) against division-by-zero or numerical anomalies, enforcing a physically grounded minimum pixel area threshold of 0.05 km² (5 ha).'}
+                    {isVi ? (
+                      <>
+                        Chặn mẫu số <MathFormula tex="\max(0.05, \text{scan} \times \text{track})" /> không bị chia cho 0 hoặc lỗi số học với dữ liệu cực nhỏ, tương đương ngưỡng diện tích mặt đất tối thiểu <MathFormula tex="5\text{ ha}" /> (<MathFormula tex="0.05\text{ km}^2" />).
+                      </>
+                    ) : (
+                      <>
+                        Regularizes denominator <MathFormula tex="\max(0.05, \text{scan} \times \text{track})" /> against division-by-zero or numerical anomalies, enforcing a physically grounded minimum pixel area threshold of <MathFormula tex="0.05\text{ km}^2" /> (<MathFormula tex="5\text{ ha}" />).
+                      </>
+                    )}
                   </li>
                 </ul>
               </div>
@@ -731,9 +743,15 @@ export function MethodologyPage() {
               />
 
               <p className="text-xs text-slate-400">
-                {isVi
-                  ? 'Khi có sự hiện diện của VIIRS (375m), tập tham chiếu P_ref chỉ lấy các điểm VIIRS để tối ưu hóa độ phân giải 375m, loại trừ hoàn toàn sai số kéo lệch của pixel MODIS 1.000m tại góc quét rộng.'
-                  : 'When VIIRS (375m) detections exist, reference set P_ref strictly uses VIIRS points to anchor 375m resolution, eliminating smear pull from 1,000m MODIS bowtie pixels.'}
+                {isVi ? (
+                  <>
+                    Khi có sự hiện diện của VIIRS (375m), tập tham chiếu <MathFormula tex="\mathcal{P}_{\text{ref}}" /> chỉ lấy các điểm VIIRS để tối ưu hóa độ phân giải 375m, loại trừ hoàn toàn sai số kéo lệch của pixel MODIS 1.000m tại góc quét rộng.
+                  </>
+                ) : (
+                  <>
+                    When VIIRS (375m) detections exist, reference set <MathFormula tex="\mathcal{P}_{\text{ref}}" /> strictly uses VIIRS points to anchor 375m resolution, eliminating smear pull from 1,000m MODIS bowtie pixels.
+                  </>
+                )}
               </p>
             </div>
 
