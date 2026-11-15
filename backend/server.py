@@ -6,6 +6,7 @@ Supports FastAPI/Uvicorn when installed, with automatic fallback to Python's bui
 ThreadingHTTPServer when running in a zero-dependency standard-library environment.
 """
 
+import os
 import sys
 from http.server import ThreadingHTTPServer
 from pathlib import Path
@@ -90,6 +91,14 @@ if HAS_FASTAPI:
     if api_router:
         app.include_router(api_router)
 
+    @app.on_event("startup")
+    def on_startup():
+        cache_manager.start_background_poller(interval_sec=900)
+
+    @app.on_event("shutdown")
+    def on_shutdown():
+        cache_manager.stop_background_poller()
+
     if DIST_DIR.exists():
         assets_dir = DIST_DIR / "assets"
         data_dir = DIST_DIR / "data"
@@ -110,18 +119,19 @@ if HAS_FASTAPI:
 if __name__ == "__main__":
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    port = int(os.environ.get("PORT", 8000))
     print("\n=======================================================")
     print("NASA FIRMS Harmonization Platform (ST-DBSCAN v2.2)")
-    print("Server running on: http://localhost:8000")
+    print(f"Server running on: http://0.0.0.0:{port}")
     print("=======================================================\n")
 
     # Start background poller daemon for seamless telemetry refresh
     cache_manager.start_background_poller(interval_sec=900)
 
     if HAS_FASTAPI:
-        uvicorn.run(app, host="0.0.0.0", port=8000)
+        uvicorn.run(app, host="0.0.0.0", port=port)
     else:
-        server = ThreadingHTTPServer(("0.0.0.0", 8000), FallbackHTTPHandler)
+        server = ThreadingHTTPServer(("0.0.0.0", port), FallbackHTTPHandler)
         try:
             server.serve_forever()
         except KeyboardInterrupt:

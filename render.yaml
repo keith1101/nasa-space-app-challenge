@@ -1,0 +1,28 @@
+# ==============================================================================
+# Render Blueprint Specification (Infrastructure-as-Code)
+# Project: NASA FIRMS Hotspot Harmonization Platform
+# Documentation: https://render.com/docs/blueprint-spec
+# ==============================================================================
+
+services:
+  # ============================================================================
+  # Unified Fullstack Service (FastAPI + React Vite SPA)
+  # - Multi-stage Docker build: compiles React frontend & installs Python stack
+  # - Single domain: zero CORS issues, serves both /api/* and UI bundle
+  # ============================================================================
+  - type: web
+    name: nasa-firms-platform
+    runtime: docker
+    plan: free # Change to starter/standard if dedicated RAM/CPU is desired
+    region: oregon # Available: oregon, ohio, frankfurt, singapore
+    branch: dev
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/data-status
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: FIRMS_MAP_KEY
+        sync: false # Set via Render Dashboard if using live NASA FIRMS API key
