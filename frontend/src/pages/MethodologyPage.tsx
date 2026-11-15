@@ -858,6 +858,32 @@ export function MethodologyPage() {
                     : 'Reconciled FRP: Intra-pass summation followed by inter-pass maximum reconciliation'
                 }
               />
+
+              <div className="rounded-lg border border-line bg-ink-950 p-3 space-y-1.5 text-xs text-slate-300">
+                <div className="font-semibold text-rose-300 font-mono">
+                  {isVi ? 'Ý nghĩa vật lý & ký hiệu năng lượng bức xạ:' : 'Radiative Power Symbols & Physical Grounding:'}
+                </div>
+                <ul className="space-y-1 list-disc list-inside text-slate-300">
+                  <li>
+                    <strong><MathFormula tex="\text{FRP}_i" />:</strong>{' '}
+                    {isVi
+                      ? 'Năng lượng bức xạ cháy tức thời của điểm phát hiện nhiệt i (tính bằng Megawatt - MW).'
+                      : 'Instantaneous Fire Radiative Power emitted by active fire pixel i (in Megawatts - MW).'}
+                  </li>
+                  <li>
+                    <strong><MathFormula tex="\sum_{i \in s} \text{FRP}_i" />:</strong>{' '}
+                    {isVi
+                      ? 'Tích phân không gian theo lượt quét s: cộng dồn năng lượng của các pixel con cùng thuộc một thời điểm quét để phản ánh toàn bộ bề rộng mặt lửa thực tế.'
+                      : 'Intra-pass spatial integration across overpass s: aggregates instantaneous power emitted across the entire contiguous active flaming front.'}
+                  </li>
+                  <li>
+                    <strong><MathFormula tex="\max_{s}" />:</strong>{' '}
+                    {isVi
+                      ? 'Hòa giải cực đại giữa các lượt quét độc lập: lấy đỉnh công suất cực đại thay vì cộng dồn đa thời gian, tránh thổi phồng năng lượng từ 1.8× đến 2.1× khi nhiều vệ tinh bay qua.'
+                      : 'Inter-pass maximum reconciliation: takes peak instantaneous power rather than multi-pass summation, preventing artificial 1.8×–2.1× energy overcounting.'}
+                  </li>
+                </ul>
+              </div>
             </div>
 
             {/* Equation 6: Jackknife Climatological Z-Score */}
@@ -889,6 +915,40 @@ export function MethodologyPage() {
                     : 'Jackknife Z-score eliminating sample self-suppression in extreme El Niño episodes'
                 }
               />
+
+              <div className="rounded-lg border border-line bg-ink-950 p-3 space-y-1.5 text-xs text-slate-300">
+                <div className="font-semibold text-amber-300 font-mono">
+                  {isVi ? 'Ý nghĩa ký hiệu thống kê Jackknife:' : 'Jackknife Statistical Symbols & Formulation:'}
+                </div>
+                <ul className="space-y-1 list-disc list-inside text-slate-300">
+                  <li>
+                    <strong><MathFormula tex="y" />:</strong>{' '}
+                    {isVi ? 'Năm mục tiêu đang khảo sát trong chuỗi dữ liệu viễn thám.' : 'Target observation year evaluated within the multi-decadal time series.'}
+                  </li>
+                  <li>
+                    <strong><MathFormula tex="x_y" />:</strong>{' '}
+                    {isVi ? 'Tổng số điểm cháy hoặc tổng năng lượng bức xạ FRP đo được trong năm y.' : 'Observed annual fire metric (fire count or cumulative FRP) for year y.'}
+                  </li>
+                  <li>
+                    <strong><MathFormula tex="\bar{x}_{(-y)}" />:</strong>{' '}
+                    {isVi
+                      ? 'Giá trị trung bình chuẩn khí hậu tính trên N - 1 năm còn lại sau khi loại trừ năm y.'
+                      : 'Climatological baseline sample mean calculated across all remaining N - 1 years after omitting target year y.'}
+                  </li>
+                  <li>
+                    <strong><MathFormula tex="s_{(-y)}" />:</strong>{' '}
+                    {isVi
+                      ? 'Độ lệch chuẩn mẫu hiệu chỉnh bậc tự do Jackknife N - 2, bảo đảm ước lượng không chệch cho phương sai quần thể.'
+                      : 'Jackknife sample standard deviation adjusted with N - 2 degrees of freedom, guaranteeing unbiased population variance estimation.'}
+                  </li>
+                  <li>
+                    <strong><MathFormula tex="Z_y" />:</strong>{' '}
+                    {isVi
+                      ? 'Chỉ số dị thường khí hậu chuẩn hóa, triệt tiêu hiện tượng tự dập tắt độ dị thường trong các năm đại hạn hán El Niño (như 2015–2016).'
+                      : 'Standardized climatological anomaly index, eliminating self-suppression during extreme climate-driven El Niño fire seasons.'}
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </section>
@@ -1033,8 +1093,8 @@ export function MethodologyPage() {
             </div>
             <p className="text-xs sm:text-sm text-slate-400">
               {isVi
-                ? 'Đánh giá định lượng trên bộ dữ liệu vệ tinh NASA FIRMS thực tế bao gồm toàn bộ lãnh thổ Việt Nam và Đông Nam Á lục địa.'
-                : 'Quantitative evaluation over real-world NASA FIRMS telemetry across Vietnam and Indochina.'}
+                ? 'Đánh giá định lượng trên bộ dữ liệu vệ tinh NASA FIRMS 24 giờ toàn cầu thực tế (153.948 điểm quan sát trên 143 quốc gia, bao gồm cả Đông Nam Á và các vùng sinh thái rừng nhiệt đới).'
+                : 'Quantitative evaluation over the verified global 24-hour NASA FIRMS telemetry catalog (153,948 raw detections across 143 countries, including Southeast Asia and global tropical biomes).'}
             </p>
           </div>
 
