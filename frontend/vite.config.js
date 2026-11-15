@@ -3,6 +3,9 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
+  optimizeDeps: {
+    exclude: ['maplibre-gl'],
+  },
   build: {
     chunkSizeWarningLimit: 1500,
     rollupOptions: {
@@ -37,6 +40,9 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true,
+    watch: {
+      ignored: ['**/public/textures/**', '**/public/data/**'],
+    },
     proxy: {
       '/api': {
         target: 'http://localhost:8000',
