@@ -1,23 +1,16 @@
-import { useCallback, useEffect, useState } from 'react';
-import { DataLoadError, fetchJson, isAbortError } from '../lib/api';
-import {
-  isAnalytics,
-  isCalendar,
-  isGlobalCatalog,
-  isWorldCountriesCollection,
-} from '../lib/validate';
+import { useGlobalDatasetsQuery } from './useQueries';
 import type {
   AnalyticsSummary,
   CalendarData,
   GlobalCatalog,
-  ProvinceCollection,
+  WorldCountriesCollection,
 } from '../types/harmonization';
 
 export interface GlobalAllCountriesDatasets {
   globalCatalog: GlobalCatalog;
-  worldCountries: ProvinceCollection;
+  worldCountries: WorldCountriesCollection;
   analytics: AnalyticsSummary;
-  calendar: CalendarData;
+  calendar: CalendarData | null;
 }
 
 export type DatasetState =
@@ -25,61 +18,48 @@ export type DatasetState =
   | { status: 'error'; message: string }
   | { status: 'ready'; data: GlobalAllCountriesDatasets };
 
-function describeError(e: unknown): string {
-  if (e instanceof DataLoadError) return e.message;
-  if (e instanceof Error) return e.message;
-  return 'Đã xảy ra lỗi khi tải dữ liệu điểm cháy toàn cầu.';
+/**
+ * Loads and validates the worldwide 87,311 harmonized fire dataset and 177 world country boundaries
+ * using TanStack React Query for optimal in-memory caching and zero-delay route navigation.
+ */
+export function useDatasets(): { state: DatasetState; reload: () => void } {
+  const { isPending, isError, error, data, refetch } = useGlobalDatasetsQuery();
+
+  if (isPending) {
+    return {
+      state: { status: 'loading' },
+      reload: refetch,
+    };
+  }
+
+  if (isError || !data) {
+    return {
+      state: {
+        status: 'error',
+        message: error || 'Đã xảy ra lỗi khi tải dữ liệu điểm cháy toàn cầu.',
+      },
+      reload: refetch,
+    };
+  }
+
+  return {
+    state: {
+      status: 'ready',
+      data,
+    },
+    reload: refetch,
+  };
 }
 
-/** Loads and validates the worldwide 87,311 harmonized fire dataset and 177 world country boundaries. */
-export function useDatasets(): { state: DatasetState; reload: () => void } {
-  const [state, setState] = useState<DatasetState>({ status: 'loading' });
-  const [attempt, setAttempt] = useState(0);
+export type GlobalCatalogState =
+  | { status: 'loading' }
+  | { status: 'error'; message: string }
+  | { status: 'ready'; data: GlobalCatalog };
 
-  useEffect(() => {
-    const ctrl = new AbortController();
-    setState({ status: 'loading' });
-
-    Promise.all([
-      fetchJson(
-        '/data/fires_global_harmonized.json',
-        isGlobalCatalog,
-        'Global harmonized active-fire catalog',
-        ctrl.signal,
-      ),
-      fetchJson(
-        '/data/world_countries.geojson',
-        isWorldCountriesCollection,
-        'World countries boundary polygons',
-        ctrl.signal,
-      ),
-      fetchJson(
-        '/data/analytics_summary.json',
-        isAnalytics,
-        'NASA FIRMS analytics summary',
-        ctrl.signal,
-      ),
-      fetchJson(
-        '/data/calendar_matrix.json',
-        isCalendar,
-        'Fire regime calendar matrix',
-        ctrl.signal,
-      ),
-    ])
-      .then(([globalCatalog, worldCountries, analytics, calendar]) => {
-        setState({
-          status: 'ready',
-          data: { globalCatalog, worldCountries, analytics, calendar },
-        });
-      })
-      .catch((e: unknown) => {
-        if (isAbortError(e)) return;
-        setState({ status: 'error', message: describeError(e) });
-      });
-
-    return () => ctrl.abort();
-  }, [attempt]);
-
-  const reload = useCallback(() => setAttempt((a) => a + 1), []);
-  return { state, reload };
+/** Legacy backwards-compatible hook */
+export function useGlobalCatalog(_arg?: unknown): GlobalCatalogState {
+  const { state } = useDatasets();
+  if (state.status === 'ready') return { status: 'ready', data: state.data.globalCatalog };
+  if (state.status === 'error') return { status: 'error', message: state.message };
+  return { status: 'loading' };
 }

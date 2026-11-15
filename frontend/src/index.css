@@ -1,3 +1,5 @@
+@import 'maplibre-gl/dist/maplibre-gl.css';
+@import 'katex/dist/katex.min.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -34,6 +36,11 @@
   select {
     color-scheme: dark;
   }
+
+  h1, h2, h3, h4 {
+    font-family: 'Space Grotesk', var(--font-sans, system-ui, sans-serif);
+    letter-spacing: -0.02em;
+  }
 }
 
 @layer components {
@@ -57,20 +64,57 @@
   }
 }
 
-/* Scrollbars */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+@keyframes border-beam-spin {
+  from {
+    stroke-dashoffset: 740;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
 }
-::-webkit-scrollbar-track {
-  background: #070b14;
+
+/* Standard Scrollbars with WCAG >= 3:1 non-text contrast */
+:root {
+  --scrollbar-thumb: #1f3050;
+  --scrollbar-track: #070b14;
 }
-::-webkit-scrollbar-thumb {
-  background: #1f3050;
-  border-radius: 4px;
+
+html, body, * {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #2c4166;
+
+/* Legacy fallback for WebKit/Blink browsers */
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #2c4166;
+  }
+}
+
+/* Native Modal Dialog standard top-layer & scroll containment */
+dialog:not([open]) {
+  display: none !important;
+}
+
+dialog:modal {
+  overscroll-behavior: contain;
+}
+dialog::backdrop {
+  background: rgba(4, 7, 13, 0.85);
+  backdrop-filter: blur(4px);
+  overflow: hidden;
+  overscroll-behavior: contain;
 }
 
 /* Range inputs */

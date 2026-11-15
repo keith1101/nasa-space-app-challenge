@@ -1,11 +1,7 @@
 import { useMemo, useState } from 'react';
 import {
-  AlertTriangle,
   Calendar,
   Flame,
-  Globe2,
-  Info,
-  MapPin,
   TrendingUp,
 } from 'lucide-react';
 import { displayPlace, fmtInt, fmtNum } from '../lib/format';
@@ -15,13 +11,13 @@ import type {
   CalendarData,
   CalendarMonthlyRecord,
 } from '../types/harmonization';
-import { Card, cx } from './ui';
+import { Card, Spinner, cx } from './ui';
 
 const YEARS = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026] as const;
 
 export interface FireCalendarCardProps {
   lang: Language;
-  calendarData: CalendarData;
+  calendarData: CalendarData | null;
   initialRegion?: string;
   className?: string;
 }
@@ -39,6 +35,7 @@ export function FireCalendarCard({
 
   // Separate macro regions vs VN provinces
   const { macroKeys, vnKeys } = useMemo(() => {
+    if (!calendarData) return { macroKeys: [], vnKeys: [] };
     const allKeys = Object.keys(calendarData);
     const macro = allKeys.filter((k) => calendarData[k]?.scope === 'global_macro_region');
     const vn = allKeys
@@ -47,10 +44,11 @@ export function FireCalendarCard({
     return { macroKeys: macro, vnKeys: vn };
   }, [calendarData]);
 
-  const activeData =
-    calendarData[selectedRegion] ||
-    calendarData['Global (Worldwide)'] ||
-    calendarData[Object.keys(calendarData)[0]];
+  const activeData = calendarData
+    ? calendarData[selectedRegion] ||
+      calendarData['Global (Worldwide)'] ||
+      calendarData[Object.keys(calendarData)[0]]
+    : null;
 
   const records = activeData?.records ?? [];
 
@@ -94,8 +92,6 @@ export function FireCalendarCard({
     return 'bg-sky-500/25 text-sky-200 border-sky-400/40';
   };
 
-  const isGlobalMacro = activeData?.scope === 'global_macro_region';
-
   // 12-month baseline data for seasonal bar chart
   const seasonalBars = useMemo(() => {
     if (!activeData?.baseline_by_month) return [];
@@ -118,6 +114,14 @@ export function FireCalendarCard({
     }
     return arr;
   }, [activeData, t]);
+
+  if (!calendarData) {
+    return (
+      <Card className={cx('flex flex-col min-h-[300px] p-4 justify-center items-center', className)}>
+        <Spinner label={lang === 'vi' ? 'Đang nạp dữ liệu lịch chế độ cháy…' : 'Loading fire regime calendar data…'} />
+      </Card>
+    );
+  }
 
   return (
     <Card className={cx('flex flex-col min-h-0 overflow-hidden', className)}>
