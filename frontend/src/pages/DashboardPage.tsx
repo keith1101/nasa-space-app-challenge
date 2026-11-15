@@ -1,13 +1,7 @@
 import { useMemo } from 'react';
 import {
-  Activity,
-  Filter,
-  Flame,
   RefreshCw,
   Search,
-  ShieldCheck,
-  Sparkles,
-  TrendingDown,
 } from 'lucide-react';
 import * as Slider from '@radix-ui/react-slider';
 import { FireDeckMap } from '../components/deck/FireDeckMap';
@@ -303,13 +297,12 @@ export function DashboardPage() {
       {datasetState.status === 'ready' && (
         <>
           {/* Top 5 KPI Summary Metrics */}
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5">
             <StatCard
               label={t.kpiTotalLabel}
               value={fmtInt(totalEvents)}
               unit={t.kpiTotalUnit}
               tone="cyan"
-              icon={Flame}
               sub={
                 <span>
                   {selectedCountry
@@ -317,7 +310,7 @@ export function DashboardPage() {
                     : minConfidence > 0
                     ? `${t.kpiConfFilterActive(minConfidence)} (${fmtInt(totalEvents)} / ${fmtInt(allPoints.length)})`
                     : liveRegion
-                    ? 'FIRMS vùng Việt Nam + dữ liệu toàn cầu'
+                    ? 'FIRMS vùng VN + toàn cầu'
                     : t.kpiTotalSub(rawScans)}
                 </span>
               }
@@ -327,47 +320,33 @@ export function DashboardPage() {
               value={fmtInt(dualConfirmed)}
               unit={t.kpiDualUnit(dualConfirmed)}
               tone="emerald"
-              icon={ShieldCheck}
-              sub={
-                <span>
-                  {dualConfirmed > 0 ? (
-                    <span className="text-emerald-300 font-semibold">
-                      {t.kpiDualSub(dualConfirmed)}
-                    </span>
-                  ) : (
-                    t.kpiDualSub(0)
-                  )}
-                </span>
-              }
+              sub={dualConfirmed > 0 ? t.kpiDualSub(dualConfirmed) : t.kpiDualSub(0)}
             />
             <StatCard
               label={t.kpiFrpLabel}
               value={fmtNum(totalHarmonizedFrp, 1)}
               unit="MW"
               tone="amber"
-              icon={Activity}
               sub={t.kpiFrpSub}
             />
             <StatCard
               label={t.kpiHighResLabel}
               value={liveRegion ? '—' : '87.0%'}
               tone="blue"
-              icon={Sparkles}
               sub={t.kpiHighResSub}
             />
             <StatCard
               label={t.kpiDedupLabel}
               value={liveRegion ? '—' : '−43.3%'}
               tone="emerald"
-              icon={TrendingDown}
               sub={t.kpiDedupSub}
             />
           </div>
 
           {/* Main Workspace: DeckGL Map (8 cols) + Controls & Calendar (4 cols) */}
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+          <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-12">
             {/* Left Column: Deck.gl WebGL Map */}
-            <div className="h-[520px] lg:col-span-8 lg:h-[740px]">
+            <div className="h-[500px] lg:col-span-8 lg:h-[calc(100vh-190px)] min-h-[580px] rounded-xl overflow-hidden border border-line-strong/60 shadow-panel">
               <FireDeckMap
                 lang={lang}
                 worldCountriesGeojson={datasetState.data.worldCountries}
@@ -388,12 +367,11 @@ export function DashboardPage() {
             </div>
 
             {/* Right Column: Filters & ECharts Regime Matrix */}
-            <div className="flex flex-col gap-3 lg:col-span-4 h-[740px]">
+            <div className="flex flex-col gap-2.5 lg:col-span-4 lg:h-[calc(100vh-190px)] min-h-[580px] overflow-hidden">
               {/* Search & Filter Card */}
-              <Card className="p-3.5 space-y-3 shrink-0">
+              <Card className="p-3 space-y-2.5 shrink-0 border-line-strong/60">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                    <Filter className="h-3.5 w-3.5 text-cyan-300" aria-hidden="true" />
+                  <span className="text-[11px] font-bold text-white uppercase tracking-wider">
                     {t.filterHeading}
                   </span>
                   {(selectedCountryId != null ||
@@ -418,7 +396,7 @@ export function DashboardPage() {
                 {/* Search by country */}
                 <div className="relative">
                   <Search
-                    className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400"
+                    className="absolute left-2.5 top-2 h-3.5 w-3.5 text-slate-400"
                     aria-hidden="true"
                   />
                   <input
@@ -435,7 +413,7 @@ export function DashboardPage() {
                   <div>
                     <label
                       htmlFor="country-select"
-                      className="mb-1 block text-[11px] font-semibold text-slate-300"
+                      className="mb-1 block text-[11px] font-medium text-slate-300"
                     >
                       {t.countryLabel}
                     </label>
@@ -465,7 +443,7 @@ export function DashboardPage() {
                   <div>
                     <label
                       htmlFor="continent-select"
-                      className="mb-1 block text-[11px] font-semibold text-slate-300"
+                      className="mb-1 block text-[11px] font-medium text-slate-300"
                     >
                       {t.continentLabel}
                     </label>
@@ -488,7 +466,7 @@ export function DashboardPage() {
                   </div>
                 </div>
 
-                {/* Category Filter Pills */}
+                {/* Category Filter Pills (clean text pills without icon clutter) */}
                 <div className="flex flex-wrap gap-1.5 pt-0.5">
                   <button
                     type="button"
@@ -506,39 +484,37 @@ export function DashboardPage() {
                     type="button"
                     onClick={() => setFilterType('dual')}
                     className={cx(
-                      'rounded-md px-2 py-1 text-[11px] font-semibold transition-colors flex items-center gap-1',
+                      'rounded-md px-2 py-1 text-[11px] font-semibold transition-colors',
                       filterType === 'dual'
                         ? 'bg-emerald-400 text-ink-950 font-bold'
                         : 'border border-emerald-400/30 bg-ink-900 text-emerald-300 hover:bg-emerald-400/10',
                     )}
                   >
-                    <ShieldCheck className="h-3 w-3" aria-hidden="true" />
                     <span>{t.pillDual}</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setFilterType('high_frp')}
                     className={cx(
-                      'rounded-md px-2 py-1 text-[11px] font-semibold transition-colors flex items-center gap-1',
+                      'rounded-md px-2 py-1 text-[11px] font-semibold transition-colors',
                       filterType === 'high_frp'
                         ? 'bg-rose-400 text-ink-950 font-bold'
                         : 'border border-rose-400/30 bg-ink-900 text-rose-300 hover:bg-rose-400/10',
                     )}
                   >
-                    <Flame className="h-3 w-3" aria-hidden="true" />
                     <span>{t.pillHighFrp}</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => setVegetationOnly((v) => !v)}
                     className={cx(
-                      'rounded-md px-2 py-1 text-[11px] font-semibold transition-colors flex items-center gap-1',
+                      'rounded-md px-2 py-1 text-[11px] font-semibold transition-colors',
                       vegetationOnly
                         ? 'bg-emerald-400 text-ink-950 font-bold'
                         : 'border border-line bg-ink-900 text-slate-300 hover:text-white',
                     )}
                   >
-                    <span>🌱 {lang === 'vi' ? 'Thảm thực vật' : 'Vegetation'}</span>
+                    <span>{lang === 'vi' ? 'Thảm thực vật' : 'Vegetation'}</span>
                   </button>
                 </div>
 
@@ -552,8 +528,7 @@ export function DashboardPage() {
                 {fireRisk && fireRisk.cells && fireRisk.cells.length > 0 && (
                   <div className="pt-2 border-t border-line space-y-1.5">
                     <div className="flex items-center justify-between text-[11px]">
-                      <span className="font-semibold text-amber-300 flex items-center gap-1">
-                        <Activity className="h-3 w-3" />
+                      <span className="font-semibold text-amber-300">
                         {lang === 'vi' ? 'Lưới lan truyền' : 'Spread Grid'}
                       </span>
                       <div className="flex gap-1">
@@ -578,10 +553,9 @@ export function DashboardPage() {
                 )}
 
                 {/* Radix Slider for Confidence Filter */}
-                <div className="pt-2.5 border-t border-line space-y-2">
+                <div className="pt-2 border-t border-line space-y-1.5">
                   <div className="flex items-center justify-between text-[11px]">
-                    <span className="font-semibold text-slate-200 flex items-center gap-1.5">
-                      <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" aria-hidden="true" />
+                    <span className="font-medium text-slate-300">
                       {t.confFilterHeading}
                     </span>
                     <span

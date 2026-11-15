@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react';
 import ReactECharts from 'echarts-for-react';
 import type { EChartsOption } from 'echarts';
 import * as Tabs from '@radix-ui/react-tabs';
-import { Calendar, BarChart2, Flame, AlertCircle } from 'lucide-react';
 import type { Language } from '../../lib/i18n';
 import { TRANSLATIONS } from '../../lib/i18n';
 import { displayPlace, fmtInt, fmtNum } from '../../lib/format';
@@ -266,13 +265,10 @@ export function FireRegimeHeatmap({
       )}
     >
       {/* Header bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line bg-ink-850 px-3.5 py-2.5">
-        <div className="flex items-center gap-2">
-          <Calendar className="h-4 w-4 text-cyan-400" aria-hidden="true" />
-          <span className="text-xs font-bold text-white tracking-wide">
-            {lang === 'vi' ? 'Ma Trận Chế Độ Cháy Rừng 2018–2026' : 'Wildfire Regime Matrix 2018–2026'}
-          </span>
-        </div>
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line bg-ink-850 px-3.5 py-2">
+        <span className="text-xs font-bold text-white tracking-wide">
+          {lang === 'vi' ? 'Ma Trận Chế Độ Cháy 2018–2026' : 'Wildfire Regime Matrix 2018–2026'}
+        </span>
 
         {/* Region selector */}
         <div className="flex items-center gap-1.5">
@@ -315,25 +311,23 @@ export function FireRegimeHeatmap({
             <Tabs.Trigger
               value="matrix"
               className={cx(
-                'flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold transition-all',
+                'rounded-md px-2.5 py-1 text-xs font-semibold transition-all',
                 activeTab === 'matrix'
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/30'
+                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 font-bold'
                   : 'text-slate-400 hover:text-white',
               )}
             >
-              <Flame className="h-3.5 w-3.5" />
               <span>{t.calendarTabMatrix}</span>
             </Tabs.Trigger>
             <Tabs.Trigger
               value="seasonal"
               className={cx(
-                'flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold transition-all',
+                'rounded-md px-2.5 py-1 text-xs font-semibold transition-all',
                 activeTab === 'seasonal'
-                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/30'
+                  ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 font-bold'
                   : 'text-slate-400 hover:text-white',
               )}
             >
-              <BarChart2 className="h-3.5 w-3.5" />
               <span>{t.calendarTabSeasonal}</span>
             </Tabs.Trigger>
           </Tabs.List>
@@ -384,13 +378,12 @@ export function FireRegimeHeatmap({
 
       {/* Footer Info */}
       <div className="flex items-center justify-between border-t border-line/60 bg-ink-950/60 px-3.5 py-1.5 text-[10px] text-slate-400">
-        <span className="flex items-center gap-1">
-          <AlertCircle className="h-3 w-3 text-cyan-400" />
+        <span className="text-slate-400">
           {lang === 'vi'
-            ? 'Mô hình khí hậu bán thực nghiệm (FIRMS C6.1 / VIIRS)'
-            : 'Semi-empirical climatology model (FIRMS C6.1 / VIIRS)'}
+            ? 'Mô hình bán thực nghiệm (FIRMS C6.1 / VIIRS)'
+            : 'Semi-empirical model (FIRMS C6.1 / VIIRS)'}
         </span>
-        <span className="font-mono text-slate-400">NASA EOSDIS · ECharts Engine</span>
+        <span className="font-mono text-slate-500">NASA EOSDIS · ECharts Engine</span>
       </div>
     </div>
   );

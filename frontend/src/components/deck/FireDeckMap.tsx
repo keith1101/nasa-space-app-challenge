@@ -1,8 +1,8 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
-import DeckGL from '@deck.gl/react';
+import MapLibreMap, { useControl } from 'react-map-gl/maplibre';
+import { MapLibreOverlay } from '@deck.gl/maplibre';
 import { ScatterplotLayer, GeoJsonLayer } from '@deck.gl/layers';
 import { HeatmapLayer } from '@deck.gl/aggregation-layers';
-import MapLibreMap from 'react-map-gl/maplibre';
 import * as maplibregl from 'maplibre-gl';
 import {
   Compass,
@@ -89,6 +89,19 @@ const INITIAL_VIEW_STATE = {
   minZoom: 1,
 };
 
+function DeckGLOverlay({ layers }: { layers: any[] }) {
+  const overlay = useControl<MapLibreOverlay>(() => new MapLibreOverlay({
+    interleaved: false,
+    layers,
+  }));
+
+  useEffect(() => {
+    overlay.setProps({ layers });
+  }, [overlay, layers]);
+
+  return null;
+}
+
 export function FireDeckMap({
   lang,
   worldCountriesGeojson,
@@ -131,14 +144,24 @@ export function FireDeckMap({
   // Dynamically sync projection (Globe vs Mercator) with MapLibre GL v6
   useEffect(() => {
     const map = mapRef.current?.getMap ? mapRef.current.getMap() : mapRef.current;
-    if (map && typeof map.setProjection === 'function') {
-      try {
-        map.setProjection({ type: is3DMode ? 'globe' : 'mercator' });
-      } catch (err) {
-        console.warn('Map projection sync notice:', err);
+    if (!map) return;
+
+    const applyProjection = () => {
+      if (typeof map.setProjection === 'function') {
+        try {
+          map.setProjection({ type: is3DMode ? 'globe' : 'mercator' });
+        } catch (err) {
+          console.warn('Map projection sync notice:', err);
+        }
       }
-    }
-  }, [is3DMode]);
+    };
+
+    applyProjection();
+    map.on('style.load', applyProjection);
+    return () => {
+      map.off('style.load', applyProjection);
+    };
+  }, [is3DMode, basemapStyle]);
 
   // Dynamically configure 3D Raster-DEM Terrain on the Globe
   useEffect(() => {
@@ -459,20 +482,19 @@ export function FireDeckMap({
         className,
       )}
     >
-      <DeckGL
-        viewState={viewState}
-        onViewStateChange={({ viewState: nextState }: any) => setViewState(nextState)}
-        controller={{ doubleClickZoom: false, dragRotate: true }}
-        layers={layers}
-        getCursor={({ isHovering }: any) => (isHovering ? 'pointer' : 'grab')}
+      <MapLibreMap
+        ref={mapRef}
+        {...viewState}
+        onMove={(evt: any) => setViewState(evt.viewState)}
+        reuseMaps
+        mapLib={maplibregl as any}
+        mapStyle={basemapStyle === 'satellite' ? ESRI_SATELLITE_STYLE : CARTO_DARK}
+        style={{ width: '100%', height: '100%' }}
+        maxPitch={is3DMode ? 85 : 60}
+        dragRotate={true}
       >
-        <MapLibreMap
-          ref={mapRef}
-          reuseMaps
-          mapLib={maplibregl as any}
-          mapStyle={basemapStyle === 'satellite' ? ESRI_SATELLITE_STYLE : CARTO_DARK}
-        />
-      </DeckGL>
+        <DeckGLOverlay layers={layers} />
+      </MapLibreMap>
 
       {/* 3D Globe & Elevation Terrain Controls */}
       <GlobeControls

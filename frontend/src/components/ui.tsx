@@ -150,20 +150,20 @@ export function StatCard({
   value: string;
   unit?: string;
   sub?: ReactNode;
-  icon: LucideIcon;
+  icon?: LucideIcon;
   tone?: Tone;
 }) {
   return (
-    <div className="rounded-xl border border-line bg-ink-800/80 p-3.5 shadow-panel">
-      <div className="flex items-center justify-between gap-2">
-        <span className="eyebrow">{label}</span>
-        <Icon className={cx('h-4 w-4 shrink-0', TONE_TEXT[tone])} aria-hidden="true" />
+    <div className="rounded-xl border border-line-strong/60 bg-ink-900/90 p-3 sm:p-3.5 shadow-panel backdrop-blur-sm transition-all hover:border-line-strong">
+      <div className="flex items-center justify-between gap-1.5">
+        <span className="eyebrow text-[10px] text-slate-400 font-medium tracking-wider">{label}</span>
+        {Icon && <Icon className={cx('h-3.5 w-3.5 shrink-0 opacity-50', TONE_TEXT[tone])} aria-hidden="true" />}
       </div>
-      <div className="mt-1.5 flex items-baseline gap-1.5">
-        <span className="num text-[26px] font-bold leading-none text-white">{value}</span>
-        {unit && <span className="text-xs font-medium text-slate-400">{unit}</span>}
+      <div className="mt-1 flex items-baseline gap-1.5">
+        <span className="num text-2xl font-bold tracking-tight text-white">{value}</span>
+        {unit && <span className="text-[11px] font-mono text-slate-400">{unit}</span>}
       </div>
-      {sub && <div className="mt-2 text-xs leading-snug text-slate-400">{sub}</div>}
+      {sub && <div className="mt-1.5 text-[11px] leading-tight text-slate-400 line-clamp-1">{sub}</div>}
     </div>
   );
 }
@@ -381,3 +381,7 @@ export function RangeField({
     </div>
   );
 }
+
+export { MathFormula } from './ui/MathFormula';
+export { ArchitectureFlowchart } from './ui/ArchitectureFlowchart';
+

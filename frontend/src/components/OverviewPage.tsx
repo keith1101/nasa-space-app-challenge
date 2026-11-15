@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import {
   Activity,
   ArrowRight,
@@ -36,7 +37,7 @@ export interface OverviewPageProps {
   activeMetrics: HarmonizationMetrics;
   vietnamOnly: boolean;
   onSelectDateAndAnalyze: (date: string | null) => void;
-  onOpenMethodology: () => void;
+  onOpenMethodology?: () => void;
 }
 
 export function OverviewPage({
@@ -44,7 +45,6 @@ export function OverviewPage({
   activeMetrics,
   vietnamOnly,
   onSelectDateAndAnalyze,
-  onOpenMethodology,
 }: OverviewPageProps) {
   const globalState = useGlobalCatalog(true);
   const { analytics, harmonized } = datasets;
@@ -88,10 +88,10 @@ export function OverviewPage({
                 <Database className="h-4 w-4 text-cyan-300" aria-hidden="true" />
                 <span>Inspect Provenance &amp; Event Catalog</span>
               </a>
-              <button type="button" onClick={onOpenMethodology} className={buttonSecondary}>
+              <Link to="/methodology" className={buttonSecondary}>
                 <BookOpen className="h-4 w-4 text-amber-300" aria-hidden="true" />
                 <span>Mathematical Formulation</span>
-              </button>
+              </Link>
             </div>
           </div>
 

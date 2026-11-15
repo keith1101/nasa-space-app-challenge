@@ -1,5 +1,5 @@
 import { Link, NavLink } from 'react-router-dom';
-import { BookOpen, Flame, Globe2, Layers, Satellite } from 'lucide-react';
+import { Globe2, Layers } from 'lucide-react';
 import type { Language } from '../lib/i18n';
 import { TRANSLATIONS } from '../lib/i18n';
 import { cx } from './ui';
@@ -65,14 +65,13 @@ export function Header({
             end
             className={({ isActive }) =>
               cx(
-                'rounded-lg px-3 py-1.5 text-xs font-semibold transition-all flex items-center gap-1.5',
+                'rounded-lg px-3 py-1.5 text-xs font-medium transition-all',
                 isActive
-                  ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-400/30 font-bold'
-                  : 'text-slate-300 hover:text-white hover:bg-ink-900',
+                  ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-400/30 font-semibold'
+                  : 'text-slate-400 hover:text-white hover:bg-ink-900',
               )
             }
           >
-            <Satellite className="h-3.5 w-3.5" />
             <span>{isVi ? 'Trang Chủ' : 'Home'}</span>
           </NavLink>
 
@@ -80,14 +79,13 @@ export function Header({
             to="/methodology"
             className={({ isActive }) =>
               cx(
-                'rounded-lg px-3 py-1.5 text-xs font-semibold transition-all flex items-center gap-1.5',
+                'rounded-lg px-3 py-1.5 text-xs font-medium transition-all',
                 isActive
-                  ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-400/30 font-bold'
-                  : 'text-slate-300 hover:text-white hover:bg-ink-900',
+                  ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-400/30 font-semibold'
+                  : 'text-slate-400 hover:text-white hover:bg-ink-900',
               )
             }
           >
-            <BookOpen className="h-3.5 w-3.5" />
             <span>{isVi ? 'Phương Pháp Luận' : 'Methodology'}</span>
           </NavLink>
 
@@ -95,14 +93,13 @@ export function Header({
             to="/dashboard"
             className={({ isActive }) =>
               cx(
-                'rounded-lg px-3 py-1.5 text-xs font-semibold transition-all flex items-center gap-1.5',
+                'rounded-lg px-3 py-1.5 text-xs font-medium transition-all',
                 isActive
                   ? 'bg-gradient-to-r from-cyan-500 to-emerald-500 text-ink-950 font-bold shadow-md shadow-cyan-500/20'
                   : 'border border-cyan-400/30 bg-cyan-400/10 text-cyan-300 hover:bg-cyan-400/20',
               )
             }
           >
-            <Flame className="h-3.5 w-3.5" />
             <span>{isVi ? 'Trạm Giám Sát' : 'GIS Dashboard'}</span>
           </NavLink>
         </nav>
