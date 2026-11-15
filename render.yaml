@@ -1,51 +1,42 @@
+# ==============================================================================
+# Render Blueprint Specification (Infrastructure-as-Code)
+# Project: NASA FIRMS Hotspot Harmonization Platform
+# Documentation: https://render.com/docs/blueprint-spec
+# ==============================================================================
+
 services:
+  # ============================================================================
+  # Unified Fullstack Service (FastAPI + React Vite SPA)
+  # - Multi-stage Docker build: compiles React frontend & installs Python stack
+  # - Single domain: zero CORS issues, serves both /api/* and UI bundle
+  # ============================================================================
   - type: web
-    name: nasa-firms-harmonization
-    runtime: python
-    region: singapore           # closest to Vietnam; change to: oregon, ohio, frankfurt, etc.
-    plan: free                  # upgrade to starter ($7/mo) for always-on + more RAM
-
-    # Render runs commands from the repo root.
-    # rootDir is NOT set because render.yaml lives inside the sub-folder;
-    # adjust if you place render.yaml at the top-level of the git repo.
-
-    buildCommand: |
-      # ── 1. Install Python dependencies ──────────────────────────
-      pip install -r requirements.txt
-
-      # ── 2. Install Node & build the React frontend ───────────────
-      curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-      apt-get install -y nodejs
-      cd frontend && npm ci && npm run build && cd ..
-
-    startCommand: python3 -m backend.server
-
+    name: nasa-firms-platform
+    runtime: docker
+    plan: free # Change to starter/standard if dedicated RAM/CPU is desired
+    region: singapore # Closest to Vietnam (or oregon, frankfurt)
+    branch: dev
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/data-status
     envVars:
-      # ── NASA FIRMS live data key (required for live mode) ────────
-      # Get a free key → https://firms.modaps.eosdis.nasa.gov/api/area/
-      - key: FIRMS_MAP_KEY
-        sync: false              # set via Render dashboard (never commit secrets)
-
-      # ── LLM routing (all optional) ───────────────────────────────
-      - key: ROUTER_MODE
-        value: heuristic         # safe default: zero-cost math engine
-                                 # change to: auto | edge | cloud
-
-      - key: OPENAI_API_KEY
-        sync: false              # set in dashboard if using OpenAI
-
-      - key: OPENAI_MODEL
-        value: gpt-6luna
-
-      - key: GEMINI_API_KEY
-        sync: false              # set in dashboard if using Gemini
-
-      - key: GEMINI_MODEL
-        value: gemini-2.5-flash
-
-      # ── Uvicorn / FastAPI tuning ──────────────────────────────────
       - key: PORT
-        value: "8000"
-
+        value: 10000
       - key: PYTHONUNBUFFERED
         value: "1"
+      # NASA FIRMS API Key for live satellite observations
+      - key: FIRMS_MAP_KEY
+        sync: false
+      # Hybrid LLM Routing Engine: heuristic (default) | auto | edge | cloud
+      - key: ROUTER_MODE
+        value: heuristic
+      # Gemini API configuration (optional)
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      # OpenAI API configuration (optional)
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4o

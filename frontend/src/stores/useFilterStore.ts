@@ -28,7 +28,7 @@ export interface FilterState {
 }
 
 export const useFilterStore = create<FilterState>((set) => ({
-  minConfidence: 80,
+  minConfidence: 0,
   filterType: 'all',
   selectedCountryId: null,
   selectedContinent: 'all',
@@ -52,7 +52,7 @@ export const useFilterStore = create<FilterState>((set) => ({
     })),
   resetFilters: () =>
     set({
-      minConfidence: 80,
+      minConfidence: 0,
       filterType: 'all',
       selectedCountryId: null,
       selectedContinent: 'all',
