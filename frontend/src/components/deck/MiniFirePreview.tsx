@@ -9,7 +9,6 @@ import { Link } from 'react-router-dom';
 import type { GlobalHarmonizedPoint } from '../../types/harmonization';
 import { useGlobalDatasetsQuery } from '../../hooks/useQueries';
 import { fmtInt } from '../../lib/format';
-import { buildWildfire3DColumns } from './layers/wildfire3dLayers';
 
 const CARTO_DARK = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json';
 
@@ -164,8 +163,6 @@ export function MiniFirePreview({ isVi }: { isVi: boolean }) {
       getLineColor: [255, 255, 255, 180],
       lineWidthMinPixels: 1,
     }),
-    // 3. True 3D Extruded Wildfire Columns on Globe
-    buildWildfire3DColumns(points, true),
   ], [points]);
 
   return (

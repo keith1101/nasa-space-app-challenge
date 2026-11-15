@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
@@ -11,6 +11,9 @@ import {
   Database,
   Scale,
   Sparkles,
+  ListOrdered,
+  X,
+  ArrowUp,
 } from 'lucide-react';
 import { useUiStore } from '../stores/useUiStore';
 import { Badge } from '../components/ui';
@@ -23,39 +26,90 @@ export function MethodologyPage() {
 
   const [activeSection, setActiveSection] = useState<string>('sec-01');
   const [copiedBibtex, setCopiedBibtex] = useState(false);
+  const [isTocOpen, setIsTocOpen] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const tocRef = useRef<HTMLDivElement | null>(null);
 
-  const sections = [
-    { id: 'sec-01', num: '01', title: isVi ? 'Đặt Vấn Đề & Trùng Lặp 27%–43%' : 'Problem Formulation (27%–43%)' },
-    { id: 'sec-02', num: '02', title: isVi ? 'Kiến Trúc Luồng Dữ Liệu 4 Tầng' : 'End-to-End Modular Pipeline' },
-    { id: 'sec-03', num: '03', title: isVi ? 'Hệ Thống Công Thức Toán Học' : 'Mathematical Formulations' },
-    { id: 'sec-04', num: '04', title: isVi ? 'Bảng Đối Chiếu Cảm Biến Kỹ Thuật' : 'MODIS vs. VIIRS Sensor Matrix' },
-    { id: 'sec-05', num: '05', title: isVi ? 'Kiểm Chứng Thực Nghiệm & Đo Đạc' : 'Empirical Benchmarks' },
-    { id: 'sec-06', num: '06', title: isVi ? 'Danh Mục Tham Khảo & Trích Dẫn' : 'Academic References' },
-  ];
+  const sections = useMemo(
+    () => [
+      { id: 'sec-01', num: '01', title: isVi ? 'Đặt Vấn Đề & Trùng Lặp 27%–43%' : 'Problem Formulation (27%–43%)' },
+      { id: 'sec-02', num: '02', title: isVi ? 'Kiến Trúc Luồng Dữ Liệu 4 Tầng' : 'End-to-End Modular Pipeline' },
+      { id: 'sec-03', num: '03', title: isVi ? 'Hệ Thống Công Thức Toán Học' : 'Mathematical Formulations' },
+      { id: 'sec-04', num: '04', title: isVi ? 'Bảng Đối Chiếu Cảm Biến Kỹ Thuật' : 'MODIS vs. VIIRS Sensor Matrix' },
+      { id: 'sec-05', num: '05', title: isVi ? 'Kiểm Chứng Thực Nghiệm & Đo Đạc' : 'Empirical Benchmarks' },
+      { id: 'sec-06', num: '06', title: isVi ? 'Danh Mục Tham Khảo & Trích Dẫn' : 'Academic References' },
+    ],
+    [isVi],
+  );
 
-  // IntersectionObserver to sync sticky TOC with current scroll position
+  // Sync scroll position, progress, and active section
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      for (let i = sections.length - 1; i >= 0; i--) {
-        const el = document.getElementById(sections[i].id);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          if (rect.top <= 140) {
-            setActiveSection(sections[i].id);
-            break;
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          // Active section detection
+          for (let i = sections.length - 1; i >= 0; i--) {
+            const el = document.getElementById(sections[i].id);
+            if (el) {
+              const rect = el.getBoundingClientRect();
+              if (rect.top <= 110) {
+                setActiveSection(sections[i].id);
+                break;
+              }
+            }
           }
-        }
+
+          // Document scroll progress percentage
+          const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+          if (totalScroll > 0) {
+            const currentProgress = Math.min(100, Math.max(0, Math.round((window.pageYOffset / totalScroll) * 100)));
+            setScrollProgress(currentProgress);
+          }
+
+          // Scroll-to-top visibility trigger
+          setShowScrollTop(window.pageYOffset > 400);
+
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, [sections]);
+
+  // Handle outside click & Escape key to close popup
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isTocOpen) {
+        setIsTocOpen(false);
+      }
+    };
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (tocRef.current && !tocRef.current.contains(e.target as Node)) {
+        setIsTocOpen(false);
+      }
+    };
+
+    if (isTocOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isTocOpen]);
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
     if (el) {
-      const topOffset = 110;
+      const topOffset = 80;
       const elementPosition = el.getBoundingClientRect().top;
       const offsetPosition = elementPosition + window.pageYOffset - topOffset;
       window.scrollTo({
@@ -63,7 +117,15 @@ export function MethodologyPage() {
         behavior: 'smooth',
       });
       setActiveSection(id);
+      setIsTocOpen(false);
     }
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
   };
 
   const bibtex = `@techreport{nasa_firms_harmonization_2026,
@@ -191,44 +253,7 @@ export function MethodologyPage() {
         </div>
       </section>
 
-      {/* 2. Sticky Table of Contents Header Bar */}
-      <nav
-        aria-label="Table of contents"
-        className="sticky top-0 z-30 border-b border-line bg-ink-950/95 backdrop-blur-md px-4 sm:px-6 lg:px-8 py-2.5 transition-all shadow-sm"
-      >
-        <div className="mx-auto max-w-5xl flex items-center justify-between gap-4 overflow-x-auto no-scrollbar">
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            {sections.map((sec) => {
-              const isCurrent = activeSection === sec.id;
-              return (
-                <button
-                  key={sec.id}
-                  type="button"
-                  onClick={() => scrollTo(sec.id)}
-                  className={`rounded-lg px-2.5 py-1 text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5 ${
-                    isCurrent
-                      ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-400/30 font-semibold'
-                      : 'text-slate-400 hover:text-white hover:bg-ink-900'
-                  }`}
-                >
-                  <span className="font-mono text-[10px] opacity-70">{sec.num}</span>
-                  <span>{sec.title}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          <Link
-            to="/dashboard"
-            className="hidden sm:inline-flex items-center gap-1.5 shrink-0 rounded-lg border border-line-strong bg-ink-900 px-3 py-1 text-xs text-slate-300 hover:text-white hover:border-cyan-400/40"
-          >
-            <span>{isVi ? 'Mở Trạm Giám Sát' : 'Launch Dashboard'}</span>
-            <ArrowRight className="h-3 w-3" />
-          </Link>
-        </div>
-      </nav>
-
-      {/* 3. Main Academic Body */}
+      {/* 2. Main Academic Body */}
       <main className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-10 space-y-14">
         {/* ========================================================================= */}
         {/* SECTION 01: Problem Formulation */}
@@ -1082,6 +1107,126 @@ export function MethodologyPage() {
           </div>
         </div>
       </main>
+
+      {/* Floating TOC Popup & Action Dock */}
+      <aside
+        ref={tocRef}
+        aria-label={isVi ? 'Mục lục tài liệu nổi' : 'Floating table of contents'}
+        className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-2.5"
+      >
+        {/* Floating Popup Dialog */}
+        {isTocOpen && (
+          <div
+            role="dialog"
+            aria-modal="false"
+            aria-label={isVi ? 'Mục lục nội dung' : 'Table of contents'}
+            className="w-80 max-w-[calc(100vw-3rem)] rounded-2xl border border-line-strong bg-ink-900/95 backdrop-blur-2xl shadow-pop flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-3 duration-200"
+          >
+            {/* Popup Header */}
+            <div className="flex items-center justify-between border-b border-line bg-ink-950/70 px-4 py-3">
+              <div className="flex items-center gap-2">
+                <ListOrdered className="h-4 w-4 text-cyan-400" />
+                <span className="font-bold text-xs text-white">
+                  {isVi ? 'Mục Lục Báo Cáo' : 'Table of Contents'}
+                </span>
+                <Badge tone="cyan">
+                  {activeSection.replace('sec-', '')}/06
+                </Badge>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsTocOpen(false)}
+                aria-label={isVi ? 'Đóng mục lục' : 'Close table of contents'}
+                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-ink-800 transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Scroll Progress Bar inside Popup */}
+            <div className="w-full bg-ink-950 h-1 relative overflow-hidden">
+              <div
+                className="bg-gradient-to-r from-cyan-500 to-emerald-500 h-full transition-all duration-150"
+                style={{ width: `${scrollProgress}%` }}
+              />
+            </div>
+
+            {/* Section Items */}
+            <div className="max-h-[50vh] overflow-y-auto p-2 space-y-1 text-xs">
+              {sections.map((sec) => {
+                const isCurrent = activeSection === sec.id;
+                return (
+                  <button
+                    key={sec.id}
+                    type="button"
+                    onClick={() => scrollTo(sec.id)}
+                    className={`w-full text-left rounded-xl px-3 py-2 transition-all flex items-start gap-2.5 ${
+                      isCurrent
+                        ? 'bg-cyan-500/15 text-cyan-300 border border-cyan-400/30 font-semibold shadow-sm'
+                        : 'text-slate-300 hover:text-white hover:bg-ink-800/80'
+                    }`}
+                  >
+                    <span className={`font-mono text-[11px] mt-0.5 ${isCurrent ? 'text-cyan-400 font-bold' : 'text-slate-400'}`}>
+                      {sec.num}
+                    </span>
+                    <span className="flex-1 leading-snug">{sec.title}</span>
+                    {isCurrent && (
+                      <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 shadow-glow mt-1.5 shrink-0" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Popup Footer */}
+            <div className="border-t border-line bg-ink-950/60 px-3 py-2 flex items-center justify-between text-[11px] text-slate-400">
+              <span className="font-mono">
+                {isVi ? `Đã đọc: ${scrollProgress}%` : `Progress: ${scrollProgress}%`}
+              </span>
+              <button
+                type="button"
+                onClick={scrollToTop}
+                className="inline-flex items-center gap-1 text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
+              >
+                <ArrowUp className="h-3 w-3" />
+                <span>{isVi ? 'Đầu trang' : 'Top'}</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Floating Action Capsule (Trigger + ScrollTop) */}
+        <div className="flex items-center gap-2">
+          {showScrollTop && (
+            <button
+              type="button"
+              onClick={scrollToTop}
+              aria-label={isVi ? 'Cuộn lên đầu trang' : 'Scroll to top'}
+              className="h-10 w-10 rounded-full border border-line-strong bg-ink-900/90 text-slate-300 hover:text-white hover:border-cyan-400/50 shadow-pop backdrop-blur-xl transition-all duration-200 flex items-center justify-center hover:scale-105 active:scale-95"
+            >
+              <ArrowUp className="h-4 w-4" />
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={() => setIsTocOpen(!isTocOpen)}
+            aria-expanded={isTocOpen}
+            aria-label={isVi ? 'Mở mục lục tài liệu' : 'Toggle table of contents'}
+            className={`h-10 rounded-full border px-4 py-2 text-xs font-semibold shadow-pop backdrop-blur-xl transition-all duration-200 flex items-center gap-2 hover:scale-[1.02] active:scale-95 ${
+              isTocOpen
+                ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400 shadow-glow'
+                : 'bg-ink-900/90 text-slate-200 hover:text-white border-line-strong hover:border-cyan-400/50'
+            }`}
+          >
+            <ListOrdered className="h-4 w-4 text-cyan-400" />
+            <span>{isVi ? 'Mục Lục' : 'Contents'}</span>
+            <span className="font-mono text-[10px] rounded-full bg-ink-950 px-1.5 py-0.5 border border-line text-cyan-300 font-bold">
+              {activeSection.replace('sec-', '')}/06
+            </span>
+          </button>
+        </div>
+      </aside>
     </div>
   );
 }

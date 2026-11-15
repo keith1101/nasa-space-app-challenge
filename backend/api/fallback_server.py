@@ -37,6 +37,8 @@ class FallbackHTTPHandler(BaseHTTPRequestHandler):
     compute_llm_analysis_func: Any = None
     compute_vegetation_func: Any = None
     predict_grid_func: Any = None
+    compute_airbase_func: Any = None
+    compute_mission_route_func: Any = None
 
     def _send_json(self, payload: Any, status: int = 200):
         body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
@@ -177,6 +179,48 @@ class FallbackHTTPHandler(BaseHTTPRequestHandler):
                 self._send_json({"detail": str(err)}, status=503)
             return
 
+        if path == "/api/flight/airbases/nearest":
+            if not self.compute_airbase_func:
+                self._send_json({"detail": "Airbase service not configured"}, status=501)
+                return
+            try:
+                lat_str = qs.get("latitude", [None])[0] or qs.get("lat", [None])[0]
+                lon_str = qs.get("longitude", [None])[0] or qs.get("lon", [None])[0]
+                if not lat_str or not lon_str:
+                    self._send_json({"detail": "latitude and longitude required"}, status=400)
+                    return
+                lat = float(lat_str)
+                lon = float(lon_str)
+                min_runway = safe_query_float(qs.get("min_runway", ["1200.0"])[0], 1200.0, 500.0, 5000.0)
+                max_dist = safe_query_float(qs.get("max_distance_km", ["500.0"])[0], 500.0, 10.0, 2000.0)
+                fire_capable_only = qs.get("fire_capable_only", ["false"])[0].lower() in ("true", "1", "yes")
+                self._send_json(self.compute_airbase_func(lat, lon, min_runway, max_dist, fire_capable_only=fire_capable_only))
+            except Exception as err:
+                self._send_json({"detail": str(err)}, status=500)
+            return
+
+        if path == "/api/flight/mission-route":
+            if not self.compute_mission_route_func:
+                self._send_json({"detail": "Mission routing service not configured"}, status=501)
+                return
+            try:
+                o_lat = float(qs.get("origin_lat", [""])[0])
+                o_lon = float(qs.get("origin_lon", [""])[0])
+                t_lat = float(qs.get("target_lat", [""])[0])
+                t_lon = float(qs.get("target_lon", [""])[0])
+                cruise_alt = safe_query_float(qs.get("cruise_alt_m", ["2500.0"])[0], 2500.0, 300.0, 10000.0)
+                origin_icao = qs.get("origin_icao", [None])[0]
+                o_elev_raw = qs.get("origin_elev_m", [None])[0]
+                t_elev_raw = qs.get("target_elev_m", [None])[0]
+                origin_elev = float(o_elev_raw) if o_elev_raw is not None and o_elev_raw != "" else None
+                target_elev = float(t_elev_raw) if t_elev_raw is not None and t_elev_raw != "" else None
+                self._send_json(self.compute_mission_route_func(
+                    o_lat, o_lon, t_lat, t_lon, cruise_alt, origin_icao, origin_elev, target_elev
+                ))
+            except Exception as err:
+                self._send_json({"detail": str(err)}, status=400)
+            return
+
         # Serve static files from frontend/public/data or frontend/dist with path-traversal protection
         rel_path = path.lstrip("/")
         if rel_path.startswith("data/"):
@@ -277,6 +321,48 @@ class FallbackHTTPHandler(BaseHTTPRequestHandler):
                 self._send_json({"detail": str(err)}, status=400)
             except Exception as err:
                 self._send_json({"detail": str(err)}, status=503)
+            return
+
+        if path == "/api/flight/airbases/nearest":
+            if not self.compute_airbase_func:
+                self._send_json({"detail": "Airbase service not configured"}, status=501)
+                return
+            try:
+                lat_str = qs.get("latitude", [None])[0] or qs.get("lat", [None])[0]
+                lon_str = qs.get("longitude", [None])[0] or qs.get("lon", [None])[0]
+                if not lat_str or not lon_str:
+                    self._send_json({"detail": "latitude and longitude required"}, status=400)
+                    return
+                lat = float(lat_str)
+                lon = float(lon_str)
+                min_runway = safe_query_float(qs.get("min_runway", ["1200.0"])[0], 1200.0, 500.0, 5000.0)
+                max_dist = safe_query_float(qs.get("max_distance_km", ["500.0"])[0], 500.0, 10.0, 2000.0)
+                fire_capable_only = qs.get("fire_capable_only", ["false"])[0].lower() in ("true", "1", "yes")
+                self._send_json(self.compute_airbase_func(lat, lon, min_runway, max_dist, fire_capable_only=fire_capable_only))
+            except Exception as err:
+                self._send_json({"detail": str(err)}, status=500)
+            return
+
+        if path == "/api/flight/mission-route":
+            if not self.compute_mission_route_func:
+                self._send_json({"detail": "Mission routing service not configured"}, status=501)
+                return
+            try:
+                o_lat = float(qs.get("origin_lat", [""])[0])
+                o_lon = float(qs.get("origin_lon", [""])[0])
+                t_lat = float(qs.get("target_lat", [""])[0])
+                t_lon = float(qs.get("target_lon", [""])[0])
+                cruise_alt = safe_query_float(qs.get("cruise_alt_m", ["2500.0"])[0], 2500.0, 300.0, 10000.0)
+                origin_icao = qs.get("origin_icao", [None])[0]
+                o_elev_raw = qs.get("origin_elev_m", [None])[0]
+                t_elev_raw = qs.get("target_elev_m", [None])[0]
+                origin_elev = float(o_elev_raw) if o_elev_raw is not None and o_elev_raw != "" else None
+                target_elev = float(t_elev_raw) if t_elev_raw is not None and t_elev_raw != "" else None
+                self._send_json(self.compute_mission_route_func(
+                    o_lat, o_lon, t_lat, t_lon, cruise_alt, origin_icao, origin_elev, target_elev
+                ))
+            except Exception as err:
+                self._send_json({"detail": str(err)}, status=400)
             return
 
         self._send_json({"detail": "Not found"}, status=404)

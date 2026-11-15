@@ -19,10 +19,13 @@ from backend.services.landcover_service import compute_global_vegetation, LandCo
 from backend.services.grid_risk_service import predict_live_grid
 from backend.services.province_service import assign_province
 from backend.services.cache_service import cache_manager
+from backend.services.airbase_service import airbase_service
 from backend.models import (
     HarmonizeResponse,
     DataStatusResponse,
     ProvinceItemResponse,
+    NearestAirbaseResponse,
+    MissionRouteResponse,
     HAS_PYDANTIC,
 )
 
@@ -207,11 +210,52 @@ def compute_fire_llm_analysis(
         telemetry = enrich_fire_event_with_weather(telemetry)
 
     analysis = analyze_fire_spread_with_llm(telemetry, provider=provider)
+    enriched_telem = analysis.get("enriched_telemetry") or telemetry
     return {
-        "event_id": telemetry.get("event_id"),
-        "telemetry": telemetry,
+        "event_id": enriched_telem.get("event_id"),
+        "telemetry": enriched_telem,
         "analysis": analysis,
     }
+
+
+def compute_nearest_airbase(
+    lat: float,
+    lon: float,
+    min_runway: float = 1200.0,
+    max_distance_km: float = 500.0,
+    fire_capable_only: bool = False,
+) -> Dict[str, Any]:
+    """Finds nearest compatible airbase or falls back to procedural Forward Operating Base (FOB)."""
+    return airbase_service.find_nearest_airbase(
+        lat=lat,
+        lon=lon,
+        min_runway_m=min_runway,
+        max_distance_km=max_distance_km,
+        fire_capable_only=fire_capable_only,
+    )
+
+
+def compute_mission_route(
+    origin_lat: float,
+    origin_lon: float,
+    target_lat: float,
+    target_lon: float,
+    cruise_alt_m: float = 2500.0,
+    origin_icao: Optional[str] = None,
+    origin_elev_m: Optional[float] = None,
+    target_elev_m: Optional[float] = None,
+) -> Dict[str, Any]:
+    """Generates 3D tactical transit waypoints from origin runway to target wildfire."""
+    return airbase_service.generate_mission_route(
+        origin_lat=origin_lat,
+        origin_lon=origin_lon,
+        target_lat=target_lat,
+        target_lon=target_lon,
+        cruise_alt_m=cruise_alt_m,
+        origin_icao=origin_icao,
+        origin_elev_m=origin_elev_m,
+        target_elev_m=target_elev_m,
+    )
 
 
 def create_api_router() -> Any:
@@ -345,5 +389,51 @@ def create_api_router() -> Any:
             return predict_live_grid(latitude, longitude)
         except Exception as err:
             raise HTTPException(status_code=503, detail=str(err))
+
+    @router.get("/flight/airbases/nearest", response_model=NearestAirbaseResponse if HAS_PYDANTIC else None)
+    def get_nearest_airbase(
+        latitude: Optional[float] = Query(None, description="Target fire latitude"),
+        longitude: Optional[float] = Query(None, description="Target fire longitude"),
+        lat: Optional[float] = Query(None, description="Target fire latitude alias"),
+        lon: Optional[float] = Query(None, description="Target fire longitude alias"),
+        min_runway: float = Query(1200.0, ge=500.0, le=5000.0, description="Minimum runway length in meters"),
+        max_distance_km: float = Query(500.0, ge=10.0, le=2000.0, description="Max search radius in km"),
+        fire_capable_only: bool = Query(False, description="Filter strictly to aerial firefighting certified bases"),
+    ):
+        """Finds nearest firefighting airbase within 500km with runway length filtering, fallback to FOB."""
+        target_lat = latitude if latitude is not None else lat
+        target_lon = longitude if longitude is not None else lon
+        if target_lat is None or target_lon is None:
+            raise HTTPException(status_code=400, detail="Latitude and longitude parameters are required.")
+        return compute_nearest_airbase(
+            lat=target_lat,
+            lon=target_lon,
+            min_runway=min_runway,
+            max_distance_km=max_distance_km,
+            fire_capable_only=fire_capable_only,
+        )
+
+    @router.get("/flight/mission-route", response_model=MissionRouteResponse if HAS_PYDANTIC else None)
+    def get_mission_route(
+        origin_lat: float = Query(..., description="Origin airbase latitude"),
+        origin_lon: float = Query(..., description="Origin airbase longitude"),
+        target_lat: float = Query(..., description="Target wildfire latitude"),
+        target_lon: float = Query(..., description="Target wildfire longitude"),
+        cruise_alt_m: float = Query(2500.0, ge=300.0, le=10000.0, description="Cruising altitude in meters"),
+        origin_icao: Optional[str] = Query(None, description="ICAO code of origin airbase"),
+        origin_elev_m: Optional[float] = Query(None, description="Known origin elevation in meters MSL"),
+        target_elev_m: Optional[float] = Query(None, description="Target ground elevation in meters MSL"),
+    ):
+        """Generates 3D tactical transit waypoints from runway to target wildfire."""
+        return compute_mission_route(
+            origin_lat=origin_lat,
+            origin_lon=origin_lon,
+            target_lat=target_lat,
+            target_lon=target_lon,
+            cruise_alt_m=cruise_alt_m,
+            origin_icao=origin_icao,
+            origin_elev_m=origin_elev_m,
+            target_elev_m=target_elev_m,
+        )
 
     return router

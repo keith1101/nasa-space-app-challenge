@@ -9,6 +9,7 @@ export interface UiState {
   is3DMode: boolean;
   terrainEnabled: boolean;
   terrainExaggeration: number;
+  isMapFullscreen: boolean;
 
   // Actions
   setLang: (lang: Language) => void;
@@ -18,6 +19,8 @@ export interface UiState {
   set3DMode: (enabled: boolean) => void;
   setTerrainEnabled: (enabled: boolean) => void;
   setTerrainExaggeration: (exaggeration: number) => void;
+  toggleMapFullscreen: () => void;
+  setMapFullscreen: (enabled: boolean) => void;
 }
 
 const getInitialLang = (): Language => {
@@ -42,6 +45,7 @@ export const useUiStore = create<UiState>((set) => ({
   is3DMode: false,
   terrainEnabled: true,
   terrainExaggeration: 1.5,
+  isMapFullscreen: false,
 
   setLang: (lang) => {
     try {
@@ -57,4 +61,6 @@ export const useUiStore = create<UiState>((set) => ({
   set3DMode: (is3DMode) => set({ is3DMode }),
   setTerrainEnabled: (terrainEnabled) => set({ terrainEnabled }),
   setTerrainExaggeration: (terrainExaggeration) => set({ terrainExaggeration }),
+  toggleMapFullscreen: () => set((state) => ({ isMapFullscreen: !state.isMapFullscreen })),
+  setMapFullscreen: (isMapFullscreen) => set({ isMapFullscreen }),
 }));

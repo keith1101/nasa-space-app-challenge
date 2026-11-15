@@ -26,6 +26,8 @@ from backend.api.routes import (
     compute_live_harmonization,
     compute_live_fire_trajectories,
     compute_fire_llm_analysis,
+    compute_nearest_airbase,
+    compute_mission_route,
     create_api_router,
     DATA_DIR,
 )
@@ -45,6 +47,8 @@ FallbackHTTPHandler.compute_trajectories_func = compute_live_fire_trajectories
 FallbackHTTPHandler.compute_llm_analysis_func = compute_fire_llm_analysis
 FallbackHTTPHandler.compute_vegetation_func = compute_global_vegetation
 FallbackHTTPHandler.predict_grid_func = predict_live_grid
+FallbackHTTPHandler.compute_airbase_func = compute_nearest_airbase
+FallbackHTTPHandler.compute_mission_route_func = compute_mission_route
 
 # Backward-compatible references for external callers and existing test suites
 _CACHE = cache_manager._cache

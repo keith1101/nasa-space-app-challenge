@@ -64,6 +64,15 @@
   }
 }
 
+@keyframes border-beam-spin {
+  from {
+    stroke-dashoffset: 740;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
 /* Standard Scrollbars with WCAG >= 3:1 non-text contrast */
 :root {
   --scrollbar-thumb: #1f3050;

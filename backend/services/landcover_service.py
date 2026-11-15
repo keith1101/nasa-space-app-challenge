@@ -286,3 +286,127 @@ def compute_global_vegetation(live_features: List[Dict[str, Any]] = ()) -> Dict[
             _VEG_CACHE["result"] = res
             _VEG_CACHE["signature"] = signature
         return _VEG_CACHE["result"]
+
+
+IGBP_CLASS_NAMES: Dict[int, str] = {
+    1: "Evergreen Needleleaf Forests",
+    2: "Evergreen Broadleaf Forests",
+    3: "Deciduous Needleleaf Forests",
+    4: "Deciduous Broadleaf Forests",
+    5: "Mixed Forests",
+    6: "Closed Shrublands",
+    7: "Open Shrublands",
+    8: "Woody Savannas",
+    9: "Savannas",
+    10: "Grasslands",
+    11: "Permanent Wetlands",
+    12: "Croplands",
+    13: "Urban and Built-up Lands",
+    14: "Cropland/Natural Vegetation Mosaics",
+    15: "Permanent Snow and Ice",
+    16: "Barren",
+    17: "Water Bodies",
+}
+
+
+def get_landcover_code_at_point(lat: float, lon: float) -> int:
+    """
+    Samples MCD12Q1 GeoTIFF rasters for a single coordinate.
+    Falls back to regional heuristic or code 9 (Savannas) if outside raster coverage.
+    """
+    paths = get_landcover_paths()
+    try:
+        import rasterio
+        from rasterio.warp import transform
+        for path in paths:
+            try:
+                with rasterio.open(path) as raster:
+                    if raster.crs is None or raster.count != 1:
+                        continue
+                    xs, ys = transform("EPSG:4326", raster.crs, [lon], [lat])
+                    x, y = xs[0], ys[0]
+                    if raster.bounds.left <= x < raster.bounds.right and raster.bounds.bottom < y <= raster.bounds.top:
+                        sample = next(raster.sample([(x, y)], masked=True))
+                        val = sample[0]
+                        if not bool(getattr(val, "mask", False)):
+                            code = int(float(val))
+                            if 1 <= code <= 17:
+                                return code
+            except Exception:
+                continue
+    except ImportError:
+        pass
+
+    # Heuristic fallback based on geographic location
+    # Forest/mountainous zones in Indochina
+    if 10.0 <= lat <= 23.0 and 102.0 <= lon <= 109.5:
+        return 2  # Evergreen Broadleaf Forest
+    return 9  # Savannas / Grassland default
+
+
+def classify_hotspot_biome(lat: float, lon: float, known_code: Optional[int] = None) -> Dict[str, Any]:
+    """
+    Classifies a hotspot into 5 main biome groups and attaches fuel flammability characteristics.
+    Groups:
+      - FOREST (IGBP 1-5)
+      - SHRUBLAND_SAVANNA (IGBP 6-9)
+      - GRASSLAND (IGBP 10)
+      - CROPLAND (IGBP 12, 14)
+      - NON_VEGETATION / URBAN / WATER (IGBP 11, 13, 15, 16, 17)
+    """
+    code = known_code if (known_code and 1 <= known_code <= 17) else get_landcover_code_at_point(lat, lon)
+    class_name = IGBP_CLASS_NAMES.get(code, "Unknown Biome")
+
+    if 1 <= code <= 5:
+        biome_group = "FOREST"
+        is_forest = True
+        if code in (1, 3):
+            fuel_category = "TIMBER_LITTER_RESINOUS"
+            crown_fire_potential = "HIGH"
+            spotting_distance_km = 1.2
+            flammability_index = "EXTREME"
+        else:
+            fuel_category = "HARDWOOD_LITTER"
+            crown_fire_potential = "MODERATE"
+            spotting_distance_km = 0.5
+            flammability_index = "HIGH" if code == 4 else "MODERATE"
+    elif 6 <= code <= 9:
+        biome_group = "SHRUBLAND_SAVANNA"
+        is_forest = False
+        fuel_category = "SHRUB_BRUSH" if code in (6, 7) else "WOODY_SAVANNA"
+        crown_fire_potential = "MODERATE" if code in (8, 9) else "LOW"
+        spotting_distance_km = 0.6 if code in (8, 9) else 0.3
+        flammability_index = "HIGH"
+    elif code == 10:
+        biome_group = "GRASSLAND"
+        is_forest = False
+        fuel_category = "FINE_SHORT_GRASS"
+        crown_fire_potential = "LOW"
+        spotting_distance_km = 0.2
+        flammability_index = "VERY_HIGH"
+    elif code in (12, 14):
+        biome_group = "CROPLAND"
+        is_forest = False
+        fuel_category = "AGRICULTURAL_RESIDUE"
+        crown_fire_potential = "LOW"
+        spotting_distance_km = 0.1
+        flammability_index = "MODERATE"
+    else:
+        biome_group = "NON_VEGETATION"
+        is_forest = False
+        fuel_category = "NON_COMBUSTIBLE"
+        crown_fire_potential = "NONE"
+        spotting_distance_km = 0.0
+        flammability_index = "LOW"
+
+    return {
+        "igbp_code": code,
+        "land_cover_class": class_name,
+        "biome_group": biome_group,
+        "is_forest": is_forest,
+        "fuel_category": fuel_category,
+        "crown_fire_potential": crown_fire_potential,
+        "spotting_distance_km": spotting_distance_km,
+        "flammability_index": flammability_index,
+    }
+

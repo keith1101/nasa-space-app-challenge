@@ -33,17 +33,19 @@ export function MathFormula({
       <figure
         role="region"
         aria-label={ariaLabel || description || 'Mathematical formula'}
-        className={`my-3 overflow-x-auto rounded-lg border border-line-strong/80 bg-ink-950/90 p-4 text-center text-slate-100 shadow-inner ${className}`}
+        className={`my-3 overflow-x-auto rounded-lg border border-line-strong/80 bg-ink-950/90 p-4 text-slate-100 shadow-inner ${className}`}
       >
-        <div
-          className="inline-block text-left text-sm md:text-base text-cyan-100 font-serif"
-          dangerouslySetInnerHTML={{ __html: html }}
-        />
-        {description && (
-          <figcaption className="mt-2 text-center text-[11px] font-sans text-slate-400 italic">
-            {description}
-          </figcaption>
-        )}
+        <div className="min-w-full w-fit mx-auto px-1 py-0.5 text-center">
+          <div
+            className="inline-block text-left text-sm md:text-base text-cyan-100 font-serif"
+            dangerouslySetInnerHTML={{ __html: html }}
+          />
+          {description && (
+            <figcaption className="mt-2 text-center text-[11px] font-sans text-slate-400 italic">
+              {description}
+            </figcaption>
+          )}
+        </div>
       </figure>
     );
   }
@@ -52,7 +54,7 @@ export function MathFormula({
     <span
       role="math"
       aria-label={ariaLabel || tex}
-      className={`inline-block font-serif text-cyan-200 ${className}`}
+      className={`inline-block align-baseline font-serif text-cyan-200 ${className}`}
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );

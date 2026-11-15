@@ -11,6 +11,12 @@ from backend.models.schemas import (
     ProvinceItemResponse,
     HAS_PYDANTIC,
 )
+from backend.models.flight import (
+    AirbaseRecord,
+    NearestAirbaseResponse,
+    MissionWaypoint,
+    MissionRouteResponse,
+)
 
 __all__ = [
     "RawDetection",
@@ -20,4 +26,8 @@ __all__ = [
     "DataStatusResponse",
     "ProvinceItemResponse",
     "HAS_PYDANTIC",
+    "AirbaseRecord",
+    "NearestAirbaseResponse",
+    "MissionWaypoint",
+    "MissionRouteResponse",
 ]

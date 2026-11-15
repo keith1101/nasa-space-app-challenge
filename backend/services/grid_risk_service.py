@@ -149,11 +149,15 @@ def calculate_grid_risk(
     lon: float,
     codes: Dict[Tuple[int, int], int],
     hourly: List[Dict[str, Any]],
+    slope_multiplier: float = 1.0,
 ) -> Dict[str, Any]:
-    """Propagates fire risk across the 11x11 grid over 24 hours."""
+    """Propagates fire risk across the 11x11 grid over 24 hours taking terrain slope into account."""
     level = {(CENTER, CENTER): 1.0}
     series: Dict[int, Tuple[Dict[Tuple[int, int], float], float]] = {}
     persistence = 1.0
+
+    # Bounded slope multiplier to prevent numerical instability
+    clamped_slope = max(0.4, min(3.0, float(slope_multiplier)))
 
     for h in range(1, 25):
         w = hourly[h - 1]
@@ -182,7 +186,7 @@ def calculate_grid_risk(
 
                     bearing = math.atan2(dc, -dr)
                     aligned = (1.0 + math.cos(bearing - to_angle)) / 2.0
-                    step = (0.012 + 0.075 * min(wind, 40.0) / 40.0 * aligned) * dryness * rain_factor
+                    step = (0.012 + 0.075 * min(wind, 40.0) / 40.0 * aligned) * dryness * rain_factor * clamped_slope
                     step /= math.hypot(dr, dc)
 
                     candidate = source * step
@@ -194,11 +198,21 @@ def calculate_grid_risk(
 
     centers, dy, dx = cell_centers(lat, lon)
     cells: List[Dict[str, Any]] = []
-    for horizon, (scores, _) in series.items():
+    multi_horizon_size: Dict[str, Any] = {}
+
+    for horizon, (scores, p_val) in series.items():
+        high_risk_cells = 0
+        mod_risk_cells = 0
+
         for r, c, cell_lat, cell_lon in centers:
             if (r, c) == (CENTER, CENTER) or codes.get((r, c)) not in VEGETATION_CLASSES:
                 continue
             r_val = round(scores.get((r, c), 0.0), 4)
+            if r_val >= 0.15:
+                high_risk_cells += 1
+            if r_val >= 0.04:
+                mod_risk_cells += 1
+
             if r_val > 0.001:
                 cells.append({
                     "latitude": round(cell_lat, 6),
@@ -210,8 +224,32 @@ def calculate_grid_risk(
                     "land_cover_code": codes[(r, c)],
                 })
 
+        # Calculate expected burn area (each cell ~1.0 km2 = 100 ha)
+        est_area_km2 = round(max(0.08, high_risk_cells * 1.0 + (mod_risk_cells - high_risk_cells) * 0.35), 2)
+        est_area_ha = round(est_area_km2 * 100.0, 1)
+
+        if est_area_ha < 10.0:
+            milestone = "TIỂU HỎA HOẠN (Cấp 1 < 10 ha)"
+        elif est_area_ha < 50.0:
+            milestone = "TRUNG HỎA HOẠN (Cấp 2 10-50 ha)"
+        elif est_area_ha < 200.0:
+            milestone = "ĐẠI HỎA HOẠN (Cấp 3 50-200 ha)"
+        else:
+            milestone = "THẢM HỌA KHẨN CẤP (Cấp 4 > 200 ha)"
+
+        multi_horizon_size[f"{horizon}h"] = {
+            "horizon_hours": horizon,
+            "expected_area_km2": est_area_km2,
+            "expected_area_ha": est_area_ha,
+            "high_risk_cells": high_risk_cells,
+            "active_perimeter_cells": mod_risk_cells,
+            "persistence_confidence": p_val,
+            "threat_milestone": milestone,
+        }
+
     return {
         "persistence_index": {str(h): series[h][1] for h in HORIZONS},
+        "multi_horizon_size": multi_horizon_size,
         "cells": cells,
         "grid": {
             "side": SIDE,
@@ -219,13 +257,18 @@ def calculate_grid_risk(
             "horizons_hours": list(HORIZONS),
             "covered_cells": len(codes),
             "total_cells": SIDE * SIDE,
+            "slope_multiplier_applied": clamped_slope,
         },
     }
 
 
-def predict_live_grid(lat: float, lon: float) -> Dict[str, Any]:
+def predict_live_grid(
+    lat: float,
+    lon: float,
+    slope_multiplier: float = 1.0,
+) -> Dict[str, Any]:
     """Calculates live risk grid scenario for coordinates (lat, lon)."""
-    key = (round(lat, 4), round(lon, 4))
+    key = (round(lat, 4), round(lon, 4), round(slope_multiplier, 2))
     now = time.monotonic()
 
     with _GRID_LOCK:
@@ -237,7 +280,7 @@ def predict_live_grid(lat: float, lon: float) -> Dict[str, Any]:
     centers, _, _ = cell_centers(lat, lon)
     codes = sample_grid_landcover(centers)
     hourly = fetch_open_meteo_hourly(lat, lon)
-    scores = calculate_grid_risk(lat, lon, codes, hourly)
+    scores = calculate_grid_risk(lat, lon, codes, hourly, slope_multiplier=slope_multiplier)
 
     res = {
         "mode": "experimental_relative_indices",

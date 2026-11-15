@@ -20,6 +20,13 @@ from backend.services.cache_service import (
     LiveFIRMSClient,
     cache_manager,
 )
+from backend.services.airbase_service import (
+    AirbaseService,
+    airbase_service,
+    haversine_km,
+    initial_bearing_deg,
+    calculate_offset_coord,
+)
 
 __all__ = [
     "compute_geometry_bbox",
@@ -33,4 +40,9 @@ __all__ = [
     "HarmonizationCacheManager",
     "LiveFIRMSClient",
     "cache_manager",
+    "AirbaseService",
+    "airbase_service",
+    "haversine_km",
+    "initial_bearing_deg",
+    "calculate_offset_coord",
 ]

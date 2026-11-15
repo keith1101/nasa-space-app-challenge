@@ -54,6 +54,18 @@ export type FireRiskQueryResult = {
     total_cells: number;
   };
   persistence_index: Record<string, number>;
+  multi_horizon_size?: Record<
+    string,
+    {
+      horizon_hours: number;
+      expected_area_km2: number;
+      expected_area_ha: number;
+      high_risk_cells: number;
+      active_perimeter_cells: number;
+      persistence_confidence: number;
+      threat_milestone: string;
+    }
+  >;
   cells: Array<{
     latitude: number;
     longitude: number;

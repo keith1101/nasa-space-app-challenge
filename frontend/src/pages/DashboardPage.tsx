@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import {
   RefreshCw,
   Search,
@@ -32,7 +32,14 @@ import type {
 
 export function DashboardPage() {
   const { state: datasetState, reload } = useDatasets();
-  const { lang, selectedPoint, setSelectedPoint, riskHorizon, setRiskHorizon } = useUiStore();
+  const {
+    lang,
+    selectedPoint,
+    setSelectedPoint,
+    riskHorizon,
+    setRiskHorizon,
+    isMapFullscreen,
+  } = useUiStore();
   const t = TRANSLATIONS[lang];
 
   // Store filters
@@ -68,6 +75,9 @@ export function DashboardPage() {
     selectedPoint ? selectedPoint[0] : undefined,
     selectedPoint ? selectedPoint[1] : undefined,
   );
+
+  // Scramble 3D Flight mission ref hook
+  const scrambleMissionRef = useRef<((point?: any) => void) | null>(null);
 
   // Countries metadata
   const countries = useMemo<GlobalCountryInfo[]>(() => {
@@ -346,7 +356,14 @@ export function DashboardPage() {
           {/* Main Workspace: DeckGL Map (8 cols) + Controls & Calendar (4 cols) */}
           <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-12">
             {/* Left Column: Deck.gl WebGL Map */}
-            <div className="h-[500px] lg:col-span-8 lg:h-[calc(100vh-190px)] min-h-[580px] rounded-xl overflow-hidden border border-line-strong/60 shadow-panel">
+            <div
+              className={cx(
+                'rounded-xl overflow-hidden border border-line-strong/60 shadow-panel transition-all duration-300',
+                isMapFullscreen
+                  ? 'fixed inset-0 z-50 h-screen w-screen rounded-none border-none bg-ink-950'
+                  : 'h-[500px] lg:col-span-8 lg:h-[calc(100vh-190px)] min-h-[580px]'
+              )}
+            >
               <FireDeckMap
                 lang={lang}
                 worldCountriesGeojson={datasetState.data.worldCountries}
@@ -363,6 +380,10 @@ export function DashboardPage() {
                 onSelectGlobalPoint={(pt) => setSelectedPoint(pt)}
                 riskCells={fireRisk?.cells || []}
                 riskHorizon={riskHorizon}
+                multiHorizonSize={fireRisk?.multi_horizon_size}
+                onScrambleRef={(fn) => {
+                  scrambleMissionRef.current = fn;
+                }}
               />
             </div>
 
@@ -528,27 +549,61 @@ export function DashboardPage() {
                 {fireRisk && fireRisk.cells && fireRisk.cells.length > 0 && (
                   <div className="pt-2 border-t border-line space-y-1.5">
                     <div className="flex items-center justify-between text-[11px]">
-                      <span className="font-semibold text-amber-300">
-                        {lang === 'vi' ? 'Lưới lan truyền' : 'Spread Grid'}
-                      </span>
+                      <div>
+                        <span className="font-semibold text-amber-300 block">
+                          {lang === 'vi' ? '3 Vòng Lan Truyền Trên Map' : '3-Layer Concentric Rings'}
+                        </span>
+                        <span className="text-[9px] text-slate-400">
+                          {lang === 'vi' ? 'Đỏ trong cùng · Cam ở giữa · Xanh bao trùm' : 'Red core · Orange mid · Green outer'}
+                        </span>
+                      </div>
                       <div className="flex gap-1">
-                        {([6, 12, 24] as const).map((h) => (
+                        {[
+                          { h: 6 as const, label: '6h', color: 'border-rose-500 text-rose-400', active: 'bg-rose-500 text-white shadow-rose-500/30' },
+                          { h: 12 as const, label: '12h', color: 'border-orange-500 text-orange-400', active: 'bg-orange-500 text-white shadow-orange-500/30' },
+                          { h: 24 as const, label: '24h', color: 'border-emerald-500 text-emerald-400', active: 'bg-emerald-500 text-ink-950 shadow-emerald-500/30' },
+                        ].map((item) => (
                           <button
-                            key={h}
+                            key={item.h}
                             type="button"
-                            onClick={() => setRiskHorizon(h)}
+                            onClick={() => setRiskHorizon(item.h)}
                             className={cx(
-                              'px-1.5 py-0.5 rounded text-[10px] font-bold font-mono transition-colors',
-                              riskHorizon === h
-                                ? 'bg-amber-400 text-ink-950'
-                                : 'bg-ink-900 border border-line text-slate-300 hover:text-white',
+                              'px-2 py-0.5 rounded text-[10px] font-bold font-mono transition-all border',
+                              riskHorizon === item.h
+                                ? `${item.active} font-extrabold shadow-sm scale-105`
+                                : `bg-ink-900 ${item.color} hover:bg-ink-800`,
                             )}
                           >
-                            {h}h
+                            {item.label}
                           </button>
                         ))}
                       </div>
                     </div>
+
+                    {/* Multi-horizon Burn Size Milestone Badge */}
+                    {fireRisk.multi_horizon_size?.[`${riskHorizon}h`] && (
+                      <div className="rounded-lg border border-line bg-ink-900/80 p-2 text-[10px] space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="text-slate-400">
+                            {lang === 'vi' ? 'Quy mô dự kiến' : 'Expected Area'} ({riskHorizon}h):
+                          </span>
+                          <span className="font-mono font-bold text-amber-300">
+                            {fireRisk.multi_horizon_size[`${riskHorizon}h`].expected_area_ha} ha
+                            <span className="text-slate-400 font-normal ml-1">
+                              ({fireRisk.multi_horizon_size[`${riskHorizon}h`].expected_area_km2} km²)
+                            </span>
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between border-t border-line/50 pt-1">
+                          <span className="text-slate-400">
+                            {lang === 'vi' ? 'Cấp độ đe dọa' : 'Milestone'}:
+                          </span>
+                          <span className="font-semibold text-rose-300">
+                            {fireRisk.multi_horizon_size[`${riskHorizon}h`].threat_milestone}
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -658,6 +713,11 @@ export function DashboardPage() {
                 ? fireRisk.persistence_index[String(riskHorizon)]
                 : undefined
             }
+            multiHorizonSize={fireRisk?.multi_horizon_size}
+            initialHorizon={riskHorizon}
+            onScramble={(pt) => {
+              scrambleMissionRef.current?.(pt);
+            }}
           />
         </>
       )}

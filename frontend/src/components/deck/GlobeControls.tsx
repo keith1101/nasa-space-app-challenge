@@ -1,4 +1,4 @@
-import { Globe, Map as MapIcon, Compass, Mountain, Eye } from 'lucide-react';
+import { Globe, Map as MapIcon, Compass, Mountain, Eye, Plane, X } from 'lucide-react';
 import { useUiStore } from '../../stores/useUiStore';
 import { Tooltip } from '../ui/Tooltip';
 import { cx } from '../ui';
@@ -8,6 +8,10 @@ interface GlobeControlsProps {
   bearing: number;
   onResetNorth: () => void;
   onSetCameraAngle: (pitch: number, bearing?: number) => void;
+  isFlying?: boolean;
+  onScramble?: () => void;
+  onExitFlight?: () => void;
+  hasSelectedFire?: boolean;
 }
 
 export function GlobeControls({
@@ -15,6 +19,10 @@ export function GlobeControls({
   bearing,
   onResetNorth,
   onSetCameraAngle,
+  isFlying = false,
+  onScramble,
+  onExitFlight,
+  hasSelectedFire = false,
 }: GlobeControlsProps) {
   const {
     lang,
@@ -64,6 +72,41 @@ export function GlobeControls({
           <span>3D Globe</span>
         </button>
       </div>
+
+      {/* Flight Mission Status / Trigger Pill */}
+      {isFlying ? (
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/20 border border-amber-400/50 backdrop-blur-md shadow-xl text-amber-300 text-xs font-bold animate-pulse">
+          <Plane className="w-3.5 h-3.5 text-amber-400" />
+          <span>{isVi ? 'Đang Bay Mô Phỏng' : 'Flight Active'}</span>
+          {onExitFlight && (
+            <button
+              type="button"
+              onClick={onExitFlight}
+              className="ml-1 p-0.5 rounded-md hover:bg-amber-400/30 text-amber-200 hover:text-white"
+              title={isVi ? 'Dừng bay' : 'Exit Flight'}
+            >
+              <X className="w-3 h-3" />
+            </button>
+          )}
+        </div>
+      ) : onScramble ? (
+        <Tooltip
+          content={
+            hasSelectedFire
+              ? (isVi ? 'Xuất kích từ căn cứ gần nhất tới điểm cháy đã chọn' : 'Scramble flight from nearest base to selected fire')
+              : (isVi ? 'Xuất kích máy bay tới điểm cháy trọng điểm' : 'Scramble aerial firefighting mission')
+          }
+        >
+          <button
+            type="button"
+            onClick={onScramble}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-red-600 via-orange-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white text-xs font-bold shadow-xl shadow-red-600/30 border border-orange-400/40 transition-all duration-200"
+          >
+            <Plane className="w-3.5 h-3.5" />
+            <span>{isVi ? 'Xuất Kích Cứu Hỏa' : 'Scramble Mission'}</span>
+          </button>
+        </Tooltip>
+      ) : null}
 
       {/* 3D Special Controls (Only visible when 3D Mode is active) */}
       {is3DMode && (
