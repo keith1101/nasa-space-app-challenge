@@ -216,7 +216,7 @@ export function LandingPage() {
                     : 'Anisotropic elliptical swath clustering adapting cross-track distortion with continuous sliding time window ≤ 3.0 hours.'}
                 </p>
                 <div className="rounded-lg bg-ink-950/80 px-3 py-2 text-cyan-300 border border-line flex items-center justify-center">
-                  <MathFormula tex="\left(\frac{dx}{a}\right)^2 + \left(\frac{dy}{b}\right)^2 \le 1.0" />
+                  <MathFormula tex="\left(\frac{dx}{a_{\text{scan}}}\right)^2 + \left(\frac{dy}{b_{\text{track}}}\right)^2 \le 1.0" />
                 </div>
               </CardSpotlight>
             </motion.div>
