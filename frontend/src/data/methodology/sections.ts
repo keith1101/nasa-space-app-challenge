@@ -5,12 +5,46 @@ export interface MethodologySectionItem {
 }
 
 export const METHODOLOGY_SECTIONS: MethodologySectionItem[] = [
-  { id: 'sec-01', num: '01', title: 'Problem Formulation (27%–43%)' },
-  { id: 'sec-02', num: '02', title: 'End-to-End Modular Pipeline' },
-  { id: 'sec-03', num: '03', title: 'Mathematical Formulations' },
-  { id: 'sec-04', num: '04', title: 'MODIS vs. VIIRS Sensor Matrix' },
-  { id: 'sec-05', num: '05', title: 'Empirical Benchmarks' },
-  { id: 'sec-06', num: '06', title: 'Academic References' },
+  {
+    id: 'sec-01',
+    num: '01',
+    title: 'Problem Formulation (27%–43%)',
+  },
+  {
+    id: 'sec-02',
+    num: '02',
+    title: 'End-to-End Modular Pipeline',
+  },
+  {
+    id: 'sec-03',
+    num: '03',
+    title: 'Mathematical Formulations & Proofs',
+  },
+  {
+    id: 'sec-04',
+    num: '04',
+    title: 'MODIS vs. VIIRS Sensor Matrix',
+  },
+  {
+    id: 'sec-05',
+    num: '05',
+    title: 'Empirical Benchmarks & Verification',
+  },
+  {
+    id: 'sec-06',
+    num: '06',
+    title: 'Neuro-Symbolic LLM Fire Spread Analysis',
+  },
+  {
+    id: 'sec-07',
+    num: '07',
+    title: 'Feasibility of 3D World Models & Digital Twin',
+  },
+  {
+    id: 'sec-08',
+    num: '08',
+    title: 'Academic References & BibTeX',
+  },
 ];
 
 export interface RedundancyMechanismItem {

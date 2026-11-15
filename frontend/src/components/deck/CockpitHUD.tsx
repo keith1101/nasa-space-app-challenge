@@ -14,6 +14,7 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import type { FlightState, CockpitInstruments } from '../../types/flight';
+import type { Language } from '../../lib/i18n';
 import { cx } from '../ui';
 
 function haversineDistKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -40,7 +41,7 @@ export interface CockpitHUDProps {
   instruments: CockpitInstruments;
   onExit: () => void;
   onToggleMode: () => void;
-  lang?: 'en' | 'vi';
+  lang?: Language;
   isFullscreen?: boolean;
   onToggleFullscreen?: () => void;
 }

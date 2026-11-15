@@ -74,7 +74,7 @@ function DeckGLOverlay({ layers }: { layers: any[] }) {
   return null;
 }
 
-export function MiniFirePreview({ isVi: _isVi }: { isVi?: boolean } = {}) {
+export function MiniFirePreview() {
   const { data } = useGlobalDatasetsQuery();
   const mapRef = useRef<any>(null);
   const [viewState, setViewState] = useState<any>(INITIAL_VIEW_STATE);

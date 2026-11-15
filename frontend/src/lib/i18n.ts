@@ -1,13 +1,13 @@
-export type Language = 'en' | 'vi';
+export type Language = 'en';
 
 export const CONTINENTS = [
-  { id: 'all', vi: 'All Continents', en: 'All Continents', center: [15, 10] as [number, number], zoom: 2 },
-  { id: 'Africa', vi: 'Africa', en: 'Africa', center: [-2, 22] as [number, number], zoom: 4 },
-  { id: 'Oceania', vi: 'Australia & Oceania', en: 'Australia & Oceania', center: [-24, 134] as [number, number], zoom: 4 },
-  { id: 'South America', vi: 'South America', en: 'South America', center: [-14, -56] as [number, number], zoom: 4 },
-  { id: 'Asia', vi: 'Asia', en: 'Asia', center: [20, 95] as [number, number], zoom: 4 },
-  { id: 'North America', vi: 'North America', en: 'North America', center: [40, -100] as [number, number], zoom: 4 },
-  { id: 'Europe', vi: 'Europe', en: 'Europe', center: [45, 15] as [number, number], zoom: 4 },
+  { id: 'all', en: 'All Continents', center: [15, 10] as [number, number], zoom: 2 },
+  { id: 'Africa', en: 'Africa', center: [-2, 22] as [number, number], zoom: 4 },
+  { id: 'Oceania', en: 'Australia & Oceania', center: [-24, 134] as [number, number], zoom: 4 },
+  { id: 'South America', en: 'South America', center: [-14, -56] as [number, number], zoom: 4 },
+  { id: 'Asia', en: 'Asia', center: [20, 95] as [number, number], zoom: 4 },
+  { id: 'North America', en: 'North America', center: [40, -100] as [number, number], zoom: 4 },
+  { id: 'Europe', en: 'Europe', center: [45, 15] as [number, number], zoom: 4 },
 ] as const;
 
 const EN_TRANSLATIONS = {
@@ -136,6 +136,5 @@ const EN_TRANSLATIONS = {
 };
 
 export const TRANSLATIONS = {
-  vi: EN_TRANSLATIONS,
   en: EN_TRANSLATIONS,
 } as const;

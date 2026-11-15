@@ -231,7 +231,6 @@ function createViirsCraft(): THREE.Group {
 
 export interface CinematicEarthProps {
   className?: string;
-  isVi?: boolean;
 }
 
 export function CinematicEarth({ className }: CinematicEarthProps) {

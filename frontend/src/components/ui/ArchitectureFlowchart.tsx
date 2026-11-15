@@ -20,15 +20,15 @@ const ICON_MAP = {
 };
 
 export interface ArchitectureFlowchartProps {
-  isVi?: boolean;
+  className?: string;
 }
 
-export function ArchitectureFlowchart({ isVi: _isVi = false }: ArchitectureFlowchartProps) {
+export function ArchitectureFlowchart({ className = '' }: ArchitectureFlowchartProps = {}) {
   const [activeStage, setActiveStage] = useState<number | null>(null);
   const stages = ARCHITECTURE_STAGES;
 
   return (
-    <div className="space-y-6">
+    <div className={cx('space-y-6', className)}>
       {/* Interactive Architecture SVG Canvas */}
       <div className="relative overflow-hidden rounded-2xl border border-line-strong bg-ink-950/90 p-4 sm:p-6 shadow-2xl backdrop-blur-md">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4 mb-4">
