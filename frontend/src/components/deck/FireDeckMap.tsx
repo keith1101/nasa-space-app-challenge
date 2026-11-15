@@ -379,6 +379,13 @@ export function FireDeckMap({
     }));
   }, []);
 
+  // Auto-fly camera to country whenever selectedCountryId changes from UI filter or dropdown
+  useEffect(() => {
+    if (selectedCountry) {
+      handleCountryFlyTo(selectedCountry);
+    }
+  }, [selectedCountryId, handleCountryFlyTo]);
+
   // Reset view to global
   const handleResetView = useCallback(() => {
     onSelectCountry(null);

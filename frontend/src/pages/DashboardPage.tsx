@@ -25,6 +25,7 @@ import { useFilterStore } from '../stores/useFilterStore';
 import { useUiStore } from '../stores/useUiStore';
 import { fmtInt, fmtNum } from '../lib/format';
 import { CONTINENTS, TRANSLATIONS } from '../lib/i18n';
+import { isPointInGeoJson } from '../lib/geo';
 import type {
   GlobalCountryInfo,
   GlobalHarmonizedPoint,
@@ -155,6 +156,35 @@ export function DashboardPage() {
     return countryMap.get(selectedCountryId) || null;
   }, [selectedCountryId, countryMap]);
 
+  // Determine actual sovereign country for the selected fire point using Point-in-Polygon (PIP)
+  const activePointCountry = useMemo<GlobalCountryInfo | null>(() => {
+    if (!selectedPoint) return null;
+    const lat = selectedPoint[0];
+    const lon = selectedPoint[1];
+    const worldFeatures = datasetState.status === 'ready' ? datasetState.data?.worldCountries?.features : null;
+
+    const candidates = countries.filter(
+      (c) =>
+        lat >= c.bounds[0][0] &&
+        lat <= c.bounds[1][0] &&
+        lon >= c.bounds[0][1] &&
+        lon <= c.bounds[1][1],
+    );
+
+    if (candidates.length === 0) return null;
+    if (candidates.length === 1 && !worldFeatures) return candidates[0];
+
+    if (worldFeatures) {
+      for (const c of candidates) {
+        const feat = worldFeatures[c.id];
+        if (feat && isPointInGeoJson(lat, lon, feat.geometry)) {
+          return c;
+        }
+      }
+    }
+    return candidates[0] || null;
+  }, [selectedPoint, countries, datasetState]);
+
   // Points pool
   const allPoints = useMemo<GlobalHarmonizedPoint[]>(() => {
     if (datasetState.status !== 'ready') return [];
@@ -188,6 +218,7 @@ export function DashboardPage() {
     const isHighFrpFilter = filterType === 'high_frp';
     const hasContinentFilter = selectedContinent !== 'all';
     const hasCountryFilter = selectedCountryId != null;
+    const worldFeatures = datasetState.status === 'ready' ? datasetState.data?.worldCountries?.features : null;
 
     const result: GlobalHarmonizedPoint[] = [];
     let frpSum = 0;
@@ -203,13 +234,22 @@ export function DashboardPage() {
       // Confidence threshold check
       if (minConfidence > 0 && conf < minConfidence) continue;
 
-      // Country check
-      if (hasCountryFilter) {
+      // Country check with true Point-in-Polygon validation against sovereign border
+      if (hasCountryFilter && selectedCountry) {
         if (countryId != null && countryId >= 0) {
           if (countryId !== selectedCountryId) continue;
-        } else if (selectedCountry) {
+        } else {
           const [[minLat, minLon], [maxLat, maxLon]] = selectedCountry.bounds;
+          // Step 1: O(1) Fast bounding box rejection (filters out 99% of global points)
           if (pt[0] < minLat || pt[0] > maxLat || pt[1] < minLon || pt[1] > maxLon) continue;
+
+          // Step 2: Accurate Point-in-Polygon test against Natural Earth sovereign geometry
+          if (worldFeatures) {
+            const feat = worldFeatures[selectedCountry.id];
+            if (feat && !isPointInGeoJson(pt[0], pt[1], feat.geometry)) {
+              continue;
+            }
+          }
         }
       }
 
@@ -702,10 +742,10 @@ export function DashboardPage() {
             </div>
           </div>
 
-          {/* Radix UI Fire Detail Inspection Modal */}
+          {/* Floating Tactical Fire Detail Card */}
           <FireDetailDialog
             point={selectedPoint}
-            country={selectedCountry}
+            country={activePointCountry}
             lang={lang}
             onClose={() => setSelectedPoint(null)}
             riskPersistence={
