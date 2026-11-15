@@ -236,19 +236,15 @@ export function DashboardPage() {
 
       // Country check with true Point-in-Polygon validation against sovereign border
       if (hasCountryFilter && selectedCountry) {
-        if (countryId != null && countryId >= 0) {
-          if (countryId !== selectedCountryId) continue;
-        } else {
-          const [[minLat, minLon], [maxLat, maxLon]] = selectedCountry.bounds;
-          // Step 1: O(1) Fast bounding box rejection (filters out 99% of global points)
-          if (pt[0] < minLat || pt[0] > maxLat || pt[1] < minLon || pt[1] > maxLon) continue;
+        const [[minLat, minLon], [maxLat, maxLon]] = selectedCountry.bounds;
+        // Step 1: O(1) Fast bounding box rejection (filters out 99% of global points)
+        if (pt[0] < minLat || pt[0] > maxLat || pt[1] < minLon || pt[1] > maxLon) continue;
 
-          // Step 2: Accurate Point-in-Polygon test against Natural Earth sovereign geometry
-          if (worldFeatures) {
-            const feat = worldFeatures[selectedCountry.id];
-            if (feat && !isPointInGeoJson(pt[0], pt[1], feat.geometry)) {
-              continue;
-            }
+        // Step 2: Accurate Point-in-Polygon test against Natural Earth sovereign geometry
+        if (worldFeatures) {
+          const feat = worldFeatures[selectedCountry.id];
+          if (feat && !isPointInGeoJson(pt[0], pt[1], feat.geometry)) {
+            continue;
           }
         }
       }
@@ -527,6 +523,55 @@ export function DashboardPage() {
                   </div>
                 </div>
 
+                {/* Quick Sovereign Filter Toolbar */}
+                <div className="flex items-center gap-1.5 pt-0.5">
+                  <span className="text-[10px] text-slate-400 font-medium">
+                    {lang === 'vi' ? 'Lọc nhanh:' : 'Quick Filter:'}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const vn = countries.find((c) => c.name.toLowerCase() === 'vietnam');
+                      if (vn) {
+                        if (selectedCountryId === vn.id) {
+                          setSelectedCountryId(null);
+                        } else {
+                          setSelectedCountryId(vn.id);
+                          if (minConfidence > 50) setMinConfidence(0);
+                        }
+                        setSelectedPoint(null);
+                      }
+                    }}
+                    className={cx(
+                      'flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all border shadow-sm',
+                      selectedCountry?.name.toLowerCase() === 'vietnam'
+                        ? 'bg-rose-500/25 text-rose-300 border-rose-500/50 shadow-rose-500/20'
+                        : 'bg-ink-850 text-slate-300 border-line hover:border-cyan-400/50 hover:text-white'
+                    )}
+                  >
+                    <span>🇻🇳</span>
+                    <span>Việt Nam</span>
+                    {selectedCountry?.name.toLowerCase() === 'vietnam' && (
+                      <span className="text-[9px] bg-rose-500 text-white rounded-full px-1.5 py-0.2 ml-0.5">
+                        {lang === 'vi' ? 'Đang lọc' : 'Active'}
+                      </span>
+                    )}
+                  </button>
+
+                  {selectedCountryId != null && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedCountryId(null);
+                        setSelectedPoint(null);
+                      }}
+                      className="text-[10px] text-cyan-300 hover:underline ml-auto font-medium"
+                    >
+                      {lang === 'vi' ? 'Toàn cảnh thế giới' : 'Reset to global'}
+                    </button>
+                  )}
+                </div>
+
                 {/* Category Filter Pills (clean text pills without icon clutter) */}
                 <div className="flex flex-wrap gap-1.5 pt-0.5">
                   <button
@@ -748,6 +793,10 @@ export function DashboardPage() {
             country={activePointCountry}
             lang={lang}
             onClose={() => setSelectedPoint(null)}
+            onFilterCountry={(cid) => {
+              setSelectedCountryId(cid);
+              if (minConfidence > 50) setMinConfidence(0);
+            }}
             riskPersistence={
               fireRisk?.persistence_index
                 ? fireRisk.persistence_index[String(riskHorizon)]

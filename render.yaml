@@ -14,7 +14,7 @@ services:
     name: nasa-firms-platform
     runtime: docker
     plan: free # Change to starter/standard if dedicated RAM/CPU is desired
-    region: oregon # Available: oregon, ohio, frankfurt, singapore
+    region: singapore # Closest to Vietnam (or oregon, frankfurt)
     branch: dev
     dockerfilePath: ./Dockerfile
     dockerContext: .
@@ -24,5 +24,19 @@ services:
         value: 10000
       - key: PYTHONUNBUFFERED
         value: "1"
+      # NASA FIRMS API Key for live satellite observations
       - key: FIRMS_MAP_KEY
-        sync: false # Set via Render Dashboard if using live NASA FIRMS API key
+        sync: false
+      # Hybrid LLM Routing Engine: heuristic (default) | auto | edge | cloud
+      - key: ROUTER_MODE
+        value: heuristic
+      # Gemini API configuration (optional)
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
+      # OpenAI API configuration (optional)
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4o

@@ -16,6 +16,7 @@ import {
   Maximize2,
   Minimize2,
   Navigation,
+  X,
 } from 'lucide-react';
 import type { Language } from '../../lib/i18n';
 import { TRANSLATIONS } from '../../lib/i18n';
@@ -436,12 +437,24 @@ export function FireDeckMap({
           stroked: true,
           filled: true,
           lineWidthMinPixels: 1,
-          getLineColor: [56, 189, 248, 70],
+          getLineColor: (feature: any) => {
+            const props = feature.properties || {};
+            const name = (props.NAME || props.ADMIN || '').toLowerCase();
+            const isSelected = selectedCountry && selectedCountry.name.toLowerCase() === name;
+            return isSelected ? [34, 211, 238, 255] : [56, 189, 248, 70];
+          },
+          getLineWidth: (feature: any) => {
+            const props = feature.properties || {};
+            const name = (props.NAME || props.ADMIN || '').toLowerCase();
+            const isSelected = selectedCountry && selectedCountry.name.toLowerCase() === name;
+            return isSelected ? 3 : 1;
+          },
           getFillColor: (feature: any) => {
             const props = feature.properties || {};
-            const countryId = props.id ?? props.country_id;
-            if (selectedCountryId != null && countryId === selectedCountryId) {
-              return [56, 189, 248, 50];
+            const name = (props.NAME || props.ADMIN || '').toLowerCase();
+            const isSelected = selectedCountry && selectedCountry.name.toLowerCase() === name;
+            if (isSelected) {
+              return [56, 189, 248, 65];
             }
             return [15, 23, 42, 25];
           },
@@ -848,9 +861,20 @@ export function FireDeckMap({
               {fmtInt(globalPoints.length)} {lang === 'vi' ? 'điểm' : 'hotspots'}
             </span>
             {selectedCountry && (
-              <span className="rounded bg-cyan-500/20 px-2 py-0.5 text-[10px] font-bold text-cyan-300 border border-cyan-400/30">
-                {selectedCountry.name}
-              </span>
+              <div className="flex items-center gap-1 rounded bg-cyan-500/20 px-2 py-0.5 text-[10px] font-bold text-cyan-300 border border-cyan-400/30">
+                <span>{selectedCountry.name}</span>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleResetView();
+                  }}
+                  className="hover:text-rose-400 transition-colors ml-0.5"
+                  title={lang === 'vi' ? 'Hủy lọc quốc gia, xem toàn cảnh thế giới' : 'Reset country filter'}
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
             )}
           </div>
 

@@ -31,6 +31,7 @@ export interface FireDetailDialogProps {
   onClose: () => void;
   riskPersistence?: number;
   onScramble?: (point: GlobalHarmonizedPoint) => void;
+  onFilterCountry?: (countryId: number) => void;
   multiHorizonSize?: FireRiskQueryResult['multi_horizon_size'];
   initialHorizon?: number;
 }
@@ -42,6 +43,7 @@ export function FireDetailDialog({
   onClose,
   riskPersistence,
   onScramble,
+  onFilterCountry,
   multiHorizonSize,
   initialHorizon = 6,
 }: FireDetailDialogProps) {
@@ -274,9 +276,21 @@ export function FireDetailDialog({
               <Globe2 className="h-3.5 w-3.5 text-cyan-400" />
               {isVi ? 'Vị trí địa lý / Quốc gia:' : 'Jurisdiction:'}
             </span>
-            <span className="font-semibold text-white">
-              {country ? `${country.name} (${country.continent})` : isVi ? 'Vùng biển / Biên giới' : 'Border / Offshore'}
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="font-semibold text-white">
+                {country ? `${country.name} (${country.continent})` : isVi ? 'Vùng biển / Biên giới' : 'Border / Offshore'}
+              </span>
+              {country && onFilterCountry && (
+                <button
+                  type="button"
+                  onClick={() => onFilterCountry(country.id)}
+                  className="rounded bg-cyan-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-cyan-300 hover:bg-cyan-500/30 border border-cyan-400/30 transition-colors"
+                  title={isVi ? `Chỉ hiển thị các điểm cháy tại ${country.name}` : `Filter only ${country.name}`}
+                >
+                  {isVi ? 'Lọc nước này' : 'Filter'}
+                </button>
+              )}
+            </div>
           </div>
           <div className="flex items-center justify-between border-t border-line/60 pt-1.5 text-[11px]">
             <span className="text-slate-400 flex items-center gap-1.5">
