@@ -589,7 +589,7 @@ export function FireDeckMap({
     }
 
     // 4. Concentric 3-Layer Spread Target for Selected Global Point
-    // (Đỏ trong cùng [6h] / Cam ở giữa [12h] / Xanh bao trùm [24h])
+    // (Red core [6h] / Orange mid [12h] / Emerald perimeter [24h])
     if (selectedGlobalPoint) {
       const lat = selectedGlobalPoint[0];
       const lon = selectedGlobalPoint[1];
@@ -603,7 +603,7 @@ export function FireDeckMap({
       const r12M = Math.max(r6M * 1.6, Math.round(Math.sqrt((a12 * 1_000_000) / Math.PI)));
       const r24M = Math.max(r12M * 1.5, Math.round(Math.sqrt((a24 * 1_000_000) / Math.PI)));
 
-      // 4.1. Layer 3 (24h): Xanh Bao Trùm (Outermost Emerald/Cyan Ring)
+      // 4.1. Layer 3 (24h): Outermost Emerald Ring
       activeLayers.push(
         new ScatterplotLayer({
           id: 'concentric-ring-24h-outer',
@@ -645,7 +645,7 @@ export function FireDeckMap({
         }),
       );
 
-      // 4.3. Layer 2 (12h): Cam Ở Giữa (Middle Vivid Orange/Amber Ring)
+      // 4.3. Layer 2 (12h): Middle Orange Ring
       activeLayers.push(
         new ScatterplotLayer({
           id: 'concentric-ring-12h-middle',
@@ -664,7 +664,7 @@ export function FireDeckMap({
         }),
       );
 
-      // 4.4. Layer 1 (6h): Đỏ Trong Cùng (Innermost Crimson Red Core)
+      // 4.4. Layer 1 (6h): Innermost Crimson Red Core
       activeLayers.push(
         new ScatterplotLayer({
           id: 'concentric-ring-6h-inner',

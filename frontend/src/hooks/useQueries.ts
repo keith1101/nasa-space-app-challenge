@@ -166,7 +166,7 @@ export function useGlobalDatasetsQuery() {
   return {
     isPending,
     isError,
-    error: error ? (error instanceof Error ? error.message : 'Lỗi tải dữ liệu') : null,
+    error: error ? (error instanceof Error ? error.message : 'Data fetch error') : null,
     data,
     refetch,
     calendarData: calendarQuery.data ?? null,
@@ -187,8 +187,8 @@ export function useFirmsLiveQuery() {
         return {
           mode: status.mode || 'sample',
           statusText: status.last_error
-            ? 'FIRMS lỗi cập nhật · đang dùng dữ liệu cũ'
-            : 'Đang dùng dữ liệu mẫu · đặt FIRMS_MAP_KEY để bật FIRMS',
+            ? 'FIRMS sync error · using cached baseline'
+            : 'Sample mode · set FIRMS_MAP_KEY for live feed',
           points: null,
           fetchedAt: status.fetched_at,
         };
@@ -212,7 +212,7 @@ export function useFirmsLiveQuery() {
 
       return {
         mode: 'live',
-        statusText: `FIRMS · vùng Việt Nam cập nhật ${new Date(status.fetched_at).toLocaleString()}`,
+        statusText: `FIRMS · Live telemetry updated ${new Date(status.fetched_at).toLocaleString()}`,
         points,
         fetchedAt: status.fetched_at,
       };
@@ -229,7 +229,7 @@ export function useVegetationQuery(enabled: boolean) {
     queryFn: async ({ signal }) => {
       const res = await fetch('/api/vegetation-fires', { signal });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || 'Không tải được thảm thực vật');
+      if (!res.ok) throw new Error(data.detail || 'Failed to load vegetation layer');
       return data;
     },
     enabled,
@@ -248,7 +248,7 @@ export function useFireRiskGridQuery(lat?: number, lon?: number) {
         { signal },
       );
       const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || 'Lỗi tải lưới lan truyền');
+      if (!res.ok) throw new Error(data.detail || 'Failed to load fire spread grid');
       return data;
     },
     enabled: isEnabled,

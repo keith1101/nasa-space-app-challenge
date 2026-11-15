@@ -50,7 +50,6 @@ export function FireDetailDialog({
   const [copied, setCopied] = useState(false);
   const [selectedHorizon, setSelectedHorizon] = useState<number>(initialHorizon);
   const [isMinimized, setIsMinimized] = useState(false);
-  const isVi = false;
 
   // Whenever a new fire point is selected, auto-expand the details card
   useEffect(() => {
@@ -116,16 +115,16 @@ export function FireDetailDialog({
             type="button"
             onClick={() => setIsMinimized(false)}
             className="flex items-center gap-1 rounded-lg bg-cyan-500/20 border border-cyan-400/30 px-2.5 py-1 text-[11px] font-bold text-cyan-300 hover:bg-cyan-500/30 transition-all"
-            title={isVi ? 'Mở lại bảng chi tiết' : 'Expand detail card'}
+            title="Expand detail card"
           >
             <Maximize2 className="h-3 w-3" />
-            <span>{isVi ? 'Mở chi tiết' : 'Expand'}</span>
+            <span>Expand</span>
           </button>
           <button
             type="button"
             onClick={onClose}
             className="rounded-lg p-1 text-slate-400 hover:bg-ink-800 hover:text-rose-300 transition-colors"
-            title={isVi ? 'Bỏ chọn điểm cháy' : 'Deselect fire point'}
+            title="Deselect fire point"
           >
             <X className="h-3.5 w-3.5" />
           </button>
@@ -161,7 +160,7 @@ export function FireDetailDialog({
           </div>
           <div>
             <div className="text-sm font-bold text-white flex items-center gap-2">
-              <span>{isVi ? 'Chi Tiết Điểm Cháy Hợp Nhất' : 'Harmonized Active Fire Telemetry'}</span>
+              <span>Harmonized Active Fire</span>
               {isDual && (
                 <span className="rounded bg-emerald-400/20 px-1.5 py-0.5 font-mono text-[9px] font-bold text-emerald-300 border border-emerald-400/30">
                   DUAL
@@ -169,9 +168,7 @@ export function FireDetailDialog({
               )}
             </div>
             <div className="text-[11px] text-slate-400">
-              {isVi
-                ? 'Dữ liệu viễn thám chuẩn hóa ST-DBSCAN v2.2'
-                : 'Remote sensing telemetry (ST-DBSCAN v2.2)'}
+              ST-DBSCAN v2.2 Telemetry
             </div>
           </div>
         </div>
@@ -182,7 +179,7 @@ export function FireDetailDialog({
             type="button"
             onClick={() => setIsMinimized(true)}
             className="rounded-lg p-1.5 text-slate-400 hover:bg-ink-800 hover:text-cyan-300 transition-colors"
-            title={isVi ? 'Thu nhỏ xuống thanh đáy để xem toàn màn hình map' : 'Minimize to view map'}
+            title="Minimize to view map"
           >
             <Minimize2 className="h-4 w-4" />
           </button>
@@ -191,7 +188,7 @@ export function FireDetailDialog({
             type="button"
             onClick={onClose}
             className="rounded-lg p-1.5 text-slate-400 hover:bg-ink-800 hover:text-rose-300 transition-colors"
-            title={isVi ? 'Bỏ chọn điểm cháy' : 'Deselect fire point'}
+            title="Deselect fire point"
           >
             <X className="h-4 w-4" />
           </button>
@@ -204,7 +201,7 @@ export function FireDetailDialog({
         <div className="flex items-center justify-between rounded-xl border border-line bg-ink-900/80 p-2.5">
           <div>
             <span className="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-              {isVi ? 'Tọa độ trắc địa WGS-84' : 'Geodesic Coordinates (WGS-84)'}
+              Geodesic Coordinates (WGS-84)
             </span>
             <span className="font-mono text-sm font-bold text-cyan-300">
               {fmtNum(lat, 5)}° N, {fmtNum(lon, 5)}° E
@@ -214,17 +211,17 @@ export function FireDetailDialog({
             type="button"
             onClick={handleCopyCoords}
             className="inline-flex items-center gap-1.5 rounded-lg border border-line-strong bg-ink-850 px-2.5 py-1 text-[11px] font-medium text-slate-300 hover:border-cyan-400 hover:text-white transition-colors"
-            title="Sao chép tọa độ"
+            title="Copy coordinates"
           >
             {copied ? (
               <>
                 <Check className="h-3 w-3 text-emerald-400" />
-                <span className="text-emerald-300 font-bold">{isVi ? 'Đã chép' : 'Copied'}</span>
+                <span className="text-emerald-300 font-bold">Copied</span>
               </>
             ) : (
               <>
                 <Copy className="h-3 w-3" />
-                <span>{isVi ? 'Sao chép' : 'Copy'}</span>
+                <span>Copy</span>
               </>
             )}
           </button>
@@ -240,31 +237,31 @@ export function FireDetailDialog({
               {fmtNum(frp, 1)} <span className="text-[10px] font-normal text-slate-400">MW</span>
             </div>
             <div className="text-[9px] text-amber-300">
-              {frp >= 25 ? (isVi ? 'Cường độ cao' : 'High energy') : (isVi ? 'Mức tiêu chuẩn' : 'Moderate')}
+              {frp >= 25 ? 'High energy' : 'Moderate'}
             </div>
           </div>
 
           <div className="rounded-xl border border-line bg-ink-900/60 p-2.5 space-y-0.5">
             <span className="text-[9px] uppercase font-bold text-slate-400 tracking-wider">
-              {isVi ? 'Độ tin cậy' : 'Confidence'}
+              Confidence
             </span>
             <div className="text-sm font-extrabold text-emerald-300 font-mono">
               {conf}%
             </div>
             <div className="text-[9px] text-slate-400">
-              {conf >= 80 ? (isVi ? 'Rất cao (≥80%)' : 'High') : (isVi ? 'Đạt chuẩn' : 'Standard')}
+              {conf >= 80 ? 'High' : 'Standard'}
             </div>
           </div>
 
           <div className="rounded-xl border border-line bg-ink-900/60 p-2.5 space-y-0.5">
             <span className="text-[9px] uppercase font-bold text-slate-400 tracking-wider">
-              {isVi ? 'Lượt quét' : 'Raw Scans'}
+              Raw Scans
             </span>
             <div className="text-sm font-extrabold text-cyan-300 font-mono">
               {rawScans}
             </div>
             <div className="text-[9px] text-slate-400">
-              {rawScans > 1 ? (isVi ? 'Đa quan sát' : 'Multi-pass') : (isVi ? 'Đơn quan sát' : 'Single')}
+              {rawScans > 1 ? 'Multi-pass' : 'Single'}
             </div>
           </div>
         </div>
@@ -274,20 +271,20 @@ export function FireDetailDialog({
           <div className="flex items-center justify-between text-[11px]">
             <span className="text-slate-400 flex items-center gap-1.5">
               <Globe2 className="h-3.5 w-3.5 text-cyan-400" />
-              {isVi ? 'Vị trí địa lý / Quốc gia:' : 'Jurisdiction:'}
+              Jurisdiction:
             </span>
             <div className="flex items-center gap-1.5">
               <span className="font-semibold text-white">
-                {country ? `${country.name} (${country.continent})` : isVi ? 'Vùng biển / Biên giới' : 'Border / Offshore'}
+                {country ? `${country.name} (${country.continent})` : 'Border / Offshore'}
               </span>
               {country && onFilterCountry && (
                 <button
                   type="button"
                   onClick={() => onFilterCountry(country.id)}
                   className="rounded bg-cyan-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-cyan-300 hover:bg-cyan-500/30 border border-cyan-400/30 transition-colors"
-                  title={isVi ? `Chỉ hiển thị các điểm cháy tại ${country.name}` : `Filter only ${country.name}`}
+                  title={`Filter only ${country.name}`}
                 >
-                  {isVi ? 'Lọc nước này' : 'Filter'}
+                  Filter
                 </button>
               )}
             </div>
@@ -295,7 +292,7 @@ export function FireDetailDialog({
           <div className="flex items-center justify-between border-t border-line/60 pt-1.5 text-[11px]">
             <span className="text-slate-400 flex items-center gap-1.5">
               <Satellite className="h-3.5 w-3.5 text-emerald-400" />
-              {isVi ? 'Cảm biến viễn thám:' : 'Sensor Footprint:'}
+              Sensor Footprint:
             </span>
             <span className="font-mono text-emerald-300">
               {isDual ? 'MODIS 1000m + VIIRS 375m' : 'VIIRS 375m I-band'}
@@ -305,7 +302,7 @@ export function FireDetailDialog({
             <div className="flex items-center justify-between border-t border-line/60 pt-1.5 text-[11px]">
               <span className="text-slate-400 flex items-center gap-1.5">
                 <Sparkles className="h-3.5 w-3.5 text-amber-400" />
-                {isVi ? 'Chỉ số bền vững lan truyền:' : 'Persistence Index:'}
+                Persistence Index:
               </span>
               <span className="font-mono font-bold text-amber-300">
                 {riskPersistence.toFixed(2)}
@@ -320,7 +317,7 @@ export function FireDetailDialog({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-[11px] font-bold text-amber-300">
                 <Clock className="h-3.5 w-3.5 text-amber-400" />
-                <span>{isVi ? 'Mô Phỏng Lan Truyền Theo Chân Trời' : 'Multi-Horizon Spread Projections'}</span>
+                <span>Multi-Horizon Spread Projections</span>
               </div>
               {/* Horizon Tabs */}
               <div className="flex items-center gap-1 bg-ink-950 p-0.5 rounded-lg border border-line">
@@ -349,7 +346,7 @@ export function FireDetailDialog({
                   <div className="space-y-2 pt-1 border-t border-line/50">
                     <div className="flex items-center justify-between text-[11px]">
                       <span className="text-slate-400">
-                        {isVi ? 'Quy mô diện tích ước tính:' : 'Expected Burn Area:'}
+                        Expected Burn Area:
                       </span>
                       <div className="text-right">
                         <span className="font-mono font-extrabold text-amber-300 text-xs">
@@ -362,7 +359,7 @@ export function FireDetailDialog({
                     </div>
 
                     <div className="flex items-center justify-between text-[11px]">
-                      <span className="text-slate-400">{isVi ? 'Phân cấp hiểm họa:' : 'Threat Milestone:'}</span>
+                      <span className="text-slate-400">Threat Milestone:</span>
                       <span className="rounded bg-amber-400/10 border border-amber-400/30 px-2 py-0.5 font-bold text-[10px] text-amber-300">
                         {data.threat_milestone}
                       </span>
@@ -370,13 +367,13 @@ export function FireDetailDialog({
 
                     <div className="grid grid-cols-2 gap-2 pt-1 border-t border-line/40 text-[10px]">
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-400">{isVi ? 'Tế bào nguy cơ cao:' : 'High Risk Cells:'}</span>
+                        <span className="text-slate-400">High Risk Cells:</span>
                         <span className="font-mono font-bold text-white">
-                          {data.high_risk_cells} ô (1 km²)
+                          {data.high_risk_cells} cells (1 km²)
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-slate-400">{isVi ? 'Độ tin cậy duy trì:' : 'Confidence:'}</span>
+                        <span className="text-slate-400">Confidence:</span>
                         <span className="font-mono font-bold text-emerald-400">
                           {(data.persistence_confidence * 100).toFixed(0)}%
                         </span>
@@ -387,7 +384,7 @@ export function FireDetailDialog({
               })()
             ) : (
               <div className="text-[11px] text-slate-500 italic py-1 text-center">
-                {isVi ? 'Đang tính toán ma trận lan truyền 11x11...' : 'Computing 11x11 cellular automaton...'}
+                Computing 11x11 cellular automaton...
               </div>
             )}
           </div>
@@ -401,20 +398,20 @@ export function FireDetailDialog({
           className="inline-flex items-center gap-1 text-[11px] text-cyan-400 hover:text-cyan-300 font-semibold"
         >
           <Layers className="h-3 w-3" />
-          <span>{isVi ? 'Công thức' : 'Math'}</span>
+          <span>Math</span>
           <ExternalLink className="h-2.5 w-2.5" />
         </Link>
 
         <div className="flex items-center gap-1.5">
-          {/* Button: Xem trên Map (Thu gọn để nhìn trọn vẹn 3 vòng) */}
+          {/* Button: View on Map */}
           <button
             type="button"
             onClick={() => setIsMinimized(true)}
             className="flex items-center gap-1 rounded-xl border border-line bg-ink-900 px-2.5 py-1.5 text-[11px] font-semibold text-slate-200 hover:bg-ink-800 hover:text-white transition-colors"
-            title={isVi ? 'Thu gọn bảng để nhìn rõ 3 vòng lan truyền trên bản đồ' : 'Collapse card to view map'}
+            title="Collapse card to view map"
           >
             <Eye className="h-3.5 w-3.5 text-cyan-400" />
-            <span>{isVi ? 'Xem trên map' : 'View map'}</span>
+            <span>View map</span>
           </button>
 
           {/* Scramble Flight 3D Button */}
@@ -428,7 +425,7 @@ export function FireDetailDialog({
               className="flex items-center gap-1 rounded-xl bg-gradient-to-r from-red-600 via-orange-600 to-amber-600 hover:from-red-500 hover:to-amber-500 px-3 py-1.5 text-[11px] font-bold text-white shadow-lg shadow-red-600/30 transition-all"
             >
               <Plane className="h-3.5 w-3.5" />
-              <span>{isVi ? 'Xuất Kích' : 'Scramble'}</span>
+              <span>Scramble</span>
             </button>
           )}
 
@@ -437,9 +434,9 @@ export function FireDetailDialog({
             type="button"
             onClick={onClose}
             className="rounded-xl border border-line bg-ink-900 px-2.5 py-1.5 text-[11px] font-semibold text-slate-400 hover:bg-rose-500/20 hover:text-rose-300 hover:border-rose-500/30 transition-colors"
-            title={isVi ? 'Bỏ chọn điểm cháy này' : 'Deselect this fire'}
+            title="Deselect this fire"
           >
-            {isVi ? 'Bỏ chọn' : 'Clear'}
+            Clear
           </button>
         </div>
       </div>

@@ -55,7 +55,6 @@ export function CockpitHUD({
   onToggleFullscreen,
 }: CockpitHUDProps) {
   const [showHelp, setShowHelp] = useState(false);
-  const isVi = false;
 
   // Toggle Controls Cheat Sheet with 'H' key or close with 'Esc'
   useEffect(() => {
@@ -222,7 +221,7 @@ export function CockpitHUD({
             <div className="flex items-center gap-1 min-w-0">
               <Flame className="w-3 h-3 text-rose-400 shrink-0" />
               <span className="font-bold text-white truncate max-w-[90px]">
-                {targetFire.name?.split('(')[0].trim() || (isVi ? 'ĐÁM CHÁY' : 'FIRE')}
+                {targetFire.name?.split('(')[0].trim() || 'FIRE'}
               </span>
             </div>
             <div className="flex items-center gap-1.5 font-mono text-[9px]">
@@ -232,15 +231,15 @@ export function CockpitHUD({
             <div className="text-[10px] font-bold">
               {Math.abs(navCalc.relBearing) <= 3 ? (
                 <span className="text-emerald-400 flex items-center gap-0.5">
-                  <span>▲</span> {isVi ? 'ĐÚNG HƯỚNG' : 'ON COURSE'}
+                  <span>▲</span> ON COURSE
                 </span>
               ) : navCalc.relBearing < 0 ? (
                 <span className="text-amber-400 flex items-center gap-0.5 animate-pulse">
-                  <span>◄</span> {isVi ? 'RẼ TRÁI' : 'LEFT'} {Math.abs(Math.round(navCalc.relBearing))}°
+                  <span>◄</span> LEFT {Math.abs(Math.round(navCalc.relBearing))}°
                 </span>
               ) : (
                 <span className="text-amber-400 flex items-center gap-0.5 animate-pulse">
-                  <span>►</span> {isVi ? 'RẼ PHẢI' : 'RIGHT'} {Math.round(navCalc.relBearing)}°
+                  <span>►</span> RIGHT {Math.round(navCalc.relBearing)}°
                 </span>
               )}
             </div>
@@ -279,11 +278,11 @@ export function CockpitHUD({
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 flex-wrap">
               <span className="text-[11px] font-bold text-white uppercase tracking-wider truncate">
-                {flightState.mode === 'ground' && (isVi ? 'ĐƯỜNG BĂNG - CHUẨN BỊ' : 'RUNWAY PREP')}
-                {flightState.mode === 'takeoff' && (isVi ? 'CẤT CÁNH & LẤY ĐỘ CAO' : 'LIFTOFF & CLIMB')}
-                {flightState.mode === 'transit' && (isVi ? 'BAY TIẾP CẬN ĐÁM CHÁY' : 'ENROUTE TRANSIT')}
-                {flightState.mode === 'orbit' && (isVi ? 'TUẦN TRA QUANH TÂM CHÁY' : 'TACTICAL FIRE ORBIT')}
-                {flightState.mode === 'manual' && (isVi ? 'CHẾ ĐỘ TỰ LÁI FPV' : 'MANUAL PILOT (FPV)')}
+                {flightState.mode === 'ground' && 'RUNWAY PREP'}
+                {flightState.mode === 'takeoff' && 'LIFTOFF & CLIMB'}
+                {flightState.mode === 'transit' && 'ENROUTE TRANSIT'}
+                {flightState.mode === 'orbit' && 'TACTICAL FIRE ORBIT'}
+                {flightState.mode === 'manual' && 'MANUAL PILOT (FPV)'}
               </span>
               <span className="text-[9px] px-1 py-0.2 rounded bg-cyan-950 border border-cyan-600/50 font-mono text-cyan-300">
                 {flightState.mode === 'manual' ? 'MANUAL' : 'AUTO'}
@@ -315,9 +314,7 @@ export function CockpitHUD({
           >
             <Sliders className="w-3 h-3 text-amber-400" />
             <span>
-              {flightState.mode === 'manual'
-                ? isVi ? 'Tự Động (Tab)' : 'Auto (Tab)'
-                : isVi ? 'Tự Lái FPV (Tab)' : 'Manual (Tab)'}
+              {flightState.mode === 'manual' ? 'Auto (Tab)' : 'Manual (Tab)'}
             </span>
           </button>
 
@@ -325,10 +322,10 @@ export function CockpitHUD({
             type="button"
             onClick={() => setShowHelp(!showHelp)}
             className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-[11px] text-slate-300 hover:text-white transition-colors shadow-lg"
-            title={isVi ? 'Phím điều khiển' : 'Controls Cheat Sheet'}
+            title="Controls Cheat Sheet"
           >
             <Keyboard className="w-3 h-3 text-cyan-400" />
-            <span>{isVi ? 'Phím tắt' : 'Keys'}</span>
+            <span>Keys</span>
           </button>
         </div>
       </div>
@@ -340,17 +337,17 @@ export function CockpitHUD({
             type="button"
             onClick={onToggleFullscreen}
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-white font-bold text-xs shadow-2xl transition-all duration-150 backdrop-blur-md border border-slate-700/80"
-            title={isFullscreen ? (isVi ? 'Thu nhỏ bản đồ (F)' : 'Exit Fullscreen (F)') : (isVi ? 'Toàn màn hình (F)' : 'Fullscreen (F)')}
+            title={isFullscreen ? 'Exit Fullscreen (F)' : 'Fullscreen (F)'}
           >
             {isFullscreen ? (
               <>
                 <Minimize2 className="w-4 h-4 text-cyan-400" />
-                <span>{isVi ? 'Thu nhỏ (F)' : 'Windowed (F)'}</span>
+                <span>Windowed (F)</span>
               </>
             ) : (
               <>
                 <Maximize2 className="w-4 h-4 text-cyan-400" />
-                <span>{isVi ? 'Toàn màn hình (F)' : 'Fullscreen (F)'}</span>
+                <span>Fullscreen (F)</span>
               </>
             )}
           </button>
@@ -362,7 +359,7 @@ export function CockpitHUD({
           className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-rose-600/90 hover:bg-rose-500 text-white font-bold text-xs shadow-2xl transition-all duration-150 backdrop-blur-md border border-rose-400/40"
         >
           <X className="w-4 h-4" />
-          <span>{isVi ? 'Thoát Buồng Lái (Esc)' : 'Exit Cockpit (Esc)'}</span>
+          <span>Exit Cockpit (Esc)</span>
         </button>
       </div>
 
@@ -499,7 +496,7 @@ export function CockpitHUD({
             type="button"
             onClick={() => setIsMfdCollapsed(false)}
             className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-950/90 border border-cyan-500/50 text-cyan-300 hover:text-white shadow-xl backdrop-blur-md text-[11px] font-bold transition-all hover:scale-105"
-            title="Mở rộng Tactical MFD Mini-Map"
+            title="Expand Tactical MFD Mini-Map"
           >
             <Map className="w-3.5 h-3.5 text-cyan-400" />
             <span>MFD {mfdMode.toUpperCase()}</span>
@@ -564,7 +561,7 @@ export function CockpitHUD({
                   type="button"
                   onClick={() => setIsMfdCollapsed(true)}
                   className="p-1 rounded hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
-                  title="Thu nhỏ MFD Mini-map"
+                  title="Collapse MFD Mini-Map"
                 >
                   <ChevronDown className="w-3 h-3" />
                 </button>
@@ -808,7 +805,7 @@ export function CockpitHUD({
               <div className="flex items-center gap-2">
                 <Keyboard className="w-4 h-4 text-cyan-400" />
                 <span className="font-bold text-white text-xs tracking-wide">
-                  {isVi ? 'Bảng Phím Điều Khiển Bay' : 'Flight Simulator Controls'}
+                  Flight Simulator Controls
                 </span>
               </div>
               <button
@@ -822,41 +819,39 @@ export function CockpitHUD({
             <div className="space-y-2 text-[11px]">
               <div className="rounded-lg bg-slate-950/60 p-2 border border-slate-800">
                 <div className="text-[10px] font-bold text-cyan-400 uppercase tracking-wider mb-1">
-                  {isVi ? '🎮 Cần Lái Điều Hướng (Flight Stick)' : '🎮 Flight Control Stick'}
+                  🎮 Flight Control Stick
                 </div>
                 <div className="grid grid-cols-2 gap-1.5">
-                  <div><kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-[10px]">↑</kbd> : {isVi ? 'Chúi mũi' : 'Pitch Down'}</div>
-                  <div><kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-[10px]">↓</kbd> : {isVi ? 'Ngửa mũi / Kéo cao' : 'Pitch Up'}</div>
-                  <div><kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-[10px]">←</kbd> : {isVi ? 'Đánh lái lượn trái' : 'Bank & Turn Left'}</div>
-                  <div><kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-[10px]">→</kbd> : {isVi ? 'Đánh lái lượn phải' : 'Bank & Turn Right'}</div>
+                  <div><kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-[10px]">↑</kbd> : Pitch Down</div>
+                  <div><kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-[10px]">↓</kbd> : Pitch Up</div>
+                  <div><kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-[10px]">←</kbd> : Bank &amp; Turn Left</div>
+                  <div><kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-[10px]">→</kbd> : Bank &amp; Turn Right</div>
                 </div>
               </div>
 
               <div className="rounded-lg bg-slate-950/60 p-2 border border-slate-800">
                 <div className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider mb-1">
-                  {isVi ? '⚡ Ga & Độ Cao (Throttle & Altitude)' : '⚡ Throttle & Altitude'}
+                  ⚡ Throttle &amp; Altitude
                 </div>
                 <div className="grid grid-cols-2 gap-1.5">
-                  <div><kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-[10px]">W / S</kbd> : {isVi ? 'Tăng / Giảm Ga' : 'Throttle +/-'}</div>
-                  <div><kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-[10px]">Space</kbd> : {isVi ? 'Lấy cao nhanh' : 'Quick Climb'}</div>
-                  <div><kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-[10px]">Shift / C</kbd> : {isVi ? 'Hạ cao nhanh' : 'Quick Dive'}</div>
-                  <div><kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-[10px]">Tab</kbd> : {isVi ? 'Tự lái / Tự động' : 'Manual / Auto'}</div>
+                  <div><kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-[10px]">W / S</kbd> : Throttle +/-</div>
+                  <div><kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-[10px]">Space</kbd> : Quick Climb</div>
+                  <div><kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-[10px]">Shift / C</kbd> : Quick Dive</div>
+                  <div><kbd className="px-1.5 py-0.5 rounded bg-slate-800 text-cyan-300 font-mono text-[10px]">Tab</kbd> : Manual / Auto</div>
                 </div>
               </div>
 
               <div className="flex items-center justify-between text-[10px] text-slate-400 px-1 pt-1 border-t border-slate-800">
-                <span><kbd className="px-1 py-0.2 rounded bg-slate-800 text-slate-300 font-mono">F</kbd> {isVi ? 'Toàn màn hình' : 'Fullscreen'}</span>
-                <span><kbd className="px-1 py-0.2 rounded bg-slate-800 text-slate-300 font-mono">H</kbd> {isVi ? 'Ẩn/Hiện phím' : 'Hide/Show'}</span>
-                <span><kbd className="px-1 py-0.2 rounded bg-slate-800 text-slate-300 font-mono">Esc</kbd> {isVi ? 'Thoát' : 'Exit'}</span>
+                <span><kbd className="px-1 py-0.2 rounded bg-slate-800 text-slate-300 font-mono">F</kbd> Fullscreen</span>
+                <span><kbd className="px-1 py-0.2 rounded bg-slate-800 text-slate-300 font-mono">H</kbd> Hide/Show</span>
+                <span><kbd className="px-1 py-0.2 rounded bg-slate-800 text-slate-300 font-mono">Esc</kbd> Exit</span>
               </div>
             </div>
             <div className="pt-2 border-t border-slate-800/80 text-[10px] text-amber-300/90 leading-tight">
-              {isVi
-                ? '💡 Mẹo: Chạm bất kỳ phím lái nào để ngắt Autopilot và tự lái FPV ngay tức thì (Auto-Takeover)!'
-                : '💡 Tip: Press any flight key to instantly override Autopilot and take manual FPV control!'}
+              💡 Tip: Press any flight key to take manual FPV control!
             </div>
             <div className="pt-1.5 border-t border-slate-800 text-[10px] text-slate-400 text-center">
-              {isVi ? 'Bấm bất kỳ đâu hoặc nhấn Esc để đóng' : 'Click anywhere or press Esc to close'}
+              Click anywhere or press Esc to close
             </div>
           </div>
         </div>

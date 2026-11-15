@@ -18,7 +18,7 @@ export interface TerrainConfig {
 export interface Fire3DColumn {
   id: string;
   position: [number, number]; // [lon, lat]
-  elevation: number;          // Chiều cao cột theo FRP (meters)
+  elevation: number;          // Column height based on FRP (meters)
   frp: number;
   satellite: string;
   isDual: boolean;

@@ -93,21 +93,21 @@ export function FireRegimeHeatmap({
           const isAnchor = rec.is_empirical_anchor;
           const statusBadge =
             rec.severity === 'extreme'
-              ? '<span style="color:#fb7185;font-weight:bold;">⚡ Dị thường cực đoan</span>'
+              ? '<span style="color:#fb7185;font-weight:bold;">⚡ Extreme Anomaly</span>'
               : rec.severity === 'high'
-              ? '<span style="color:#fbbf24;font-weight:bold;">▲ Cao hơn trung bình</span>'
-              : '<span style="color:#38bdf8;">● Mức bình thường</span>';
+              ? '<span style="color:#fbbf24;font-weight:bold;">▲ Above Average</span>'
+              : '<span style="color:#38bdf8;">● Normal</span>';
 
           return `
             <div style="font-family: ui-sans-serif, system-ui; padding: 4px 6px;">
               <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px;">
                 <strong style="color: #38bdf8; font-size: 13px;">${monthName} ${rec.year}</strong>
-                ${isAnchor ? '<span style="background: rgba(52, 211, 153, 0.2); color: #34d399; font-size: 10px; padding: 1px 4px; border-radius: 4px;">Quan trắc FIRMS</span>' : ''}
+                ${isAnchor ? '<span style="background: rgba(52, 211, 153, 0.2); color: #34d399; font-size: 10px; padding: 1px 4px; border-radius: 4px;">FIRMS Observed</span>' : ''}
               </div>
               <div style="font-size: 11px; color: #cbd5e1; line-height: 1.5;">
-                <div>Sự kiện cháy: <b style="color: #fff;">${fmtInt(rec.harmonized_count)}</b></div>
-                <div>Khử trùng lặp: <b style="color: #34d399;">${fmtNum(rec.dedup_percent, 1)}%</b> (-${fmtInt(rec.dedup_savings)})</div>
-                <div>Z-score: <b>${fmtNum(rec.z_score, 2)}σ</b> (TB: ${fmtInt(Math.round(rec.historical_mean))})</div>
+                <div>Fire events: <b style="color: #fff;">${fmtInt(rec.harmonized_count)}</b></div>
+                <div>Deduplication: <b style="color: #34d399;">${fmtNum(rec.dedup_percent, 1)}%</b> (-${fmtInt(rec.dedup_savings)})</div>
+                <div>Z-score: <b>${fmtNum(rec.z_score, 2)}σ</b> (Mean: ${fmtInt(Math.round(rec.historical_mean))})</div>
                 <div style="margin-top: 4px;">${statusBadge}</div>
               </div>
             </div>
@@ -145,7 +145,7 @@ export function FireRegimeHeatmap({
         bottom: 0,
         itemWidth: 10,
         itemHeight: 120,
-        text: ['Cao', 'Thấp'],
+        text: ['High', 'Low'],
         textStyle: { color: '#64748b', fontSize: 10 },
         inRange: {
           color: ['#0b162c', '#0369a1', '#0284c7', '#f59e0b', '#ef4444', '#b91c1c'],
@@ -153,7 +153,7 @@ export function FireRegimeHeatmap({
       },
       series: [
         {
-          name: 'Điểm cháy hợp nhất',
+          name: 'Harmonized Fire Events',
           type: 'heatmap',
           data: data as any,
           label: {
@@ -211,10 +211,10 @@ export function FireRegimeHeatmap({
           const high = upperStd[mIdx];
           return `
             <div style="font-family: ui-sans-serif, system-ui; padding: 4px 6px;">
-              <strong style="color: #38bdf8; font-size: 13px;">${monthName} · Chu kỳ mùa</strong>
+              <strong style="color: #38bdf8; font-size: 13px;">${monthName} · Climatology Cycle</strong>
               <div style="font-size: 11px; color: #cbd5e1; margin-top: 4px; line-height: 1.6;">
-                <div>Trung bình lịch sử: <b style="color: #38bdf8;">${fmtInt(mean)}</b> sự kiện</div>
-                <div>Dao động chuẩn (&plusmn;1&sigma;): <b>${fmtInt(low)} &ndash; ${fmtInt(high)}</b></div>
+                <div>Historical mean: <b style="color: #38bdf8;">${fmtInt(mean)}</b> events</div>
+                <div>Normal span (&plusmn;1&sigma;): <b>${fmtInt(low)} &ndash; ${fmtInt(high)}</b></div>
               </div>
             </div>
           `;
@@ -240,7 +240,7 @@ export function FireRegimeHeatmap({
       },
       series: [
         {
-          name: 'Trung bình lịch sử',
+          name: 'Historical Mean',
           type: 'bar',
           data: means,
           itemStyle: {

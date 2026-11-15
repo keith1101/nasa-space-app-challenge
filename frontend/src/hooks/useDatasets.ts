@@ -36,7 +36,7 @@ export function useDatasets(): { state: DatasetState; reload: () => void } {
     return {
       state: {
         status: 'error',
-        message: error || 'Đã xảy ra lỗi khi tải dữ liệu điểm cháy toàn cầu.',
+        message: error || 'Failed to load global active fire telemetry.',
       },
       reload: refetch,
     };

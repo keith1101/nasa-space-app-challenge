@@ -65,11 +65,11 @@ export function DashboardPage() {
   // 1. TanStack Query for Live FIRMS Telemetry (Auto-polling every 15 mins)
   const { data: firmsLive } = useFirmsLiveQuery();
   const liveRegion = firmsLive?.points ?? null;
-  const liveStatus = firmsLive?.statusText ?? 'Đang kiểm tra kết nối vệ tinh NASA FIRMS…';
+  const liveStatus = firmsLive?.statusText ?? 'Checking NASA FIRMS connection…';
 
   // 2. TanStack Query for Vegetation Fire Masks (Cached 10 mins)
   const { data: vegetationData, error: vegError } = useVegetationQuery(vegetationOnly);
-  const vegetationError = vegError ? (vegError instanceof Error ? vegError.message : 'Lỗi thảm thực vật') : '';
+  const vegetationError = vegError ? (vegError instanceof Error ? vegError.message : 'Vegetation layer error') : '';
 
   // 3. TanStack Query for Experimental Fire Risk Grid (Cached by Lat/Lon)
   const { data: fireRisk } = useFireRiskGridQuery(
@@ -310,8 +310,8 @@ export function DashboardPage() {
           <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
           <span className="font-mono text-[11px] text-slate-300">
             {datasetState.status === 'ready'
-              ? `${fmtInt(totalEvents)} / ${fmtInt(allPoints.length)} điểm hiển thị`
-              : 'Đang khởi tạo'}
+              ? `${fmtInt(totalEvents)} / ${fmtInt(allPoints.length)} events rendered`
+              : 'Initializing...'}
           </span>
         </div>
       </div>
@@ -356,7 +356,7 @@ export function DashboardPage() {
                     : minConfidence > 0
                     ? `${t.kpiConfFilterActive(minConfidence)} (${fmtInt(totalEvents)} / ${fmtInt(allPoints.length)})`
                     : liveRegion
-                    ? 'FIRMS vùng VN + toàn cầu'
+                    ? 'FIRMS Live + Global Catalog'
                     : t.kpiTotalSub(rawScans)}
                 </span>
               }
@@ -587,10 +587,10 @@ export function DashboardPage() {
                     <div className="flex items-center justify-between text-[11px]">
                       <div>
                         <span className="font-semibold text-amber-300 block">
-                          3-Layer Concentric Rings
+                          Spread Projection
                         </span>
                         <span className="text-[9px] text-slate-400">
-                          Red core · Orange mid · Green outer
+                          Horizon ring targets
                         </span>
                       </div>
                       <div className="flex gap-1">

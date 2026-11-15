@@ -33,8 +33,6 @@ export function GlobeControls({
     setTerrainExaggeration,
   } = useUiStore();
 
-  const isVi = false;
-
   return (
     <div className="absolute top-16 right-4 z-20 flex flex-col gap-2 items-end">
       {/* 2D / 3D Mode Toggle Pill */}
@@ -63,7 +61,7 @@ export function GlobeControls({
           className={cx(
             'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200',
             is3DMode
-              ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-md shadow-orange-500/30'
+              ? 'bg-gradient-to-r from-teal-500 to-emerald-500 text-white shadow-md shadow-emerald-500/30'
               : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
           )}
         >
@@ -76,13 +74,13 @@ export function GlobeControls({
       {isFlying ? (
         <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/20 border border-amber-400/50 backdrop-blur-md shadow-xl text-amber-300 text-xs font-bold animate-pulse">
           <Plane className="w-3.5 h-3.5 text-amber-400" />
-          <span>{isVi ? 'Đang Bay Mô Phỏng' : 'Flight Active'}</span>
+          <span>Flight Active</span>
           {onExitFlight && (
             <button
               type="button"
               onClick={onExitFlight}
               className="ml-1 p-0.5 rounded-md hover:bg-amber-400/30 text-amber-200 hover:text-white"
-              title={isVi ? 'Dừng bay' : 'Exit Flight'}
+              title="Exit Flight"
             >
               <X className="w-3 h-3" />
             </button>
@@ -92,8 +90,8 @@ export function GlobeControls({
         <Tooltip
           content={
             hasSelectedFire
-              ? (isVi ? 'Xuất kích từ căn cứ gần nhất tới điểm cháy đã chọn' : 'Scramble flight from nearest base to selected fire')
-              : (isVi ? 'Xuất kích máy bay tới điểm cháy trọng điểm' : 'Scramble aerial firefighting mission')
+              ? 'Scramble flight to target'
+              : 'Scramble firefighting mission'
           }
         >
           <button
@@ -102,7 +100,7 @@ export function GlobeControls({
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-red-600 via-orange-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white text-xs font-bold shadow-xl shadow-red-600/30 border border-orange-400/40 transition-all duration-200"
           >
             <Plane className="w-3.5 h-3.5" />
-            <span>{isVi ? 'Xuất Kích Cứu Hỏa' : 'Scramble Mission'}</span>
+            <span>Scramble Mission</span>
           </button>
         </Tooltip>
       ) : null}
@@ -113,7 +111,7 @@ export function GlobeControls({
           {/* Compass & Quick Orientations */}
           <div className="flex items-center justify-between border-b border-slate-800 pb-2">
             <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-              {isVi ? 'Góc Nhìn 3D' : 'Camera 3D'}
+              Camera 3D
             </span>
             <div className="flex items-center gap-1 text-[10px] text-amber-400 font-mono">
               <span>{Math.round(pitch)}°P</span>
@@ -123,7 +121,7 @@ export function GlobeControls({
           </div>
 
           <div className="grid grid-cols-3 gap-1">
-            <Tooltip content={isVi ? 'Quay về hướng Bắc' : 'Reset to North'}>
+            <Tooltip content="Reset North">
               <button
                 type="button"
                 onClick={onResetNorth}
@@ -137,7 +135,7 @@ export function GlobeControls({
               </button>
             </Tooltip>
 
-            <Tooltip content={isVi ? 'Góc nghiêng 45°' : 'Tilt 45°'}>
+            <Tooltip content="Tilt 45°">
               <button
                 type="button"
                 onClick={() => onSetCameraAngle(45)}
@@ -153,7 +151,7 @@ export function GlobeControls({
               </button>
             </Tooltip>
 
-            <Tooltip content={isVi ? 'Đường chân trời 70°' : 'Horizon 70°'}>
+            <Tooltip content="Horizon 70°">
               <button
                 type="button"
                 onClick={() => onSetCameraAngle(70)}
@@ -178,7 +176,7 @@ export function GlobeControls({
                 className="flex items-center gap-1.5 text-xs text-slate-300 cursor-pointer"
               >
                 <Mountain className="w-3.5 h-3.5 text-emerald-400" />
-                <span>{isVi ? 'Địa hình 3D (DEM)' : '3D Terrain'}</span>
+                <span>3D Terrain</span>
               </label>
               <input
                 id="terrain-toggle"
@@ -192,7 +190,7 @@ export function GlobeControls({
             {terrainEnabled && (
               <div className="flex flex-col gap-1 pl-5">
                 <div className="flex justify-between text-[10px] text-slate-400">
-                  <span>{isVi ? 'Độ gồ ghề' : 'Exaggeration'}</span>
+                  <span>Exaggeration</span>
                   <span className="text-emerald-400 font-mono font-bold">
                     {terrainExaggeration.toFixed(1)}x
                   </span>
