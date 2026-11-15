@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useRef } from 'react';
+import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import DeckGL from '@deck.gl/react';
 import { ScatterplotLayer, GeoJsonLayer } from '@deck.gl/layers';
 import { HeatmapLayer } from '@deck.gl/aggregation-layers';
@@ -23,6 +23,9 @@ import type {
 } from '../../types/harmonization';
 import { cx } from '../ui';
 import { Tooltip } from '../ui/Tooltip';
+import { useUiStore } from '../../stores/useUiStore';
+import { GlobeControls } from './GlobeControls';
+import { buildWildfire3DColumns, buildRisk3DColumns } from './layers/wildfire3dLayers';
 
 export type RiskCell = {
   latitude: number;
@@ -102,7 +105,9 @@ export function FireDeckMap({
   className,
 }: FireDeckMapProps) {
   const t = TRANSLATIONS[lang];
+  const { is3DMode, terrainEnabled, terrainExaggeration } = useUiStore();
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<any>(null);
   const [viewState, setViewState] = useState<any>(INITIAL_VIEW_STATE);
   const [layerMode, setLayerMode] = useState<LayerMode>('both');
   const [hoverInfo, setHoverInfo] = useState<{
@@ -111,6 +116,57 @@ export function FireDeckMap({
     point?: GlobalHarmonizedPoint;
     country?: any;
   } | null>(null);
+
+  // Sync Camera Angle when toggling 2D / 3D Globe Mode
+  useEffect(() => {
+    setViewState((prev: any) => ({
+      ...prev,
+      pitch: is3DMode ? 45 : 0,
+      bearing: is3DMode ? prev.bearing : 0,
+      maxPitch: is3DMode ? 85 : 60,
+      transitionDuration: 1000,
+    }));
+  }, [is3DMode]);
+
+  // Dynamically sync projection (Globe vs Mercator) with MapLibre GL v6
+  useEffect(() => {
+    const map = mapRef.current?.getMap ? mapRef.current.getMap() : mapRef.current;
+    if (map && typeof map.setProjection === 'function') {
+      try {
+        map.setProjection({ type: is3DMode ? 'globe' : 'mercator' });
+      } catch (err) {
+        console.warn('Map projection sync notice:', err);
+      }
+    }
+  }, [is3DMode]);
+
+  // Dynamically configure 3D Raster-DEM Terrain on the Globe
+  useEffect(() => {
+    const map = mapRef.current?.getMap ? mapRef.current.getMap() : mapRef.current;
+    if (!map) return;
+    try {
+      if (is3DMode && terrainEnabled) {
+        if (!map.getSource('terrarium-dem')) {
+          map.addSource('terrarium-dem', {
+            type: 'raster-dem',
+            tiles: ['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],
+            tileSize: 256,
+            encoding: 'terrarium',
+            maxzoom: 14,
+          });
+        }
+        if (typeof map.setTerrain === 'function') {
+          map.setTerrain({ source: 'terrarium-dem', exaggeration: terrainExaggeration });
+        }
+      } else {
+        if (typeof map.setTerrain === 'function') {
+          map.setTerrain(null);
+        }
+      }
+    } catch (err) {
+      console.warn('Terrain DEM setup notice:', err);
+    }
+  }, [is3DMode, terrainEnabled, terrainExaggeration]);
 
   // Quick country lookup using Map
   const countryMap = useMemo(() => {
@@ -296,6 +352,31 @@ export function FireDeckMap({
       );
     }
 
+    // 3D Extruded Fire Columns (Only when 3D Globe Mode is enabled)
+    if (is3DMode && (layerMode === 'hotspots' || layerMode === 'both')) {
+      const colLayer = buildWildfire3DColumns(
+        globalPoints,
+        true,
+        (info: any) => {
+          if (info.object) {
+            setHoverInfo({
+              x: info.x,
+              y: info.y,
+              point: info.object as GlobalHarmonizedPoint,
+            });
+          } else {
+            setHoverInfo(null);
+          }
+        },
+        (info: any) => {
+          if (info.object) {
+            onSelectGlobalPoint(info.object as GlobalHarmonizedPoint);
+          }
+        }
+      );
+      if (colLayer) activeLayers.push(colLayer);
+    }
+
     // 4. Highlight Ring for Selected Global Point
     if (selectedGlobalPoint) {
       activeLayers.push(
@@ -316,25 +397,30 @@ export function FireDeckMap({
     // 5. Experimental Risk Grid Cells (if any)
     const activeRiskCells = riskCells.filter((c) => c.horizon_hours === riskHorizon);
     if (activeRiskCells.length > 0) {
-      activeLayers.push(
-        new ScatterplotLayer({
-          id: 'experimental-risk-grid',
-          data: activeRiskCells,
-          getPosition: (c: RiskCell) => [c.longitude, c.latitude],
-          radiusMinPixels: 4,
-          radiusMaxPixels: 15,
-          filled: true,
-          stroked: true,
-          lineWidthMinPixels: 1,
-          getFillColor: (c: RiskCell) => {
-            const risk = c.relative_risk;
-            if (risk >= 0.7) return [239, 68, 68, 180];
-            if (risk >= 0.4) return [245, 158, 11, 160];
-            return [52, 211, 153, 140];
-          },
-          getLineColor: [255, 255, 255, 180],
-        }),
-      );
+      if (is3DMode) {
+        const riskColLayer = buildRisk3DColumns(activeRiskCells, true, riskHorizon);
+        if (riskColLayer) activeLayers.push(riskColLayer);
+      } else {
+        activeLayers.push(
+          new ScatterplotLayer({
+            id: 'experimental-risk-grid',
+            data: activeRiskCells,
+            getPosition: (c: RiskCell) => [c.longitude, c.latitude],
+            radiusMinPixels: 4,
+            radiusMaxPixels: 15,
+            filled: true,
+            stroked: true,
+            lineWidthMinPixels: 1,
+            getFillColor: (c: RiskCell) => {
+              const risk = c.relative_risk;
+              if (risk >= 0.7) return [239, 68, 68, 180];
+              if (risk >= 0.4) return [245, 158, 11, 160];
+              return [52, 211, 153, 140];
+            },
+            getLineColor: [255, 255, 255, 180],
+          }),
+        );
+      }
     }
 
     return activeLayers;
@@ -342,6 +428,7 @@ export function FireDeckMap({
     worldCountriesGeojson,
     globalPoints,
     layerMode,
+    is3DMode,
     selectedCountryId,
     selectedGlobalPoint,
     riskCells,
@@ -380,11 +467,34 @@ export function FireDeckMap({
         getCursor={({ isHovering }: any) => (isHovering ? 'pointer' : 'grab')}
       >
         <MapLibreMap
+          ref={mapRef}
           reuseMaps
           mapLib={maplibregl as any}
           mapStyle={basemapStyle === 'satellite' ? ESRI_SATELLITE_STYLE : CARTO_DARK}
         />
       </DeckGL>
+
+      {/* 3D Globe & Elevation Terrain Controls */}
+      <GlobeControls
+        pitch={viewState.pitch || 0}
+        bearing={viewState.bearing || 0}
+        onResetNorth={() =>
+          setViewState((prev: any) => ({
+            ...prev,
+            bearing: 0,
+            pitch: is3DMode ? 45 : 0,
+            transitionDuration: 600,
+          }))
+        }
+        onSetCameraAngle={(pitch: number, bearing?: number) =>
+          setViewState((prev: any) => ({
+            ...prev,
+            pitch,
+            bearing: bearing !== undefined ? bearing : prev.bearing,
+            transitionDuration: 800,
+          }))
+        }
+      />
 
       {/* Top Map HUD Overlay Header */}
       <div className="pointer-events-none absolute left-4 top-4 right-4 flex items-center justify-between gap-2">

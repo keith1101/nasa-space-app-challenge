@@ -6,11 +6,18 @@ export interface UiState {
   lang: Language;
   selectedPoint: GlobalHarmonizedPoint | null;
   riskHorizon: 6 | 12 | 24;
+  is3DMode: boolean;
+  terrainEnabled: boolean;
+  terrainExaggeration: number;
 
   // Actions
   setLang: (lang: Language) => void;
   setSelectedPoint: (point: GlobalHarmonizedPoint | null) => void;
   setRiskHorizon: (horizon: 6 | 12 | 24) => void;
+  toggle3DMode: () => void;
+  set3DMode: (enabled: boolean) => void;
+  setTerrainEnabled: (enabled: boolean) => void;
+  setTerrainExaggeration: (exaggeration: number) => void;
 }
 
 const getInitialLang = (): Language => {
@@ -32,6 +39,9 @@ export const useUiStore = create<UiState>((set) => ({
   lang: getInitialLang(),
   selectedPoint: null,
   riskHorizon: 24,
+  is3DMode: false,
+  terrainEnabled: true,
+  terrainExaggeration: 1.5,
 
   setLang: (lang) => {
     try {
@@ -43,4 +53,8 @@ export const useUiStore = create<UiState>((set) => ({
   },
   setSelectedPoint: (selectedPoint) => set({ selectedPoint }),
   setRiskHorizon: (riskHorizon) => set({ riskHorizon }),
+  toggle3DMode: () => set((state) => ({ is3DMode: !state.is3DMode })),
+  set3DMode: (is3DMode) => set({ is3DMode }),
+  setTerrainEnabled: (terrainEnabled) => set({ terrainEnabled }),
+  setTerrainExaggeration: (terrainExaggeration) => set({ terrainExaggeration }),
 }));
