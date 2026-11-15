@@ -169,6 +169,7 @@ def track_fire_events(
     base_spatial_eps_km: float = 1.5,
     max_spread_velocity_kmh: float = 3.5,
     pass_window_hours: float = 3.0,
+    max_spatial_jump_km: float = 8.0,
 ) -> List[Dict[str, Any]]:
     """
     Builds a Spatio-Temporal Directed Acyclic Graph (ST-DAG) across multi-pass satellite scans.
@@ -180,6 +181,7 @@ def track_fire_events(
         base_spatial_eps_km: Base satellite footprint resolution margin (default 1.5 km).
         max_spread_velocity_kmh: Upper physical bound of fire spread velocity (default 3.5 km/h).
         pass_window_hours: Temporal window for clustering contemporaneous detections in a single pass (default 3.0h).
+        max_spatial_jump_km: Upper bound on spatial distance for physical flame front continuity (default 8.0 km).
 
     Returns:
         List of structured Fire Event dictionaries, ordered by total FRP descending.
@@ -211,8 +213,12 @@ def track_fire_events(
                 # Same pass, already grouped or spatially separated
                 continue
 
-            # Dynamic expansion radius: delta_d <= eps_base + v_max * delta_t
-            max_allowed_dist_km = base_spatial_eps_km + (max_spread_velocity_kmh * dt_h)
+            # Bounded dynamic expansion radius:
+            # Prevents chaining disparate wildfires into nationwide megaclusters
+            max_allowed_dist_km = min(
+                max_spatial_jump_km,
+                base_spatial_eps_km + (max_spread_velocity_kmh * dt_h),
+            )
             d_km = haversine_km(
                 node_a["latitude"], node_a["longitude"],
                 node_b["latitude"], node_b["longitude"]
@@ -283,6 +289,13 @@ def track_fire_events(
             "duration_hours": duration_hours,
             "first_detected_utc": w_first["datetime_utc"],
             "last_detected_utc": w_last["datetime_utc"],
+            "centroid_lat": w_last["latitude"],
+            "centroid_lon": w_last["longitude"],
+            "total_frp_mw": kinematics["total_frp_mw"],
+            "peak_frp_mw": kinematics["peak_frp_mw"],
+            "overall_rate_of_spread_kmh": kinematics["average_ros_kmh"],
+            "overall_bearing_deg": kinematics["net_bearing_deg"],
+            "overall_bearing_compass": kinematics["net_compass_dir"],
             "waypoint_count": len(waypoints),
             "pass_count": len(waypoints),
             "raw_detection_count": len(all_raw_records),
