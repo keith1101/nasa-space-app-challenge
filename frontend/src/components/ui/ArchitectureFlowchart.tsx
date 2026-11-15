@@ -76,7 +76,7 @@ export function ArchitectureFlowchart({ isVi = false }: ArchitectureFlowchartPro
           name: isVi ? 'Hiệu chuẩn xác suất Laplace' : 'Laplace Confidence Mapping',
           specs: (
             <span>
-              MODIS: <MathFormula tex="\max(0.05, \frac{\text{conf}}{100})" /> · VIIRS: 0.30 / 0.70 / 0.95
+              MODIS: <MathFormula tex="\max\left(0.05, \min\left(0.99, \frac{\text{conf}}{100}\right)\right)" /> · VIIRS: 0.30 / 0.70 / 0.95
             </span>
           ),
           tag: 'Laplace',
@@ -359,7 +359,7 @@ export function ArchitectureFlowchart({ isVi = false }: ArchitectureFlowchartPro
               {/* Deliverable Pill */}
               <rect x="222" y="168" width="155" height="24" rx="6" fill="#032b3a" stroke="#0284c7" strokeWidth="0.8" />
               <text x="228" y="184" fill="#7dd3fc" fontSize="8.5" fontWeight="600" fontFamily="monospace">
-                Vector thô: lat, lon, frp
+                {isVi ? 'Vector thô: lat, lon, frp' : 'Raw: lat, lon, frp, scan'}
               </text>
             </g>
 
@@ -412,7 +412,7 @@ export function ArchitectureFlowchart({ isVi = false }: ArchitectureFlowchartPro
               {/* Deliverable Pill */}
               <rect x="428" y="168" width="155" height="24" rx="6" fill="#022c22" stroke="#059669" strokeWidth="0.8" />
               <text x="434" y="184" fill="#6ee7b7" fontSize="8.5" fontWeight="600" fontFamily="monospace">
-                Xác suất tiên nghiệm & elip
+                {isVi ? 'Xác suất tiên nghiệm & elip' : 'Prior & Bowtie Ellipse'}
               </text>
             </g>
 
@@ -465,7 +465,7 @@ export function ArchitectureFlowchart({ isVi = false }: ArchitectureFlowchartPro
               {/* Deliverable Pill */}
               <rect x="634" y="168" width="155" height="24" rx="6" fill="#2d1c02" stroke="#d97706" strokeWidth="0.8" />
               <text x="640" y="184" fill="#fde68a" fontSize="8.5" fontWeight="600" fontFamily="monospace">
-                -43.3% cụm · P ≥ 0.92
+                {isVi ? '-43.3% cụm · P ≥ 0.92' : '-43.3% events · P ≥ 0.92'}
               </text>
             </g>
 
@@ -518,7 +518,7 @@ export function ArchitectureFlowchart({ isVi = false }: ArchitectureFlowchartPro
               {/* Deliverable Pill */}
               <rect x="840" y="168" width="156" height="24" rx="6" fill="#2d050f" stroke="#e11d48" strokeWidth="0.8" />
               <text x="846" y="184" fill="#fecdd3" fontSize="8.5" fontWeight="600" fontFamily="monospace">
-                WebGL GIS & Z-Score Telemetry
+                {isVi ? 'Bản đồ WebGL & Z-Score' : 'WebGL GIS & Z-Score Telemetry'}
               </text>
             </g>
           </svg>

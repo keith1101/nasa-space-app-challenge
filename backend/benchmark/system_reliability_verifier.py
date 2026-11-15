@@ -181,8 +181,8 @@ def build_tactical_prompt(sample: Dict[str, Any], enriched: Dict[str, Any]) -> s
     weather = sample.get("weather", {})
     wind_alignment = sample.get("wind_alignment", {})
 
-    bearing_deg = sample.get("overall_bearing_deg") or kin.get("current_bearing_deg")
-    compass_dir = sample.get("overall_bearing_compass") or kin.get("current_compass_dir")
+    bearing_deg = sample.get("overall_bearing_deg") or kin.get("current_bearing_deg") or kin.get("net_bearing_deg")
+    compass_dir = sample.get("overall_bearing_compass") or kin.get("current_compass_dir") or kin.get("net_compass_dir")
     ros_kmh = sample.get("overall_rate_of_spread_kmh") or kin.get("current_ros_kmh")
     total_frp = sample.get("total_frp_mw") or kin.get("total_frp_mw")
     peak_frp = sample.get("peak_frp_mw") or kin.get("peak_frp_mw")
@@ -194,6 +194,11 @@ def build_tactical_prompt(sample: Dict[str, Any], enriched: Dict[str, Any]) -> s
         "location_name": sample.get("location_name"),
         "duration_hours": sample.get("duration_hours"),
         "waypoint_count": sample.get("waypoint_count") or len(sample.get("waypoints", [])),
+        "tactical_guidelines": {
+            "risk_stratification_standard": "Phân cấp risk_level: EXTREME hoặc HIGH nếu tổng FRP > 100 MW hoặc FRP đỉnh > 80 MW; LOW hoặc MODERATE nếu tổng FRP < 15 MW; các trường hợp còn lại đánh giá theo ROS và multi_horizon_size.",
+            "forecast_6h_standard": "Dự báo hướng lan truyền theo kinematics (compass_dir) và cự ly (km) hoặc diện tích (ha) lan truyền trong 6 giờ tới.",
+            "containment_standard": "Khuyến nghị bắt buộc bao gồm: (1) thiết lập đường băng cản lửa theo hướng đón đầu mũi cháy chính; (2) xuất kích máy bay chữa cháy từ căn cứ không quân gần nhất với thời gian bay tiếp cận; (3) bố trí lực lượng chữa cháy mặt đất."
+        },
         "centroid": sample.get("current_centroid") or {
             "latitude": sample.get("centroid_lat"),
             "longitude": sample.get("centroid_lon"),
@@ -310,7 +315,7 @@ def score_sample_reliability(
     terrain = enriched.get("terrain_context", {})
     horizon_size = enriched.get("multi_horizon_size", {})
 
-    gt_compass = sample.get("overall_bearing_compass") or kin.get("current_compass_dir") or "VARIABLE"
+    gt_compass = sample.get("overall_bearing_compass") or kin.get("current_compass_dir") or kin.get("net_compass_dir") or "VARIABLE"
     gt_ros = _safe_float(sample.get("overall_rate_of_spread_kmh") or kin.get("current_ros_kmh"), 0.0)
     total_frp = _safe_float(sample.get("total_frp_mw") or kin.get("total_frp_mw"), 0.0)
     peak_frp = _safe_float(sample.get("peak_frp_mw") or kin.get("peak_frp_mw"), 0.0)
