@@ -11,7 +11,9 @@ from pathlib import Path
 from typing import Dict, Any, List, Optional, Tuple
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
-DEFAULT_DB_PATH = ROOT_DIR / "airbases.db"
+PROJECT_ROOT = ROOT_DIR.parent
+DATA_DIR = PROJECT_ROOT / "data"
+DEFAULT_DB_PATH = DATA_DIR / "airbases.db"
 
 # Major firefighting hubs and airports worldwide (Seed dataset)
 SEED_AIRBASES = [

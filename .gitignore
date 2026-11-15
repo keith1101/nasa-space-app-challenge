@@ -33,6 +33,11 @@ htmlcov/
 .env.local
 .env.*.local
 
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
 # Logs & temporary files
 *.log
 npm-debug.log*

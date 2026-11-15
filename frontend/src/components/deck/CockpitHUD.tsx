@@ -427,10 +427,10 @@ export function CockpitHUD({
         </div>
       </div>
 
-      {/* 6. Left: Airspeed Tape (IAS in Knots) */}
+      {/* 6. Left: Airspeed Tape (IAS in Knots - Central corridor, never collides with MFD) */}
       <div
-        className="absolute top-1/2 -translate-y-1/2 z-20 flex items-center transition-all"
-        style={{ left: 'clamp(16px, calc(50% - 225px), calc(50% - 180px))' }}
+        className="absolute top-1/2 -translate-y-1/2 z-20 flex items-center transition-all pointer-events-none"
+        style={{ left: 'clamp(252px, calc(50% - 150px), calc(50% - 110px))' }}
       >
         <div className="relative w-14 h-52 bg-slate-950/85 border border-cyan-500/50 rounded-xl backdrop-blur-md flex flex-col justify-between p-1.5 shadow-2xl">
           <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider text-center border-b border-slate-800 pb-0.5">
@@ -457,8 +457,8 @@ export function CockpitHUD({
 
       {/* 7. Right: Altimeter & VSI Tape */}
       <div
-        className="absolute top-1/2 -translate-y-1/2 z-20 flex items-center gap-1.5 transition-all"
-        style={{ right: 'clamp(16px, calc(50% - 255px), calc(50% - 190px))' }}
+        className="absolute top-1/2 -translate-y-1/2 z-20 flex items-center gap-1.5 transition-all pointer-events-none"
+        style={{ right: 'clamp(16px, calc(50% - 158px), calc(50% - 110px))' }}
       >
         {/* Altimeter Tape (ALT MSL in Feet) */}
         <div className="relative w-16 h-52 bg-slate-950/85 border border-cyan-500/50 rounded-xl backdrop-blur-md flex flex-col justify-between p-1.5 shadow-2xl">

@@ -32,16 +32,18 @@ def compute_geometry_bbox(geom: Dict[str, Any]) -> Tuple[float, float, float, fl
 
 
 def load_vietnam_provinces(geojson_path: Path) -> List[Dict[str, Any]]:
-    """Loads and cleans Vietnam province GeoJSON features with precomputed bounding boxes."""
+    """Loads and cleans Vietnam administrative boundary GeoJSON features with precomputed bounding boxes."""
     with open(geojson_path, "r", encoding="utf-8") as f:
         prov_geojson = json.load(f)
 
     province_features: List[Dict[str, Any]] = []
     for feat in prov_geojson.get("features", []):
         props = dict(feat.get("properties", {}))
-        # Clean trailing tabs/whitespace in province names (e.g. "Hà Nội\t")
-        props["shapeName"] = str(props.get("shapeName", "")).strip()
-        props["shapeISO"] = str(props.get("shapeISO", "VN")).strip()
+        # Support both Admin-1 (shapeName/shapeISO) and Admin-0 (NAME/ADMIN/ISO_A3)
+        name = props.get("shapeName") or props.get("NAME") or props.get("ADMIN") or props.get("SOVEREIGNT") or "Vietnam"
+        iso = props.get("shapeISO") or props.get("ISO_A3") or props.get("SOV_A3") or "VNM"
+        props["shapeName"] = str(name).strip()
+        props["shapeISO"] = str(iso).strip()
         geom = feat.get("geometry", {})
         bbox = compute_geometry_bbox(geom)
         province_features.append(
@@ -85,5 +87,6 @@ def assign_province(
         item["in_vietnam"] = matched_name is not None
         item["province_name"] = matched_name if matched_name is not None else "Border / Offshore Zone"
         item["province_iso"] = matched_iso if matched_iso is not None else "VN-EXT"
+        item["country_name"] = "Vietnam" if matched_name is not None else str(r.get("country_name", "International"))
         out.append(item)
     return out

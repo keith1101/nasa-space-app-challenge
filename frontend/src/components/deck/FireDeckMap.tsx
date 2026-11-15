@@ -4,6 +4,12 @@ import { MapLibreOverlay } from '@deck.gl/maplibre';
 import { ScatterplotLayer, GeoJsonLayer, PathLayer } from '@deck.gl/layers';
 import { HeatmapLayer } from '@deck.gl/aggregation-layers';
 import * as maplibregl from 'maplibre-gl';
+import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
+
+// Register MapLibre GL v6 Web Worker URL for Vite bundler
+if (typeof (maplibregl as any).setWorkerUrl === 'function') {
+  (maplibregl as any).setWorkerUrl(maplibreWorkerUrl);
+}
 import {
   Compass,
   Crosshair,
@@ -304,12 +310,15 @@ export function FireDeckMap({
     }));
   }, [is3DMode]);
 
-  // Dynamically sync projection (Globe vs Mercator) with MapLibre GL v6
+  // Dynamically sync projection (Globe vs Mercator) and 3D Raster-DEM Terrain with MapLibre GL v6
   useEffect(() => {
     const map = mapRef.current?.getMap ? mapRef.current.getMap() : mapRef.current;
     if (!map) return;
 
-    const applyProjection = () => {
+    const DEM_SOURCE_ID = 'terrarium-dem';
+
+    const syncProjectionAndTerrain = () => {
+      // 1. Sync projection (Globe in 3D Mode, Mercator in 2D Mode)
       if (typeof map.setProjection === 'function') {
         try {
           map.setProjection({ type: is3DMode ? 'globe' : 'mercator' });
@@ -317,42 +326,56 @@ export function FireDeckMap({
           console.warn('Map projection sync notice:', err);
         }
       }
-    };
 
-    applyProjection();
-    map.on('style.load', applyProjection);
-    return () => {
-      map.off('style.load', applyProjection);
-    };
-  }, [is3DMode, basemapStyle]);
-
-  // Dynamically configure 3D Raster-DEM Terrain on the Globe
-  useEffect(() => {
-    const map = mapRef.current?.getMap ? mapRef.current.getMap() : mapRef.current;
-    if (!map) return;
-    try {
-      if (is3DMode && terrainEnabled) {
-        if (!map.getSource('terrarium-dem')) {
-          map.addSource('terrarium-dem', {
-            type: 'raster-dem',
-            tiles: ['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],
-            tileSize: 256,
-            encoding: 'terrarium',
-            maxzoom: 14,
-          });
+      // 2. Sync 3D Raster-DEM elevation terrain
+      try {
+        if (is3DMode && terrainEnabled) {
+          if (!map.getSource(DEM_SOURCE_ID)) {
+            map.addSource(DEM_SOURCE_ID, {
+              type: 'raster-dem',
+              tiles: ['https://tiles.mapterhorn.com/{z}/{x}/{y}.webp'],
+              tileSize: 512,
+              encoding: 'terrarium',
+              maxzoom: 14,
+            });
+          }
+          if (typeof map.setTerrain === 'function') {
+            map.setTerrain({ source: DEM_SOURCE_ID, exaggeration: terrainExaggeration });
+          }
+          if (!map.getLayer('terrain-hillshade')) {
+            map.addLayer({
+              id: 'terrain-hillshade',
+              type: 'hillshade',
+              source: DEM_SOURCE_ID,
+              paint: {
+                'hillshade-exaggeration': 0.6,
+                'hillshade-shadow-color': '#020617',
+                'hillshade-highlight-color': '#ffffff',
+                'hillshade-illumination-anchor': 'viewport',
+              },
+            });
+          }
+        } else {
+          if (typeof map.setTerrain === 'function') {
+            map.setTerrain(null);
+          }
+          if (map.getLayer('terrain-hillshade')) {
+            map.removeLayer('terrain-hillshade');
+          }
         }
-        if (typeof map.setTerrain === 'function') {
-          map.setTerrain({ source: 'terrarium-dem', exaggeration: terrainExaggeration });
-        }
-      } else {
-        if (typeof map.setTerrain === 'function') {
-          map.setTerrain(null);
-        }
+      } catch (err) {
+        console.warn('Terrain DEM setup notice:', err);
       }
-    } catch (err) {
-      console.warn('Terrain DEM setup notice:', err);
+    };
+
+    if (map.isStyleLoaded()) {
+      syncProjectionAndTerrain();
     }
-  }, [is3DMode, terrainEnabled, terrainExaggeration]);
+    map.on('style.load', syncProjectionAndTerrain);
+    return () => {
+      map.off('style.load', syncProjectionAndTerrain);
+    };
+  }, [is3DMode, terrainEnabled, terrainExaggeration, basemapStyle]);
 
   // Quick country lookup using Map
   const countryMap = useMemo(() => {
@@ -369,13 +392,21 @@ export function FireDeckMap({
     return countryMap.get(selectedCountryId) || null;
   }, [selectedCountryId, countryMap]);
 
-  // Fly to country if selected
+  // Fly to country if selected with adaptive zoom based on geographic bounding box
   const handleCountryFlyTo = useCallback((c: GlobalCountryInfo) => {
+    let zoom = 4.5;
+    if (c.bounds && Array.isArray(c.bounds) && c.bounds.length === 2) {
+      const latSpan = Math.abs(c.bounds[1][0] - c.bounds[0][0]);
+      const lonSpan = Math.abs(c.bounds[1][1] - c.bounds[0][1]);
+      const maxSpan = Math.max(latSpan, lonSpan, 0.8);
+      // Adaptive zoom: map span to WebGL zoom level (2.2 for continental giants down to 6.8 for small territories)
+      zoom = Math.min(6.8, Math.max(2.2, Math.round((Math.log2(360 / maxSpan) + 0.2) * 10) / 10));
+    }
     setViewState((prev: any) => ({
       ...prev,
       latitude: c.center[0],
       longitude: c.center[1],
-      zoom: 4.5,
+      zoom,
       transitionDuration: 1200,
     }));
   }, []);

@@ -12,6 +12,65 @@ from typing import List, Dict, Any, Tuple
 
 MONTH_ABBR = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
+SOVEREIGN_FIRE_NATIONS = {
+    "Vietnam": {
+        "peak_season": "Feb – Apr (Indochina Monsoon Dry Season)",
+        "weights": [0.45, 1.15, 1.85, 1.55, 0.65, 0.35, 0.30, 0.40, 0.65, 0.50, 0.35, 0.35],
+        "base_rate": 450,
+        "anomaly_factor": {2018: 0.95, 2019: 1.65, 2020: 0.85, 2021: 0.75, 2022: 0.80, 2023: 1.50, 2024: 1.35, 2025: 1.00, 2026: 1.08},
+        "desc": "Sovereign active fire regime across Central Highlands, Northwest montane, and southern agricultural ecosystems.",
+        "scope": "sovereign_country",
+    },
+    "Indonesia": {
+        "peak_season": "Aug – Oct (Kalimantan & Sumatra Peatland Season)",
+        "weights": [0.25, 0.40, 0.55, 0.45, 0.40, 0.50, 0.95, 1.85, 2.30, 1.65, 0.50, 0.20],
+        "base_rate": 4200,
+        "anomaly_factor": {2018: 0.90, 2019: 2.10, 2020: 0.75, 2021: 0.80, 2022: 0.85, 2023: 1.95, 2024: 1.25, 2025: 0.95, 2026: 1.05},
+        "desc": "Peat dome burning and tropical agricultural expansion across Sumatra, Kalimantan, and Papua.",
+        "scope": "sovereign_country",
+    },
+    "Australia": {
+        "peak_season": "Oct – Jan (Spring/Summer Bushfire Season)",
+        "weights": [1.40, 0.75, 0.30, 0.20, 0.25, 0.45, 0.70, 1.10, 1.35, 1.65, 1.85, 1.80],
+        "base_rate": 18500,
+        "anomaly_factor": {2018: 0.90, 2019: 2.15, 2020: 1.65, 2021: 0.65, 2022: 0.70, 2023: 1.45, 2024: 1.30, 2025: 0.95, 2026: 1.05},
+        "desc": "Savanna burning across Northern Territory & Kimberley, and temperate bushfires in southeastern New South Wales and Victoria.",
+        "scope": "sovereign_country",
+    },
+    "Brazil": {
+        "peak_season": "Aug – Oct (Amazon & Cerrado Season)",
+        "weights": [0.20, 0.20, 0.25, 0.35, 0.50, 0.70, 1.20, 2.10, 2.40, 1.60, 0.70, 0.30],
+        "base_rate": 19500,
+        "anomaly_factor": {2018: 0.95, 2019: 1.48, 2020: 1.35, 2021: 0.88, 2022: 0.92, 2023: 1.55, 2024: 1.40, 2025: 1.05, 2026: 1.10},
+        "desc": "Amazon deforestation fire corridor and agricultural savanna burning in the Cerrado and Pantanal wetlands.",
+        "scope": "sovereign_country",
+    },
+    "Canada": {
+        "peak_season": "May – Aug (Boreal Summer Season)",
+        "weights": [0.05, 0.05, 0.10, 0.35, 1.65, 2.45, 2.80, 1.75, 0.50, 0.15, 0.05, 0.05],
+        "base_rate": 6500,
+        "anomaly_factor": {2018: 1.25, 2019: 0.85, 2020: 0.45, 2021: 1.70, 2022: 0.95, 2023: 3.10, 2024: 1.60, 2025: 1.00, 2026: 1.10},
+        "desc": "Subarctic and boreal forest crown fires in British Columbia, Alberta, Quebec, and Northwest Territories.",
+        "scope": "sovereign_country",
+    },
+    "United States": {
+        "peak_season": "Jul – Oct (Western Wildfire Season)",
+        "weights": [0.15, 0.20, 0.35, 0.55, 0.80, 1.35, 2.25, 2.35, 1.55, 0.75, 0.30, 0.15],
+        "base_rate": 6200,
+        "anomaly_factor": {2018: 1.30, 2019: 0.75, 2020: 2.10, 2021: 1.90, 2022: 1.15, 2023: 0.85, 2024: 1.45, 2025: 1.00, 2026: 1.15},
+        "desc": "Western mega-fires in California and Pacific Northwest, plus spring agricultural burning in the Southeast.",
+        "scope": "sovereign_country",
+    },
+    "Democratic Republic of the Congo": {
+        "peak_season": "Jun – Aug (Sub-Saharan Savanna Season)",
+        "weights": [0.30, 0.25, 0.25, 0.35, 0.75, 1.75, 2.15, 1.95, 1.10, 0.45, 0.30, 0.30],
+        "base_rate": 28000,
+        "anomaly_factor": {2018: 1.00, 2019: 1.12, 2020: 1.05, 2021: 0.95, 2022: 0.98, 2023: 1.15, 2024: 1.10, 2025: 1.00, 2026: 1.02},
+        "desc": "Intense slash-and-burn agricultural clearing and Miombo savanna burning in the southern Congo Basin.",
+        "scope": "sovereign_country",
+    },
+}
+
 MACRO_REGIONS = {
     "Global (Worldwide)": {
         "peak_season": "Aug – Oct (Southern Hemisphere Savannas & Boreal Summer)",
@@ -227,13 +286,83 @@ def generate_multi_year_calendar(
     rng = random.Random(42)
     calendar_data: Dict[str, Any] = {}
 
-    for prov in provinces:
+    # 1. Sovereign Fire Nations (Vietnam, Indonesia, Australia, Brazil, Canada, USA, DR Congo)
+    for nation_name, meta in SOVEREIGN_FIRE_NATIONS.items():
+        w_list = meta["weights"]
+        base = meta["base_rate"]
+        anom_dict = meta["anomaly_factor"]
+
+        # Empirical telemetry counts for Vietnam
+        if nation_name == "Vietnam":
+            obs_h = int(emp_h.get("Vietnam", 0)) or sum(int(v) for k, v in emp_h.items() if k != "Border / Offshore Zone")
+            obs_m = int(emp_m.get("Vietnam", 0)) or sum(int(v) for k, v in emp_m.items() if k != "Border / Offshore Zone")
+            obs_v = int(emp_v.get("Vietnam", 0)) or sum(int(v) for k, v in emp_v.items() if k != "Border / Offshore Zone")
+        else:
+            obs_h = int(emp_h.get(nation_name, 0))
+            obs_m = int(emp_m.get(nation_name, 0))
+            obs_v = int(emp_v.get(nation_name, 0))
+
+        monthly_records: List[Dict[str, Any]] = []
+        for yr in years:
+            yr_factor = anom_dict[yr]
+            for m in months:
+                w = w_list[m - 1]
+                noise = rng.gauss(1.0, 0.10)
+                true_fire_events = max(1, int(base * w * yr_factor * noise))
+
+                modis_miss_factor = rng.uniform(0.38, 0.52)
+                modis_fires = max(0, int(true_fire_events * modis_miss_factor))
+
+                viirs_dup_factor = rng.uniform(1.28, 1.42)
+                viirs_raw_fires = int(true_fire_events * viirs_dup_factor)
+
+                harmonized_fires = true_fire_events
+
+                is_anchored = bool(yr == 2026 and m == 11 and obs_h > 0)
+                if is_anchored:
+                    scale_30d = 30.0 / 7.0
+                    harmonized_fires = max(obs_h, int(round(obs_h * scale_30d)))
+                    modis_fires = max(obs_m, int(round(obs_m * scale_30d)))
+                    viirs_raw_fires = max(obs_v, int(round(obs_v * scale_30d)), harmonized_fires)
+
+                dedup_savings = max(0, (modis_fires + viirs_raw_fires) - harmonized_fires)
+                raw_total_m_v = modis_fires + viirs_raw_fires
+
+                monthly_records.append(
+                    {
+                        "year": yr,
+                        "month": m,
+                        "modis_count": modis_fires,
+                        "viirs_count": viirs_raw_fires,
+                        "harmonized_count": harmonized_fires,
+                        "dedup_savings": dedup_savings,
+                        "dedup_percent": round((dedup_savings / raw_total_m_v) * 100.0, 1) if raw_total_m_v > 0 else 0.0,
+                        "is_empirical_anchor": is_anchored,
+                        "is_simulated_baseline": not is_anchored,
+                    }
+                )
+
+        final_recs, baseline_stats = compute_z_scores_and_peaks(monthly_records)
+        calendar_data[nation_name] = {
+            "province_name": nation_name,
+            "scope": "sovereign_country",
+            "peak_season": meta["peak_season"],
+            "description": meta["desc"],
+            "data_provenance": "Climatological Reference Model (2018-2026) anchored to Nov 2026 NASA FIRMS Telemetry" if is_anchored else "Planetary Climatological Reference Model (2018-2026)",
+            "observed_7d_harmonized": obs_h,
+            "records": final_recs,
+            "baseline_by_month": baseline_stats,
+        }
+
+    # 2. Sub-national provinces if explicitly present in province_features (excluding "Vietnam")
+    sub_provinces = [p for p in provinces if p not in SOVEREIGN_FIRE_NATIONS and p != "Vietnam"]
+    for prov in sub_provinces:
         weights = get_monthly_weights(prov)
         base_rate = 65.0 if prov in high_forest else 18.0
         if prov in ["Gia Lai", "Đắk Lắk", "Sơn La", "Điện Biên"]:
             base_rate = 110.0
 
-        monthly_records: List[Dict[str, Any]] = []
+        monthly_records = []
         for yr in years:
             yr_factor = year_anomaly_factor[yr]
             for m in months:

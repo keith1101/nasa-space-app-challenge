@@ -8,6 +8,7 @@ import {
   Workflow,
 } from 'lucide-react';
 import { Badge } from '../ui';
+import { MathFormula } from './MathFormula';
 
 interface ArchitectureFlowchartProps {
   isVi?: boolean;
@@ -73,12 +74,20 @@ export function ArchitectureFlowchart({ isVi = false }: ArchitectureFlowchartPro
       inputs: [
         {
           name: isVi ? 'Hiệu chuẩn xác suất Laplace' : 'Laplace Confidence Mapping',
-          specs: isVi ? 'MODIS: max(0.05, conf/100) · VIIRS: 0.30 / 0.70 / 0.95' : 'MODIS: max(0.05, conf/100) · VIIRS: 0.30 / 0.70 / 0.95',
+          specs: (
+            <span>
+              MODIS: <MathFormula tex="\max(0.05, \frac{\text{conf}}{100})" /> · VIIRS: 0.30 / 0.70 / 0.95
+            </span>
+          ),
           tag: 'Laplace',
         },
         {
           name: isVi ? 'Mô hình Footprint Elip Dị Hướng' : 'Anisotropic Swath Footprint',
-          specs: isVi ? 'a_scan = (scan/2)×1.15 · b_track = (track/2)×1.15' : 'a_scan = (scan/2)×1.15 · b_track = (track/2)×1.15',
+          specs: (
+            <span>
+              <MathFormula tex="a_{\text{scan}} = \frac{\text{scan}_i + \text{scan}_j}{2} + 0.35" /> · <MathFormula tex="b_{\text{track}} = \frac{\text{track}_i + \text{track}_j}{2} + 0.55" />
+            </span>
+          ),
           tag: 'Ellipse',
         },
       ],
@@ -112,12 +121,20 @@ export function ArchitectureFlowchart({ isVi = false }: ArchitectureFlowchartPro
       inputs: [
         {
           name: isVi ? 'Định vị trọng tâm mặt lửa' : 'Flux-Density Centroid',
-          specs: isVi ? 'w_i = (FRP_i + 0.1) / max(0.05, scan_i × track_i)' : 'w_i = (FRP_i + 0.1) / max(0.05, scan_i × track_i)',
+          specs: (
+            <span>
+              <MathFormula tex="w_i = \frac{\text{FRP}_i + 0.1}{\max(0.05, \text{scan}_i \times \text{track}_i)}" />
+            </span>
+          ),
           tag: 'w_i centroid',
         },
         {
           name: isVi ? 'Hợp nhất Bayesian theo lượt quét' : 'Pass-Grouped Bayesian Noisy-OR',
-          specs: isVi ? 'P_fused = 1 - ∏(1 - p_sat,s) · Ngưỡng sàn kép ≥ 0.92' : 'P_fused = 1 - ∏(1 - p_sat,s) · Dual-confirmed ≥ 0.92',
+          specs: (
+            <span>
+              <MathFormula tex="P_{\text{fused}} = 1 - \prod_{s}(1 - p_{\text{sat}, s})" /> · {isVi ? 'Sàn kép' : 'Dual-floor'} <MathFormula tex="\ge 0.92" />
+            </span>
+          ),
           tag: 'Noisy-OR',
         },
       ],
@@ -132,7 +149,7 @@ export function ArchitectureFlowchart({ isVi = false }: ArchitectureFlowchartPro
             'Anchor physical fire front towards fine 375m VIIRS radiative hotspots',
             'Reconcile instantaneous radiative energy: FRP_reconciled = max_s(∑ FRP_i)',
           ],
-      output: isVi ? 'Cụm điểm cháy vật lý hợp nhất (Khử 38.4% điểm ảo)' : 'Fused physical fire events (38.4% redundancy eliminated)',
+      output: isVi ? 'Cụm điểm cháy vật lý hợp nhất (Khử 43.29% điểm ảo)' : 'Fused physical fire events (43.29% redundancy eliminated)',
     },
     {
       id: 4,
@@ -151,7 +168,11 @@ export function ArchitectureFlowchart({ isVi = false }: ArchitectureFlowchartPro
       inputs: [
         {
           name: isVi ? 'Chỉ số dị thường khí hậu Jackknife' : 'Jackknife Climatological Z-Score',
-          specs: isVi ? 'Z_i = (x_i - x̄_(-i)) / s_(-i) · Phân tích tương quan ENSO' : 'Z_i = (x_i - x̄_(-i)) / s_(-i) · ENSO teleconnection',
+          specs: (
+            <span>
+              <MathFormula tex="Z_y = \frac{x_y - \bar{x}_{(-y)}}{s_{(-y)}}" /> · {isVi ? 'Tương quan ENSO' : 'ENSO teleconnection'}
+            </span>
+          ),
           tag: 'Z-score',
         },
         {
@@ -444,7 +465,7 @@ export function ArchitectureFlowchart({ isVi = false }: ArchitectureFlowchartPro
               {/* Deliverable Pill */}
               <rect x="634" y="168" width="155" height="24" rx="6" fill="#2d1c02" stroke="#d97706" strokeWidth="0.8" />
               <text x="640" y="184" fill="#fde68a" fontSize="8.5" fontWeight="600" fontFamily="monospace">
-                -38.4% cụm · P ≥ 0.92
+                -43.3% cụm · P ≥ 0.92
               </text>
             </g>
 

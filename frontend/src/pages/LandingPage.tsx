@@ -9,6 +9,7 @@ import { AnimatedCounter } from '../components/ui/AnimatedCounter';
 import { CardSpotlight } from '../components/ui/CardSpotlight';
 import { BorderBeam } from '../components/ui/BorderBeam';
 import { SpaceStarfield } from '../components/ui/SpaceStarfield';
+import { MathFormula } from '../components/ui/MathFormula';
 import { cx } from '../components/ui';
 
 export function LandingPage() {
@@ -128,7 +129,7 @@ export function LandingPage() {
             className="rounded-xl border border-line-strong/60 bg-ink-900/60 p-4 backdrop-blur-sm text-center space-y-1 hover:border-emerald-400/40 transition-colors"
           >
             <div className="text-3xl sm:text-4xl font-extrabold text-white font-mono tracking-tight">
-              <AnimatedCounter to={953} />
+              <AnimatedCounter to={962} />
             </div>
             <div className="text-xs font-semibold text-emerald-300">
               {isVi ? 'Xác thực kép' : 'Dual Confirmed'}
@@ -214,8 +215,8 @@ export function LandingPage() {
                     ? 'Phân cụm thích ứng hình học vết quét (scan × track) hình elip dị hướng kết hợp khoảng cách Haversine và cửa sổ thời gian trượt ≤ 3 giờ.'
                     : 'Anisotropic elliptical swath clustering adapting cross-track distortion with continuous sliding time window ≤ 3.0 hours.'}
                 </p>
-                <div className="rounded-lg bg-ink-950/80 px-3 py-2 font-mono text-[11px] text-cyan-300 border border-line">
-                  (dx/a)² + (dy/b)² ≤ 1.0
+                <div className="rounded-lg bg-ink-950/80 px-3 py-2 text-cyan-300 border border-line flex items-center justify-center">
+                  <MathFormula tex="\left(\frac{dx}{a}\right)^2 + \left(\frac{dy}{b}\right)^2 \le 1.0" />
                 </div>
               </CardSpotlight>
             </motion.div>
@@ -243,8 +244,8 @@ export function LandingPage() {
                     ? 'Gom nhóm theo lượt quét vệ tinh độc lập, hợp nhất độ tin cậy P = 1 - Π(1 - p). Triệt tiêu báo động giả và tăng độ tin cậy ≥ 92% cho xác thực kép.'
                     : 'Pass-grouped noisy-OR logic eliminates false alarms. Multi-sensor corroboration guarantees robust confidence calibration ≥ 92%.'}
                 </p>
-                <div className="rounded-lg bg-ink-950/80 px-3 py-2 font-mono text-[11px] text-emerald-300 border border-line">
-                  P_fused = 1 - ∏(1 - p_s)
+                <div className="rounded-lg bg-ink-950/80 px-3 py-2 text-emerald-300 border border-line flex items-center justify-center">
+                  <MathFormula tex="P_{\text{fused}} = 1 - \prod_{s} (1 - p_s)" />
                 </div>
               </CardSpotlight>
             </motion.div>
@@ -272,8 +273,8 @@ export function LandingPage() {
                     ? 'Định vị trọng tâm đám cháy theo kênh VIIRS 375m; điều hòa năng lượng bức xạ FRP theo lượt quét cực đại để tránh thổi phồng năng lượng.'
                     : 'Localizes physical fire front using 375m VIIRS I-band; reconciles peak pass FRP to prevent multi-orbit energy inflation.'}
                 </p>
-                <div className="rounded-lg bg-ink-950/80 px-3 py-2 font-mono text-[11px] text-rose-300 border border-line">
-                  FRP = max_s(∑ FRP_i)
+                <div className="rounded-lg bg-ink-950/80 px-3 py-2 text-rose-300 border border-line flex items-center justify-center">
+                  <MathFormula tex="\text{FRP}_{\text{reconciled}} = \max_s \left(\sum_{i \in s} \text{FRP}_i\right)" />
                 </div>
               </CardSpotlight>
             </motion.div>

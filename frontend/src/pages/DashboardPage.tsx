@@ -717,8 +717,8 @@ export function DashboardPage() {
                 lang={lang}
                 calendarData={datasetState.data.calendar}
                 initialRegion={
-                  selectedCountry?.name === 'Vietnam' || selectedCountryId === 176
-                    ? 'An Giang'
+                  selectedCountry?.name === 'Vietnam'
+                    ? 'Vietnam'
                     : selectedContinent === 'South America'
                     ? 'South America (Amazon & Cerrado)'
                     : selectedContinent === 'Africa'

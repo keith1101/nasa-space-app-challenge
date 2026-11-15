@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ReactECharts from 'echarts-for-react';
 import type { EChartsOption } from 'echarts';
 import * as Tabs from '@radix-ui/react-tabs';
@@ -28,6 +28,12 @@ export function FireRegimeHeatmap({
   const t = TRANSLATIONS[lang];
   const [selectedRegion, setSelectedRegion] = useState<string>(initialRegion);
   const [activeTab, setActiveTab] = useState<'matrix' | 'seasonal'>('matrix');
+
+  useEffect(() => {
+    if (initialRegion) {
+      setSelectedRegion(initialRegion);
+    }
+  }, [initialRegion]);
 
   // Separate macro regions vs VN provinces
   const { macroKeys, vnKeys } = useMemo(() => {
