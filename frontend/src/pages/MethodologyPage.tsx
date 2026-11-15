@@ -233,7 +233,7 @@ export function MethodologyPage() {
                 {isVi ? 'Độ trễ xử lý' : 'Latency Performance'}
               </div>
               <div className="text-lg font-bold font-mono text-emerald-300 mt-0.5">&lt; 95 ms</div>
-              <div className="text-[11px] text-slate-400">{isVi ? 'Toàn lãnh thổ VN' : 'Complete VN catalog'}</div>
+              <div className="text-[11px] text-slate-400">{isVi ? 'Danh mục 24h toàn cầu' : '24h Global Catalog'}</div>
             </div>
             <div className="rounded-xl border border-line bg-ink-900/60 p-3">
               <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400">
@@ -647,6 +647,32 @@ export function MethodologyPage() {
                     : 'Prevents extreme probability collapse (0 or 1) in posterior Bayesian likelihood updates'
                 }
               />
+
+              <div className="rounded-lg border border-line bg-ink-950 p-3 space-y-1.5 text-xs text-slate-300">
+                <div className="font-semibold text-emerald-300 font-mono">
+                  {isVi ? 'Ý nghĩa tham số & chuẩn hóa xác suất:' : 'Parameter Definitions & Probability Mapping:'}
+                </div>
+                <ul className="space-y-1 list-disc list-inside text-slate-300">
+                  <li>
+                    <strong><MathFormula tex="p_{\text{MODIS}}" />:</strong>{' '}
+                    {isVi
+                      ? 'Xác suất tiên nghiệm của điểm phát hiện MODIS, chuẩn hóa từ độ tin cậy phần trăm conf ∈ [0, 100%].'
+                      : 'Prior probability for MODIS active fire observation, normalized from percentage rating conf ∈ [0, 100%].'}
+                  </li>
+                  <li>
+                    <strong><MathFormula tex="[0.05, 0.99]" />:</strong>{' '}
+                    {isVi
+                      ? 'Khoảng kẹp cận Laplace: chặn dưới 0.05 ngăn triệt tiêu tỷ số hợp lý Bayes (zero-likelihood collapse); chặn trên 0.99 phản ánh không có cảm biến viễn thám nào tuyệt đối 100% không có sai số.'
+                      : 'Laplace regularization bounds: floor 0.05 avoids zero-likelihood collapse; ceiling 0.99 reflects non-zero instrument uncertainty.'}
+                  </li>
+                  <li>
+                    <strong><MathFormula tex="p_{\text{VIIRS}}" />:</strong>{' '}
+                    {isVi
+                      ? 'Ánh xạ xác suất 3 mức từ cờ danh định: low → 0.30, nominal → 0.70, high → 0.95 theo khuyến nghị của thuật toán NASA/NOAA C2.'
+                      : 'Three-tier probability assignment from categorical flags: low → 0.30, nominal → 0.70, high → 0.95 per NASA/NOAA C2 specifications.'}
+                  </li>
+                </ul>
+              </div>
             </div>
 
             {/* Equation 3: Flux-Density Centroid */}

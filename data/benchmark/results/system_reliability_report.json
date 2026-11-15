@@ -1,0 +1,144 @@
+{
+  "metadata": {
+    "verification_timestamp_utc": "2026-11-15T11:10:55.541420+00:00",
+    "target_model": "gpt-4o",
+    "api_endpoint": "https://api.openai.com/v1",
+    "total_samples": 2,
+    "concurrency_workers": 4,
+    "enrichment_duration_sec": 3.09,
+    "inference_duration_sec": 5.06,
+    "total_pipeline_duration_sec": 8.15
+  },
+  "system_reliability_kpis": {
+    "kpi1_mission_success_and_json_validity": {
+      "passed_count": 2,
+      "total_count": 2,
+      "percentage": 100.0,
+      "benchmark_target": ">= 95.0%",
+      "status": "PASS",
+      "description": "100% valid schema compliance and zero JSON parse failures."
+    },
+    "kpi2_kinematic_fidelity_and_zero_hallucination": {
+      "passed_count": 2,
+      "total_count": 2,
+      "percentage": 100.0,
+      "benchmark_target": ">= 90.0%",
+      "status": "PASS",
+      "description": "Direction prediction matches ground-truth bearing; mechanism matches wind/terrain dynamics."
+    },
+    "kpi3_6h_spread_distance_feasibility": {
+      "passed_count": 2,
+      "total_count": 2,
+      "percentage": 100.0,
+      "benchmark_target": ">= 85.0%",
+      "status": "PASS",
+      "description": "Predicted 6h spread distance is within physical bounds (ROS * 6h * slope multiplier)."
+    },
+    "kpi4_risk_stratification_calibration": {
+      "passed_count": 1,
+      "total_count": 2,
+      "percentage": 50.0,
+      "benchmark_target": ">= 90.0%",
+      "status": "FAIL",
+      "description": "High FRP (>100 MW) mapped to HIGH/EXTREME; Low FRP (<15 MW) mapped to LOW/MODERATE."
+    },
+    "kpi5_tactical_actionability": {
+      "passed_count": 2,
+      "total_count": 2,
+      "percentage": 100.0,
+      "benchmark_target": ">= 90.0%",
+      "status": "PASS",
+      "description": "Actionable containment line guidance and nearest airbase flight scramble time."
+    }
+  },
+  "overall_performance": {
+    "system_reliability_score": 90.0,
+    "overall_status": "EXCELLENT",
+    "latency_metrics": {
+      "avg_ms": 5059.0,
+      "p50_ms": 5059.6,
+      "p90_ms": 5058.4,
+      "p95_ms": 5058.4,
+      "min_ms": 5058.4,
+      "max_ms": 5059.6
+    }
+  },
+  "per_sample_evaluations": [
+    {
+      "sample_id": "SAMPLE-001",
+      "event_id": "FE-0186",
+      "latency_ms": 5059.6,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 0,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 8.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [
+          "High FRP (245.3 MW) misclassified as MODERATE (expected HIGH or EXTREME)"
+        ],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Quảng Nam đang lan truyền chủ yếu theo thảm thực vật và địa hình với tốc độ ổn định. Nguy cơ cháy tán và bắn tàn lửa ở mức độ vừa phải.",
+        "risk_level": "MODERATE",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Quảng Nam",
+        "forecast_6h": "Dự báo lan truyền về phía Tây Bắc với diện tích bao phủ 8 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 8 ha với độ tin cậy duy trì 92.3%.",
+          "h12_summary": "Trong 12 giờ tới, diện tích bao phủ vẫn giữ nguyên ở mức 8 ha với độ tin cậy duy trì 85.3%.",
+          "h24_summary": "Trong 24 giờ tới, diện tích bao phủ dự kiến tăng lên 35 ha với độ tin cậy duy trì 71.8%."
+        },
+        "tactical_recommendations": [
+          "Lập đường băng cản lửa ở phía Tây Bắc để ngăn chặn đám cháy lan rộng.",
+          "Điều động lực lượng mặt đất để kiểm soát và dập tắt các điểm cháy nhỏ.",
+          "Xuất kích phi đội máy bay chữa cháy từ căn cứ VNFOB để hỗ trợ dập lửa từ trên không."
+        ],
+        "sitrep_markdown": "# Tactical SITREP for Event FE-0186\n\n## Summary\nThe wildfire in Quảng Nam is primarily spreading through vegetation and terrain with a stable rate of spread. The potential for crown fire and spotting is moderate.\n\n## Risk Level\n**MODERATE**\n\n## Spread Mechanism\n**FUEL_DRIVEN**\n\n## Threat Zone\nThe main affected area is the evergreen broadleaf forest in Quảng Nam.\n\n## Forecast 6h\nThe fire is expected to spread northwest, covering an area of 8 hectares in the next 6 hours.\n\n## Multi-Horizon Assessment\n- **6h Summary:** The fire is expected to cover 8 hectares with a persistence confidence of 92.3%.\n- **12h Summary:** The area remains at 8 hectares with a persistence confidence of 85.3%.\n- **24h Summary:** The area is expected to increase to 35 hectares with a persistence confidence of 71.8%.\n\n## Tactical Recommendations\n1. Establish a firebreak to the northwest to prevent further spread.\n2. Deploy ground forces to control and extinguish small fire spots.\n3. Launch aerial firefighting operations from VNFOB to assist in fire suppression from the air."
+      }
+    },
+    {
+      "sample_id": "SAMPLE-002",
+      "event_id": "FE-0131",
+      "latency_ms": 5058.4,
+      "kpi1_valid_schema": 1,
+      "kpi2_kinematic_fidelity": 1,
+      "kpi3_distance_feasible": 1,
+      "kpi4_risk_calibrated": 1,
+      "kpi5_tactical_actionable": 1,
+      "kpi5_tactical_actionability": 1,
+      "system_score": 10.0,
+      "audit_trail": {
+        "kpi1_reasons": [],
+        "kpi2_reasons": [],
+        "kpi3_reasons": [],
+        "kpi4_reasons": [],
+        "kpi5_reasons": []
+      },
+      "response": {
+        "summary_vi": "Đám cháy tại Quảng Ngãi đang lan rộng với tốc độ ổn định, chủ yếu do thảm thực vật và địa hình sườn dốc. Nguy cơ cháy tán và bắn tàn lửa ở mức trung bình.",
+        "risk_level": "HIGH",
+        "spread_mechanism": "FUEL_DRIVEN",
+        "threat_zone": "Khu vực rừng lá rộng thường xanh tại Quảng Ngãi",
+        "forecast_6h": "Dự báo đám cháy sẽ lan rộng thêm 8 ha trong 6 giờ tới.",
+        "multi_horizon_assessment": {
+          "h6_summary": "Trong 6 giờ tới, đám cháy dự kiến bao phủ 8 ha với độ tin cậy duy trì 92.7%.",
+          "h12_summary": "Trong 12 giờ tới, đám cháy có thể mở rộng lên 105 ha với độ tin cậy duy trì 86.2%.",
+          "h24_summary": "Trong 24 giờ tới, đám cháy có thể bao phủ 210 ha với độ tin cậy duy trì 72.6%."
+        },
+        "tactical_recommendations": [
+          "Lập đường băng cản lửa tại phía Tây để ngăn đám cháy lan rộng.",
+          "Điều động lực lượng mặt đất để kiểm soát các khu vực có nguy cơ cao.",
+          "Xuất kích phi đội máy bay chữa cháy từ căn cứ VNFOB để hỗ trợ dập lửa."
+        ],
+        "sitrep_markdown": "# Báo cáo Tình huống Chiến thuật\n\n## Tình hình hiện tại\nĐám cháy tại Quảng Ngãi đang lan rộng với tốc độ 2.942 km/h theo hướng Tây. Đám cháy chủ yếu lan theo thảm thực vật và địa hình sườn dốc với độ dốc 2.6 độ.\n\n## Đánh giá nguy cơ\n- **Mức độ nguy cơ:** Cao\n- **Cơ chế lan truyền:** Chủ yếu do thảm thực vật\n- **Vùng nguy cơ:** Khu vực rừng lá rộng thường xanh\n\n## Dự báo\n- **6 giờ tới:** Dự kiến bao phủ 8 ha\n- **12 giờ tới:** Dự kiến bao phủ 105 ha\n- **24 giờ tới:** Dự kiến bao phủ 210 ha\n\n## Khuyến nghị tác chiến\n1. Lập đường băng cản lửa tại phía Tây để ngăn đám cháy lan rộng.\n2. Điều động lực lượng mặt đất để kiểm soát các khu vực có nguy cơ cao.\n3. Xuất kích phi đội máy bay chữa cháy từ căn cứ VNFOB để hỗ trợ dập lửa."
+      }
+    }
+  ]
+}
