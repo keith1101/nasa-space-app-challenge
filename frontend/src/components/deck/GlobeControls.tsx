@@ -25,7 +25,6 @@ export function GlobeControls({
   hasSelectedFire = false,
 }: GlobeControlsProps) {
   const {
-    lang,
     is3DMode,
     toggle3DMode,
     terrainEnabled,
@@ -34,7 +33,7 @@ export function GlobeControls({
     setTerrainExaggeration,
   } = useUiStore();
 
-  const isVi = lang === 'vi';
+  const isVi = false;
 
   return (
     <div className="absolute top-16 right-4 z-20 flex flex-col gap-2 items-end">

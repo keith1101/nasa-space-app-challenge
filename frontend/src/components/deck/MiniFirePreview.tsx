@@ -74,7 +74,7 @@ function DeckGLOverlay({ layers }: { layers: any[] }) {
   return null;
 }
 
-export function MiniFirePreview({ isVi }: { isVi: boolean }) {
+export function MiniFirePreview({ isVi: _isVi }: { isVi?: boolean } = {}) {
   const { data } = useGlobalDatasetsQuery();
   const mapRef = useRef<any>(null);
   const [viewState, setViewState] = useState<any>(INITIAL_VIEW_STATE);
@@ -256,11 +256,11 @@ export function MiniFirePreview({ isVi }: { isVi: boolean }) {
         <div className="pointer-events-auto flex items-center gap-2 text-[10px] text-slate-300 bg-ink-950/85 px-2.5 py-1 rounded-lg border border-line backdrop-blur-md">
           <span className="flex items-center gap-1 text-emerald-300 font-semibold">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            {isVi ? 'Xác thực kép' : 'Dual confirmed'}
+            Dual confirmed
           </span>
           <span className="flex items-center gap-1 text-rose-300 font-semibold">
             <span className="h-1.5 w-1.5 rounded-full bg-rose-400" />
-            {isVi ? 'Cột lửa 3D FRP' : '3D Fire Pillar'}
+            3D Fire Pillar
           </span>
         </div>
 
@@ -269,7 +269,7 @@ export function MiniFirePreview({ isVi }: { isVi: boolean }) {
           className="pointer-events-auto inline-flex items-center gap-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 px-3 py-1.5 text-[11px] font-bold text-ink-950 shadow-md backdrop-blur-md transition-colors"
         >
           <Globe2 className="h-3.5 w-3.5" />
-          <span>{isVi ? 'Mở trạm GIS đầy đủ' : 'Open Full GIS'}</span>
+          <span>Open Full GIS</span>
         </Link>
       </div>
     </div>

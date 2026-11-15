@@ -491,7 +491,7 @@ export function DashboardPage() {
                         .filter((c) => c.fires > 0)
                         .map((c) => (
                           <option key={c.id} value={c.id}>
-                            {c.name} ({c.fires.toLocaleString(lang === 'vi' ? 'vi-VN' : 'en-US')})
+                            {c.name} ({c.fires.toLocaleString('en-US')})
                           </option>
                         ))}
                     </select>
@@ -516,7 +516,7 @@ export function DashboardPage() {
                     >
                       {CONTINENTS.map((c) => (
                         <option key={c.id} value={c.id}>
-                          {lang === 'vi' ? c.vi : c.en}
+                          {c.en}
                         </option>
                       ))}
                     </select>
@@ -571,7 +571,7 @@ export function DashboardPage() {
                         : 'border border-line bg-ink-900 text-slate-300 hover:text-white',
                     )}
                   >
-                    <span>{lang === 'vi' ? 'Thảm thực vật' : 'Vegetation'}</span>
+                    <span>Vegetation</span>
                   </button>
                 </div>
 
@@ -587,10 +587,10 @@ export function DashboardPage() {
                     <div className="flex items-center justify-between text-[11px]">
                       <div>
                         <span className="font-semibold text-amber-300 block">
-                          {lang === 'vi' ? '3 Vòng Lan Truyền Trên Map' : '3-Layer Concentric Rings'}
+                          3-Layer Concentric Rings
                         </span>
                         <span className="text-[9px] text-slate-400">
-                          {lang === 'vi' ? 'Đỏ trong cùng · Cam ở giữa · Xanh bao trùm' : 'Red core · Orange mid · Green outer'}
+                          Red core · Orange mid · Green outer
                         </span>
                       </div>
                       <div className="flex gap-1">
@@ -621,7 +621,7 @@ export function DashboardPage() {
                       <div className="rounded-lg border border-line bg-ink-900/80 p-2 text-[10px] space-y-1">
                         <div className="flex items-center justify-between">
                           <span className="text-slate-400">
-                            {lang === 'vi' ? 'Quy mô dự kiến' : 'Expected Area'} ({riskHorizon}h):
+                            Expected Area ({riskHorizon}h):
                           </span>
                           <span className="font-mono font-bold text-amber-300">
                             {fireRisk.multi_horizon_size[`${riskHorizon}h`].expected_area_ha} ha
@@ -632,7 +632,7 @@ export function DashboardPage() {
                         </div>
                         <div className="flex items-center justify-between border-t border-line/50 pt-1">
                           <span className="text-slate-400">
-                            {lang === 'vi' ? 'Cấp độ đe dọa' : 'Milestone'}:
+                            Milestone:
                           </span>
                           <span className="font-semibold text-rose-300">
                             {fireRisk.multi_horizon_size[`${riskHorizon}h`].threat_milestone}

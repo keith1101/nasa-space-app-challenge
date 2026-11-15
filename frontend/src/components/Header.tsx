@@ -17,14 +17,13 @@ interface HeaderProps {
 
 export function Header({
   lang,
-  onSelectLang,
+  onSelectLang: _onSelectLang,
   basemapStyle,
   onToggleBasemap,
   totalEvents,
   countryName,
 }: HeaderProps) {
-  const t = TRANSLATIONS[lang];
-  const isVi = lang === 'vi';
+  const t = TRANSLATIONS[lang] || TRANSLATIONS.en;
   const { basemapStyle: storeBasemap, toggleBasemapStyle } = useFilterStore();
   const currentBasemap = basemapStyle ?? storeBasemap;
   const handleToggleBasemap = onToggleBasemap ?? toggleBasemapStyle;
@@ -49,7 +48,7 @@ export function Header({
             <p className="text-[11px] text-slate-400">
               {countryName ? (
                 <span>
-                  {isVi ? 'Quốc gia:' : 'Country:'} <strong className="text-cyan-300">{countryName}</strong>
+                  Country: <strong className="text-cyan-300">{countryName}</strong>
                 </span>
               ) : (
                 t.appSubtitle
@@ -72,7 +71,7 @@ export function Header({
               )
             }
           >
-            <span>{isVi ? 'Trang Chủ' : 'Home'}</span>
+            <span>Home</span>
           </NavLink>
 
           <NavLink
@@ -86,7 +85,7 @@ export function Header({
               )
             }
           >
-            <span>{isVi ? 'Phương Pháp Luận' : 'Methodology'}</span>
+            <span>Methodology</span>
           </NavLink>
 
           <NavLink
@@ -100,7 +99,7 @@ export function Header({
               )
             }
           >
-            <span>{isVi ? 'Trạm Giám Sát' : 'GIS Dashboard'}</span>
+            <span>GIS Dashboard</span>
           </NavLink>
         </nav>
 
@@ -110,13 +109,13 @@ export function Header({
           {totalEvents != null && totalEvents > 0 && (
             <div className="hidden md:flex items-center gap-1.5 rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-2.5 py-1 text-xs text-cyan-300 font-mono">
               <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
-              <span>{totalEvents.toLocaleString(isVi ? 'vi-VN' : 'en-US')}</span>
-              <span className="text-[10px] text-slate-400">{isVi ? 'điểm' : 'pts'}</span>
+              <span>{totalEvents.toLocaleString('en-US')}</span>
+              <span className="text-[10px] text-slate-400">pts</span>
             </div>
           )}
 
           {/* Basemap Toggle */}
-          <Tooltip content={currentBasemap === 'satellite' ? (isVi ? 'Chuyển sang bản đồ tối CARTO' : 'Switch to CARTO Dark Matter') : (isVi ? 'Chuyển sang ảnh vệ tinh Esri' : 'Switch to Esri World Imagery')}>
+          <Tooltip content={currentBasemap === 'satellite' ? 'Switch to CARTO Dark Matter' : 'Switch to Esri World Imagery'}>
             <button
               type="button"
               onClick={handleToggleBasemap}
@@ -131,38 +130,6 @@ export function Header({
               <span className="hidden sm:inline">{currentBasemap === 'satellite' ? t.basemapSatellite : t.basemapDark}</span>
             </button>
           </Tooltip>
-
-          {/* Language Switcher */}
-          <div className="flex items-center rounded-lg border border-line-strong bg-ink-900 p-0.5">
-            <Tooltip content={isVi ? 'Giao diện Tiếng Việt' : 'Switch to Vietnamese'}>
-              <button
-                type="button"
-                onClick={() => onSelectLang('vi')}
-                className={cx(
-                  'rounded-md px-2 py-0.5 text-xs font-semibold transition-colors',
-                  lang === 'vi'
-                    ? 'bg-cyan-400 text-ink-950 font-bold shadow-sm'
-                    : 'text-slate-300 hover:text-white',
-                )}
-              >
-                VI
-              </button>
-            </Tooltip>
-            <Tooltip content={isVi ? 'Chuyển sang Tiếng Anh' : 'English Interface'}>
-              <button
-                type="button"
-                onClick={() => onSelectLang('en')}
-                className={cx(
-                  'rounded-md px-2 py-0.5 text-xs font-semibold transition-colors',
-                  lang === 'en'
-                    ? 'bg-cyan-400 text-ink-950 font-bold shadow-sm'
-                    : 'text-slate-300 hover:text-white',
-                )}
-              >
-                EN
-              </button>
-            </Tooltip>
-          </div>
         </div>
       </div>
     </header>

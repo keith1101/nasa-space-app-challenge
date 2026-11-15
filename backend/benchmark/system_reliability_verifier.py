@@ -51,11 +51,48 @@ COMPASS_SECTORS = [
 ]
 
 COMPASS_SECTORS_VI = {
-    "ĐÔNG BẮC": "NE", "ĐÔNG NAM": "SE", "TÂY NAM": "SW", "TÂY BẮC": "NW",
-    "DONG BAC": "NE", "DONG NAM": "SE", "TAY NAM": "SW", "TAY BAC": "NW",
-    "BẮC": "N", "ĐÔNG": "E", "NAM": "S", "TÂY": "W",
-    "BAC": "N", "DONG": "E", "TAY": "W"
+    # 3-word 16-point intermediate directions in Vietnamese (longest first)
+    "BẮC ĐÔNG BẮC": "NNE", "BAC DONG BAC": "NNE",
+    "ĐÔNG ĐÔNG BẮC": "ENE", "DONG DONG BAC": "ENE",
+    "ĐÔNG ĐÔNG NAM": "ESE", "DONG DONG NAM": "ESE",
+    "NAM ĐÔNG NAM": "SSE", "NAM DONG NAM": "SSE",
+    "NAM TÂY NAM": "SSW", "NAM TAY NAM": "SSW",
+    "TÂY TÂY NAM": "WSW", "TAY TAY NAM": "WSW",
+    "TÂY TÂY BẮC": "WNW", "TAY TAY BAC": "WNW",
+    "BẮC TÂY BẮC": "NNW", "BAC TAY BAC": "NNW",
+
+    # 2-word 8-point primary intercardinal directions
+    "ĐÔNG BẮC": "NE", "DONG BAC": "NE",
+    "ĐÔNG NAM": "SE", "DONG NAM": "SE",
+    "TÂY NAM": "SW", "TAY NAM": "SW",
+    "TÂY BẮC": "NW", "TAY BAC": "NW",
+
+    # 1-word 4 cardinal directions
+    "BẮC": "N", "BAC": "N",
+    "ĐÔNG": "E", "DONG": "E",
+    "NAM": "S",
+    "TÂY": "W", "TAY": "W",
+
+    # English full words
+    "NORTH-NORTHEAST": "NNE", "NORTH NORTHEAST": "NNE",
+    "EAST-NORTHEAST": "ENE", "EAST NORTHEAST": "ENE",
+    "EAST-SOUTHEAST": "ESE", "EAST SOUTHEAST": "ESE",
+    "SOUTH-SOUTHEAST": "SSE", "SOUTH SOUTHEAST": "SSE",
+    "SOUTH-SOUTHWEST": "SSW", "SOUTH SOUTHWEST": "SSW",
+    "WEST-SOUTHWEST": "WSW", "WEST SOUTHWEST": "WSW",
+    "WEST-NORTHWEST": "WNW", "WEST NORTHWEST": "WNW",
+    "NORTH-NORTHWEST": "NNW", "NORTH NORTHWEST": "NNW",
+    "NORTHEAST": "NE", "NORTH-EAST": "NE", "NORTH EAST": "NE",
+    "SOUTHEAST": "SE", "SOUTH-EAST": "SE", "SOUTH EAST": "SE",
+    "SOUTHWEST": "SW", "SOUTH-WEST": "SW", "SOUTH WEST": "SW",
+    "NORTHWEST": "NW", "NORTH-WEST": "NW", "NORTH WEST": "NW",
+    "NORTH": "N", "SOUTH": "S", "EAST": "E", "WEST": "W",
 }
+
+MULTI_LETTER_COMPASS = [
+    "NNE", "ENE", "ESE", "SSE", "SSW", "WSW", "WNW", "NNW",
+    "NE", "SE", "SW", "NW"
+]
 
 VALID_RISK_LEVELS = {"LOW", "MODERATE", "HIGH", "EXTREME"}
 VALID_SPREAD_MECHANISMS = {
@@ -69,6 +106,10 @@ VALID_SPREAD_MECHANISMS = {
     "FUEL_OR_TERRAIN_DOMINATED",
     "FLANKING_OR_FUEL_DRIVEN",
     "FUEL_OR_SLOPE_DRIVEN",
+    "WIND",
+    "SLOPE",
+    "FUEL",
+    "TERRAIN",
 }
 
 
@@ -83,18 +124,52 @@ def _safe_float(val: Any, default: float = 0.0) -> float:
 
 
 def _extract_bearing_or_compass(text: str) -> Optional[str]:
-    """Finds compass direction mentions in text (both English codes and Vietnamese terms)."""
+    """
+    Finds compass direction mentions in text (both English codes and Vietnamese terms).
+    Protects against false positives from single-letter tokens (e.g. 'N = 50', 'S-70')
+    and location proper nouns (e.g. 'Việt Nam', 'Quảng Nam', 'Bắc Giang').
+    """
     if not text:
         return None
     upper = text.upper()
-    # Check compound Vietnamese compass terms first (sorted by length descending)
-    for term in sorted(COMPASS_SECTORS_VI.keys(), key=len, reverse=True):
-        if re.search(rf"\b{re.escape(term)}\b", upper):
-            return COMPASS_SECTORS_VI[term]
-    # Check 16-point English compass codes (sorted by length descending, e.g. NNE before NE before N)
-    for sec in sorted(COMPASS_SECTORS, key=len, reverse=True):
-        if re.search(rf"\b{sec}\b", upper):
-            return sec
+
+    # 1. Look for explicit parenthesized compass codes e.g. "(NW)", "(SSW)", "(WNW)", "(S)"
+    paren_match = re.search(r"\((NNE|ENE|ESE|SSE|SSW|WSW|WNW|NNW|NE|SE|SW|NW|N|E|S|W)\)", upper)
+    if paren_match:
+        return paren_match.group(1)
+
+    matches: List[Tuple[int, int, int, str]] = []
+
+    # 2. Search for direction terms (Vietnamese phrases and English full words)
+    for term, code in sorted(COMPASS_SECTORS_VI.items(), key=lambda x: len(x[0]), reverse=True):
+        # Look for direction preceded by directional indicator (hướng, phía, về, theo, lan, heading, towards, direction)
+        pattern = rf"(?:HƯỚNG|PHÍA|VỀ|THEO|LAN|HEADING|TOWARDS|DIRECTION|BEARING|DIR)\s+(?:HƯỚNG\s+)?{re.escape(term)}(?=\b|[\s,.]|$)"
+        for m in re.finditer(pattern, upper):
+            matches.append((0, m.start(), -len(term), code))
+
+        # For compound multi-word compass terms (>= 2 words), allow if not preceded by proper noun markers
+        if len(term.split()) >= 2:
+            for m in re.finditer(rf"(?<!VIỆT\s)(?<!QUẢNG\s)(?<!HÀ\s)(?<!TỈNH\s)(?<!HUYỆN\s)(?<!XÃ\s)\b{re.escape(term)}\b", upper):
+                preceding = upper[max(0, m.start() - 25):m.start()]
+                has_dir = any(k in preceding for k in ("HƯỚNG", "PHÍA", "VỀ", "THEO", "HEADING", "TOWARDS", "LAN", "DIRECTION", "DIR"))
+                matches.append((0 if has_dir else 1, m.start(), -len(term), code))
+
+    # 3. Check multi-letter English compass codes (e.g. NW, SE, WNW, SSE)
+    for code in sorted(MULTI_LETTER_COMPASS, key=len, reverse=True):
+        for m in re.finditer(rf"\b{code}\b", upper):
+            preceding = upper[max(0, m.start() - 25):m.start()]
+            has_dir = any(k in preceding for k in ("HƯỚNG", "PHÍA", "VỀ", "THEO", "HEADING", "TOWARDS", "LAN", "DIR", "BEARING", "DIRECTION"))
+            matches.append((0 if has_dir else 1, m.start(), -len(code), code))
+
+    # 4. Single-letter English compass codes REQUIRE directional marker to avoid false positives (e.g. N = 50, S-70)
+    for code in ("N", "E", "S", "W"):
+        for m in re.finditer(rf"(?:HƯỚNG|PHÍA|VỀ|THEO|HEADING|TOWARDS|BEARING|DIRECTION|DIR)\s*[:=]?\s*{code}\b", upper):
+            matches.append((0, m.start(), -1, code))
+
+    if matches:
+        matches.sort()
+        return matches[0][3]
+
     return None
 
 
@@ -195,9 +270,9 @@ def build_tactical_prompt(sample: Dict[str, Any], enriched: Dict[str, Any]) -> s
         "duration_hours": sample.get("duration_hours"),
         "waypoint_count": sample.get("waypoint_count") or len(sample.get("waypoints", [])),
         "tactical_guidelines": {
-            "risk_stratification_standard": "Phân cấp risk_level: EXTREME hoặc HIGH nếu tổng FRP > 100 MW hoặc FRP đỉnh > 80 MW; LOW hoặc MODERATE nếu tổng FRP < 15 MW; các trường hợp còn lại đánh giá theo ROS và multi_horizon_size.",
-            "forecast_6h_standard": "Dự báo hướng lan truyền theo kinematics (compass_dir) và cự ly (km) hoặc diện tích (ha) lan truyền trong 6 giờ tới.",
-            "containment_standard": "Khuyến nghị bắt buộc bao gồm: (1) thiết lập đường băng cản lửa theo hướng đón đầu mũi cháy chính; (2) xuất kích máy bay chữa cháy từ căn cứ không quân gần nhất với thời gian bay tiếp cận; (3) bố trí lực lượng chữa cháy mặt đất."
+            "risk_stratification_standard": "Risk stratification for risk_level: EXTREME or HIGH if total FRP > 100 MW or peak FRP > 80 MW; LOW or MODERATE if total FRP < 15 MW; other cases evaluate based on ROS and multi_horizon_size.",
+            "forecast_6h_standard": "Forecast forward spread based on kinematics (compass_dir) and distance (km) or area (ha) projected over the next 6 hours.",
+            "containment_standard": "Mandatory containment recommendations must include: (1) establish containment lines or firebreaks ahead of primary head; (2) scramble aerial firefighting from nearest airbase with transit flight time; (3) ground crew positioning."
         },
         "centroid": sample.get("current_centroid") or {
             "latitude": sample.get("centroid_lat"),
@@ -332,11 +407,14 @@ def score_sample_reliability(
         kpi1_reasons.append(f"Inference or JSON parsing failure: {error_msg}")
     else:
         required_keys = [
-            "summary_vi", "risk_level", "spread_mechanism",
+            "risk_level", "spread_mechanism",
             "threat_zone", "forecast_6h", "multi_horizon_assessment",
             "tactical_recommendations", "sitrep_markdown"
         ]
+        has_summary = bool(response.get("summary") or response.get("summary_vi"))
         missing = [k for k in required_keys if k not in response or not response[k]]
+        if not has_summary:
+            missing.append("summary")
         if missing:
             kpi1_valid = False
             kpi1_reasons.append(f"Missing schema keys: {missing}")
@@ -365,6 +443,7 @@ def score_sample_reliability(
     if not kpi1_valid or not response:
         return {
             "sample_id": sample_id,
+            "event_id": sample.get("event_id"),
             "latency_ms": round(latency_ms, 1),
             "kpi1_valid_schema": 0,
             "kpi2_kinematic_fidelity": 0,
@@ -388,12 +467,13 @@ def score_sample_reliability(
     # ----------------------------------------------------
     kpi2_faithful = True
     kpi2_reasons: List[str] = []
-    summary_text = (
-        str(response.get("summary_vi", ""))
-        + " " + str(response.get("threat_zone", ""))
-        + " " + str(response.get("forecast_6h", ""))
-    )
-    detected_compass = _extract_bearing_or_compass(summary_text)
+
+    # Priority extraction: forecast_6h is dedicated to the predicted spread vector
+    detected_compass = _extract_bearing_or_compass(str(response.get("forecast_6h", "")))
+    if not detected_compass:
+        detected_compass = _extract_bearing_or_compass(str(response.get("summary") or response.get("summary_vi", "")))
+    if not detected_compass:
+        detected_compass = _extract_bearing_or_compass(str(response.get("threat_zone", "")))
 
     # 2a. Direction Hallucination check
     if gt_compass and gt_compass in COMPASS_SECTORS and detected_compass and detected_compass in COMPASS_SECTORS:
@@ -420,6 +500,9 @@ def score_sample_reliability(
     if total_frp > 100.0 and wind_spd > 20.0 and "STATIONARY" in resp_mech:
         kpi2_faithful = False
         kpi2_reasons.append(f"Physical contradiction: Conflagration (FRP={total_frp} MW, Wind={wind_spd} km/h) claimed STATIONARY")
+    if gt_ros > 2.0 and "STATIONARY" in resp_mech:
+        kpi2_faithful = False
+        kpi2_reasons.append(f"Physical contradiction: Fast-moving wildfire (ROS={gt_ros:.2f} km/h) claimed STATIONARY")
 
     # ----------------------------------------------------
     # KPI 3: 6h Spread Distance Feasibility
@@ -455,15 +538,20 @@ def score_sample_reliability(
     elif area_matches:
         try:
             pred_area = float(area_matches[0])
-            if exp_h6_ha > 5.0:
-                if pred_area > exp_h6_ha * 6.0 or pred_area < exp_h6_ha * 0.1:
-                    kpi3_feasible = False
-                    kpi3_reasons.append(f"Burn area out of physical bounds: {pred_area} ha vs expected ~{exp_h6_ha:.1f} ha")
-            elif exp_h6_ha <= 5.0 and pred_area > 50.0:
+            # Physical bounds considering both grid simulation and kinematic propagation
+            max_area_ha = max(exp_h6_ha * 6.0, expected_dist_km * 50.0) if expected_dist_km > 0.5 else max(exp_h6_ha * 6.0, 50.0)
+            min_area_ha = min(exp_h6_ha * 0.1, max(0.5, expected_dist_km * 2.0)) if expected_dist_km > 0.5 else 0.5
+
+            if pred_area > max_area_ha or pred_area < min_area_ha:
                 kpi3_feasible = False
-                kpi3_reasons.append(f"Small fire predicted massive area: {pred_area} ha")
+                kpi3_reasons.append(
+                    f"Burn area out of physical bounds: {pred_area} ha (allowed [{min_area_ha:.1f}, {max_area_ha:.1f}] ha, exp_grid={exp_h6_ha:.1f} ha, exp_dist={expected_dist_km:.2f} km)"
+                )
         except ValueError:
             pass
+    else:
+        kpi3_feasible = False
+        kpi3_reasons.append("Missing quantitative 6h spread prediction: neither distance (km) nor area (ha) found in forecast_6h or multi_horizon_assessment")
 
     # ----------------------------------------------------
     # KPI 4: Risk Stratification Calibration
@@ -476,7 +564,7 @@ def score_sample_reliability(
         if resp_risk not in ("HIGH", "EXTREME"):
             kpi4_calibrated = False
             kpi4_reasons.append(f"High FRP ({total_frp:.1f} MW) misclassified as {resp_risk} (expected HIGH or EXTREME)")
-    elif total_frp < 15.0 and peak_frp < 10.0:
+    elif total_frp <= 15.0 or total_frp < 10.0:
         if resp_risk not in ("LOW", "MODERATE"):
             kpi4_calibrated = False
             kpi4_reasons.append(f"Low FRP ({total_frp:.1f} MW) misclassified as {resp_risk} (expected LOW or MODERATE)")
@@ -499,7 +587,8 @@ def score_sample_reliability(
     # 5a. Containment line strategy
     containment_keywords = [
         "đường băng cản lửa", "băng cản lửa", "băng cản", "containment line",
-        "ranh cản", "hào cản lửa", "tuyến ngăn chặn", "khoanh vùng", "đường ranh cản lửa"
+        "ranh cản", "hào cản lửa", "tuyến ngăn chặn", "khoanh vùng", "đường ranh cản lửa",
+        "firebreak", "fire break", "control line", "barrier line", "tuyến phòng thủ"
     ]
     has_containment = any(kw in tactical_text for kw in containment_keywords)
     if not has_containment:
@@ -509,7 +598,8 @@ def score_sample_reliability(
     # 5b. Aerial logistics / Airbase scramble time
     aerial_keywords = [
         "máy bay", "trực thăng", "căn cứ không quân", "không quân",
-        "xuất kích", "airbase", "aerial", "tiếp cận", "phút bay", "scramble"
+        "xuất kích", "airbase", "aerial", "tiếp cận", "phút bay", "scramble",
+        "air tanker", "aviation", "helicopter", "water bomber"
     ]
     has_aerial = any(kw in tactical_text for kw in aerial_keywords)
     if not has_aerial:
@@ -752,6 +842,18 @@ def main():
         help="3rd-party LLM model name (default: env OPENAI_MODEL or 'gpt-4o')",
     )
     parser.add_argument(
+        "--api-key",
+        type=str,
+        default=None,
+        help="Optional OpenAI API key override",
+    )
+    parser.add_argument(
+        "--base-url",
+        type=str,
+        default=os.environ.get("OPENAI_BASE_URL") or "https://api.openai.com/v1",
+        help="Optional API base URL (default: env OPENAI_BASE_URL or 'https://api.openai.com/v1')",
+    )
+    parser.add_argument(
         "--workers",
         type=int,
         default=4,
@@ -769,6 +871,8 @@ def main():
         dataset_path=args.dataset,
         output_report_path=args.output,
         model=args.model,
+        api_key=args.api_key,
+        base_url=args.base_url,
         workers=args.workers,
         max_samples=args.max_samples,
     )

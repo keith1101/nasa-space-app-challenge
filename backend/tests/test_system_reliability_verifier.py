@@ -110,6 +110,27 @@ class TestSystemReliabilityVerifier(unittest.TestCase):
         self.assertEqual(_extract_bearing_or_compass("Lan rộng về phía Đông Nam."), "SE")
         self.assertIsNone(_extract_bearing_or_compass("Khong co huong cu the."))
 
+    def test_compass_extraction_intermediate_16_points(self):
+        self.assertEqual(_extract_bearing_or_compass("Dự báo lan truyền theo hướng Bắc Đông Bắc"), "NNE")
+        self.assertEqual(_extract_bearing_or_compass("Lan theo hướng Tây Tây Bắc với diện tích 70 ha"), "WNW")
+        self.assertEqual(_extract_bearing_or_compass("Lan truyền về hướng Đông Đông Nam"), "ESE")
+        self.assertEqual(_extract_bearing_or_compass("Lan về phía Nam Tây Nam (SSW)"), "SSW")
+        self.assertEqual(_extract_bearing_or_compass("Lan theo hướng Tây Tây Nam"), "WSW")
+        self.assertEqual(_extract_bearing_or_compass("Lan truyền về phía Bắc Tây Bắc"), "NNW")
+        self.assertEqual(_extract_bearing_or_compass("Lan truyền về hướng Đông Đông Bắc"), "ENE")
+        self.assertEqual(_extract_bearing_or_compass("Lan về phía Nam Đông Nam"), "SSE")
+
+    def test_compass_extraction_proper_noun_and_token_protection(self):
+        # Province and country names should NOT cause false directional matches
+        self.assertEqual(_extract_bearing_or_compass("Đám cháy tại Bắc Giang đang lan mạnh về hướng Nam."), "S")
+        self.assertEqual(_extract_bearing_or_compass("Đám cháy tại Quảng Nam, Việt Nam đang lan mạnh về hướng Bắc."), "N")
+        self.assertIsNone(_extract_bearing_or_compass("Một đám cháy nhỏ đã được phát hiện tại Thừa Thiên Huế, Việt Nam."))
+        # Arbitrary single tokens like 'N = 50' or 'S-70' must not be matched as compass directions
+        self.assertIsNone(_extract_bearing_or_compass("Đám cháy đang được kiểm soát, diện tích 5 ha, theo dõi mẫu N = 50."))
+        self.assertIsNone(_extract_bearing_or_compass("Trực thăng S-70 Blackhawk tham gia cứu hỏa."))
+        # Multiple directions with distinct spread context: prioritize earliest directional statement
+        self.assertEqual(_extract_bearing_or_compass("Đám cháy lan mạnh về hướng Tây Bắc, khói bao trùm cả vùng Đông Bắc."), "NW")
+
     def test_kpi1_json_validity(self):
         # Valid response passes KPI 1
         res = score_sample_reliability(self.sample, self.enriched, self.valid_response, None, 1200.0)
@@ -146,6 +167,15 @@ class TestSystemReliabilityVerifier(unittest.TestCase):
         res_calm = score_sample_reliability(calm_sample, self.enriched, self.valid_response, None, 1200.0)
         self.assertEqual(res_calm["kpi2_kinematic_fidelity"], 0)
 
+        # Physical contradiction: Fast-moving wildfire (ROS=3.5 km/h) claimed STATIONARY
+        fast_sample = dict(self.sample)
+        fast_sample["overall_rate_of_spread_kmh"] = 3.5
+        fast_sample["kinematics"]["current_ros_kmh"] = 3.5
+        stat_resp = dict(self.valid_response)
+        stat_resp["spread_mechanism"] = "STATIONARY"
+        res_stat = score_sample_reliability(fast_sample, self.enriched, stat_resp, None, 1200.0)
+        self.assertEqual(res_stat["kpi2_kinematic_fidelity"], 0)
+
     def test_kpi3_distance_feasibility(self):
         # Feasible distance: 3.75 km is close to expected 0.5 * 6h * 1.25 = 3.75 km
         res = score_sample_reliability(self.sample, self.enriched, self.valid_response, None, 1200.0)
@@ -157,6 +187,18 @@ class TestSystemReliabilityVerifier(unittest.TestCase):
         crazy_resp["multi_horizon_assessment"] = {"h6_summary": "150 km lan truyền"}
         res_crazy = score_sample_reliability(self.sample, self.enriched, crazy_resp, None, 1200.0)
         self.assertEqual(res_crazy["kpi3_distance_feasible"], 0)
+
+        # Missing quantitative 6h prediction (neither km nor ha provided)
+        no_numbers_resp = dict(self.valid_response)
+        no_numbers_resp["forecast_6h"] = "Đám cháy đang lan truyền với diễn biến rất phức tạp."
+        no_numbers_resp["multi_horizon_assessment"] = {
+            "h6_summary": "Đám cháy lan rộng",
+            "h12_summary": "Đám cháy phức tạp",
+            "h24_summary": "Khó kiểm soát",
+        }
+        res_no_num = score_sample_reliability(self.sample, self.enriched, no_numbers_resp, None, 1200.0)
+        self.assertEqual(res_no_num["kpi3_distance_feasible"], 0)
+        self.assertIn("Missing quantitative 6h spread prediction", res_no_num["audit_trail"]["kpi3_reasons"][0])
 
     def test_kpi4_risk_stratification_calibration(self):
         # Total FRP = 150 MW (> 100 MW) -> must be HIGH or EXTREME
@@ -178,6 +220,15 @@ class TestSystemReliabilityVerifier(unittest.TestCase):
         res_low = score_sample_reliability(low_sample, self.enriched, low_resp, None, 1200.0)
         self.assertEqual(res_low["kpi4_risk_calibrated"], 1)
 
+        # Low FRP (< 15 MW) even if peak FRP is 11 MW: MUST be LOW or MODERATE, not EXTREME
+        low_sample_peak11 = dict(self.sample)
+        low_sample_peak11["total_frp_mw"] = 13.5
+        low_sample_peak11["peak_frp_mw"] = 11.0
+        ext_resp = dict(self.valid_response)
+        ext_resp["risk_level"] = "EXTREME"
+        res_low_ext = score_sample_reliability(low_sample_peak11, self.enriched, ext_resp, None, 1200.0)
+        self.assertEqual(res_low_ext["kpi4_risk_calibrated"], 0)
+
     def test_kpi5_tactical_actionability(self):
         # Valid response has both containment line and airbase scramble
         res = score_sample_reliability(self.sample, self.enriched, self.valid_response, None, 1200.0)
@@ -192,6 +243,27 @@ class TestSystemReliabilityVerifier(unittest.TestCase):
         bad_tactics["sitrep_markdown"] = "Chỉ theo dõi."
         res_tactics = score_sample_reliability(self.sample, self.enriched, bad_tactics, None, 1200.0)
         self.assertEqual(res_tactics["kpi5_tactical_actionability"], 0)
+
+        # English terminology for containment (firebreak) and aerial logistics (helicopter/air tanker)
+        en_tactics = dict(self.valid_response)
+        en_tactics["tactical_recommendations"] = [
+            "Establish a wide firebreak along the north ridge.",
+            "Dispatch an aerial firefighting helicopter from Chu Lai Airbase, 6 min flight time.",
+            "Deploy ground suppression units.",
+        ]
+        en_tactics["sitrep_markdown"] = "Tactical SITREP complete."
+        res_en = score_sample_reliability(self.sample, self.enriched, en_tactics, None, 1200.0)
+        self.assertEqual(res_en["kpi5_tactical_actionability"], 1)
+
+    def test_score_sample_reliability_schema_consistency_on_failure(self):
+        # When KPI 1 fails, event_id must still be present in the returned dictionary
+        bad_resp = None
+        res_fail = score_sample_reliability(self.sample, self.enriched, bad_resp, "Network error", 0.0)
+        self.assertIn("event_id", res_fail)
+        self.assertEqual(res_fail["event_id"], "FE-TEST-001")
+        self.assertEqual(res_fail["sample_id"], "SAMPLE-TEST-001")
+        self.assertEqual(res_fail["kpi1_valid_schema"], 0)
+        self.assertEqual(res_fail["system_score"], 0.0)
 
     def test_build_tactical_prompt(self):
         prompt_str = build_tactical_prompt(self.sample, self.enriched)

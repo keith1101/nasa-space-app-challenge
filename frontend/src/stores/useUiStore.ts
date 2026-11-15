@@ -23,23 +23,8 @@ export interface UiState {
   setMapFullscreen: (enabled: boolean) => void;
 }
 
-const getInitialLang = (): Language => {
-  if (typeof window !== 'undefined') {
-    const urlParams = new URLSearchParams(window.location.search);
-    const urlLang = urlParams.get('lang');
-    if (urlLang === 'en' || urlLang === 'vi') return urlLang;
-    try {
-      const saved = localStorage.getItem('nasa_firms_lang');
-      if (saved === 'en' || saved === 'vi') return saved;
-    } catch {
-      // Ignore local storage error
-    }
-  }
-  return 'vi';
-};
-
 export const useUiStore = create<UiState>((set) => ({
-  lang: getInitialLang(),
+  lang: 'en',
   selectedPoint: null,
   riskHorizon: 24,
   is3DMode: false,
@@ -47,13 +32,8 @@ export const useUiStore = create<UiState>((set) => ({
   terrainExaggeration: 1.5,
   isMapFullscreen: false,
 
-  setLang: (lang) => {
-    try {
-      localStorage.setItem('nasa_firms_lang', lang);
-    } catch {
-      // Ignore storage error
-    }
-    set({ lang });
+  setLang: () => {
+    set({ lang: 'en' });
   },
   setSelectedPoint: (selectedPoint) => set({ selectedPoint }),
   setRiskHorizon: (riskHorizon) => set({ riskHorizon }),

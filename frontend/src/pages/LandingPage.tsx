@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { ArrowRight, BookOpen, Globe2, Layers, Sparkles } from 'lucide-react';
-import { useUiStore } from '../stores/useUiStore';
 import { MiniFirePreview } from '../components/deck/MiniFirePreview';
 import { CinematicEarth } from '../components/earth/CinematicEarth';
 import { AnimatedCounter } from '../components/ui/AnimatedCounter';
@@ -13,8 +12,6 @@ import { MathFormula } from '../components/ui/MathFormula';
 import { cx } from '../components/ui';
 
 export function LandingPage() {
-  const { lang } = useUiStore();
-  const isVi = lang === 'vi';
   const [previewMode, setPreviewMode] = useState<'3d' | '2d'>('3d');
 
   return (
@@ -48,21 +45,10 @@ export function LandingPage() {
             transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
             className="text-3xl font-extrabold sm:text-5xl text-white tracking-tight"
           >
-            {isVi ? (
-              <>
-                Hợp Nhất Điểm Cháy{' '}
-                <span className="bg-gradient-to-r from-cyan-400 via-emerald-400 to-amber-300 bg-clip-text text-transparent">
-                  Đa Vệ Tinh Toàn Cầu
-                </span>
-              </>
-            ) : (
-              <>
-                Global Multi-Sensor{' '}
-                <span className="bg-gradient-to-r from-cyan-400 via-emerald-400 to-amber-300 bg-clip-text text-transparent">
-                  Active-Fire Harmonization
-                </span>
-              </>
-            )}
+            Global Multi-Sensor{' '}
+            <span className="bg-gradient-to-r from-cyan-400 via-emerald-400 to-amber-300 bg-clip-text text-transparent">
+              Active-Fire Harmonization
+            </span>
           </motion.h1>
 
           <motion.p
@@ -71,9 +57,7 @@ export function LandingPage() {
             transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
             className="mx-auto max-w-2xl text-sm sm:text-base text-slate-300 leading-relaxed"
           >
-            {isVi
-              ? 'Khử trùng lặp 27%–43% giữa MODIS (1.000m) và VIIRS (375m) bằng thuật toán ST-DBSCAN không-thời gian và mô hình hợp nhất Bayesian để xây dựng danh mục điểm cháy chuẩn xác nhất.'
-              : 'Eliminating 27%–43% multi-satellite redundancy between MODIS (1,000 m) and VIIRS (375 m) using spatio-temporal ST-DBSCAN and pass-grouped Bayesian sensor fusion.'}
+            Eliminating 27%–43% multi-satellite redundancy between MODIS (1,000 m) and VIIRS (375 m) using spatio-temporal ST-DBSCAN and pass-grouped Bayesian sensor fusion.
           </motion.p>
 
           <motion.div
@@ -87,7 +71,7 @@ export function LandingPage() {
               className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-5 py-2.5 text-xs font-bold text-ink-950 shadow-lg shadow-cyan-500/20 hover:from-cyan-400 hover:to-emerald-400 transition-all hover:scale-[1.02]"
             >
               <Globe2 className="h-3.5 w-3.5" />
-              <span>{isVi ? 'Khởi Động Trạm Giám Sát' : 'Launch Dashboard'}</span>
+              <span>Launch Dashboard</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </Link>
 
@@ -96,7 +80,7 @@ export function LandingPage() {
               className="inline-flex items-center gap-2 rounded-xl border border-line-strong bg-ink-900/80 px-5 py-2.5 text-xs font-semibold text-slate-300 backdrop-blur-sm hover:bg-ink-800 hover:text-white transition-all hover:border-cyan-400/40"
             >
               <BookOpen className="h-3.5 w-3.5 text-cyan-400" />
-              <span>{isVi ? 'Phương Pháp Luận' : 'Methodology'}</span>
+              <span>Methodology</span>
             </Link>
           </motion.div>
         </div>
@@ -114,10 +98,10 @@ export function LandingPage() {
               <AnimatedCounter to={87311} />
             </div>
             <div className="text-xs font-semibold text-cyan-300">
-              {isVi ? 'Điểm cháy hợp nhất' : 'Harmonized Hotspots'}
+              Harmonized Hotspots
             </div>
             <div className="text-[11px] text-slate-400">
-              {isVi ? 'Từ 153.948 lượt quét thô' : 'From 153k raw scans'}
+              From 153k raw scans
             </div>
           </motion.div>
 
@@ -132,10 +116,10 @@ export function LandingPage() {
               <AnimatedCounter to={962} />
             </div>
             <div className="text-xs font-semibold text-emerald-300">
-              {isVi ? 'Xác thực kép' : 'Dual Confirmed'}
+              Dual Confirmed
             </div>
             <div className="text-[11px] text-slate-400">
-              {isVi ? 'Độ tin cậy ≥ 92%' : 'Confidence ≥ 92%'}
+              Confidence ≥ 92%
             </div>
           </motion.div>
 
@@ -150,10 +134,10 @@ export function LandingPage() {
               <AnimatedCounter to={43.3} prefix="−" suffix="%" decimals={1} />
             </div>
             <div className="text-xs font-semibold text-emerald-300">
-              {isVi ? 'Tỷ lệ khử trùng lặp' : 'Deduplication Rate'}
+              Deduplication Rate
             </div>
             <div className="text-[11px] text-slate-400">
-              {isVi ? 'Loại bỏ sai số ảo' : 'Zero inflation'}
+              Zero inflation
             </div>
           </motion.div>
 
@@ -168,10 +152,10 @@ export function LandingPage() {
               <AnimatedCounter to={143} />
             </div>
             <div className="text-xs font-semibold text-sky-300">
-              {isVi ? 'Quốc gia giám sát' : 'Countries Monitored'}
+              Countries Monitored
             </div>
             <div className="text-[11px] text-slate-400">
-              {isVi ? '7 vùng sinh thái' : '7 global biomes'}
+              7 global biomes
             </div>
           </motion.div>
         </div>
@@ -181,12 +165,10 @@ export function LandingPage() {
           <div className="text-center space-y-1.5">
             <h2 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight flex items-center justify-center gap-2">
               <Sparkles className="h-5 w-5 text-cyan-400" />
-              <span>{isVi ? '3 Trụ Cột Khoa Học Đột Phá' : '3 Scientific Breakthroughs'}</span>
+              <span>3 Scientific Breakthroughs</span>
             </h2>
             <p className="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto">
-              {isVi
-                ? 'Kiến trúc xử lý viễn thám kết hợp hình học quỹ đạo vết quét và xác suất thống kê Bayesian.'
-                : 'Remote sensing pipeline combining orbital swath geometry with Bayesian probability.'}
+              Remote sensing pipeline combining orbital swath geometry with Bayesian probability.
             </p>
           </div>
 
@@ -208,12 +190,10 @@ export function LandingPage() {
                   <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400">ST-DBSCAN</span>
                 </div>
                 <h3 className="text-base font-bold text-white">
-                  {isVi ? 'Phân Cụm Không - Thời Gian' : 'Spatio-Temporal Clustering'}
+                  Spatio-Temporal Clustering
                 </h3>
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  {isVi
-                    ? 'Phân cụm thích ứng hình học vết quét (scan × track) hình elip dị hướng kết hợp khoảng cách Haversine và cửa sổ thời gian trượt ≤ 3 giờ.'
-                    : 'Anisotropic elliptical swath clustering adapting cross-track distortion with continuous sliding time window ≤ 3.0 hours.'}
+                  Anisotropic elliptical swath clustering adapting cross-track distortion with continuous sliding time window ≤ 3.0 hours.
                 </p>
                 <div className="rounded-lg bg-ink-950/80 px-3 py-2 text-cyan-300 border border-line flex items-center justify-center">
                   <MathFormula tex="\left(\frac{dx}{a_{\text{scan}}}\right)^2 + \left(\frac{dy}{b_{\text{track}}}\right)^2 \le 1.0" />
@@ -237,12 +217,10 @@ export function LandingPage() {
                   <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400">Bayesian</span>
                 </div>
                 <h3 className="text-base font-bold text-white">
-                  {isVi ? 'Hợp Nhất Bayesian Độc Lập' : 'Pass-Grouped Bayesian'}
+                  Pass-Grouped Bayesian
                 </h3>
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  {isVi
-                    ? 'Gom nhóm theo lượt quét vệ tinh độc lập, hợp nhất độ tin cậy P = 1 - Π(1 - p). Triệt tiêu báo động giả và tăng độ tin cậy ≥ 92% cho xác thực kép.'
-                    : 'Pass-grouped noisy-OR logic eliminates false alarms. Multi-sensor corroboration guarantees robust confidence calibration ≥ 92%.'}
+                  Pass-grouped noisy-OR logic eliminates false alarms. Multi-sensor corroboration guarantees robust confidence calibration ≥ 92%.
                 </p>
                 <div className="rounded-lg bg-ink-950/80 px-3 py-2 text-emerald-300 border border-line flex items-center justify-center">
                   <MathFormula tex="P_{\text{fused}} = 1 - \prod_{s} (1 - p_s)" />
@@ -266,12 +244,10 @@ export function LandingPage() {
                   <span className="text-[10px] uppercase font-mono tracking-wider text-slate-400">Resolution</span>
                 </div>
                 <h3 className="text-base font-bold text-white">
-                  {isVi ? 'Định Vị 375m & Điều Hòa FRP' : '375m Centroid & Peak FRP'}
+                  375m Centroid & Peak FRP
                 </h3>
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  {isVi
-                    ? 'Định vị trọng tâm đám cháy theo kênh VIIRS 375m; điều hòa năng lượng bức xạ FRP theo lượt quét cực đại để tránh thổi phồng năng lượng.'
-                    : 'Localizes physical fire front using 375m VIIRS I-band; reconciles peak pass FRP to prevent multi-orbit energy inflation.'}
+                  Localizes physical fire front using 375m VIIRS I-band; reconciles peak pass FRP to prevent multi-orbit energy inflation.
                 </p>
                 <div className="rounded-lg bg-ink-950/80 px-3 py-2 text-rose-300 border border-line flex items-center justify-center">
                   <MathFormula tex="\text{FRP}_{\text{reconciled}} = \max_s \left(\sum_{i \in s} \text{FRP}_i\right)" />
@@ -297,15 +273,11 @@ export function LandingPage() {
               </div>
 
               <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                {isVi
-                  ? 'Mô Phỏng Trái Đất Không Gian Điện Ảnh'
-                  : 'Cinematic Orbital Earth Simulation'}
+                Cinematic Orbital Earth Simulation
               </h3>
 
               <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                {isVi
-                  ? 'Mô phỏng quả địa cầu 3D với chu kỳ ngày/đêm thực tế, đường phân định chập tối (terminator), quầng sáng tán xạ khí quyển Rayleigh, quỹ đạo vệ tinh viễn thám LEO (Terra / Aqua) và các điểm cháy nhiệt (thermal anomalies) nhấp nháy phát sáng trên bề mặt hành tinh.'
-                  : 'Photorealistic 3D Earth simulation featuring real-time day/night terminator transitions, Rayleigh atmospheric scattering, Low Earth Orbit (LEO) sun-synchronous satellite tracks, and pulsating active fire beacons.'}
+                Photorealistic 3D Earth simulation featuring real-time day/night terminator transitions, Rayleigh atmospheric scattering, Low Earth Orbit (LEO) sun-synchronous satellite tracks, and pulsating active fire beacons.
               </p>
 
               {/* View Mode Selector Tabs */}
@@ -321,7 +293,7 @@ export function LandingPage() {
                   )}
                 >
                   <Globe2 className="h-3.5 w-3.5" />
-                  <span>{isVi ? 'Quả Cầu 3D NASA' : '3D Orbital Globe'}</span>
+                  <span>3D Orbital Globe</span>
                 </button>
 
                 <button
@@ -335,14 +307,14 @@ export function LandingPage() {
                   )}
                 >
                   <Layers className="h-3.5 w-3.5" />
-                  <span>{isVi ? 'Bản Đồ 2D Deck.gl' : '2D Deck.gl Map'}</span>
+                  <span>2D Deck.gl Map</span>
                 </button>
 
                 <Link
                   to="/dashboard"
                   className="ml-auto inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-300 hover:underline"
                 >
-                  <span>{isVi ? 'Trạm GIS Toàn Màn Hình' : 'Full GIS Station'}</span>
+                  <span>Full GIS Station</span>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </div>
@@ -351,9 +323,9 @@ export function LandingPage() {
             {/* Interactive Preview Container */}
             <div className="w-full lg:w-[480px] shrink-0 h-[430px]">
               {previewMode === '3d' ? (
-                <CinematicEarth isVi={isVi} className="h-full w-full" />
+                <CinematicEarth className="h-full w-full" />
               ) : (
-                <MiniFirePreview isVi={isVi} />
+                <MiniFirePreview />
               )}
             </div>
           </div>
@@ -362,21 +334,17 @@ export function LandingPage() {
         {/* Bottom Callout */}
         <div className="text-center space-y-3 py-4">
           <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-            {isVi
-              ? 'Khám Phá Dữ Liệu Cháy Rừng Toàn Cầu'
-              : 'Explore Global Wildfire Intelligence'}
+            Explore Global Wildfire Intelligence
           </h2>
           <p className="text-xs sm:text-sm text-slate-400 max-w-md mx-auto">
-            {isVi
-              ? 'Trạm giám sát với đầy đủ công cụ lọc chuyên sâu, bản đồ GIS đa lớp và ma trận nhiệt mùa vụ.'
-              : 'Workstation equipped with GIS layer controls, multi-sensor filtering, and regime calendars.'}
+            Workstation equipped with GIS layer controls, multi-sensor filtering, and regime calendars.
           </p>
           <div className="pt-1">
             <Link
               to="/dashboard"
               className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 px-6 py-3 text-sm font-bold text-ink-950 shadow-lg shadow-cyan-500/20 hover:from-cyan-400 hover:to-emerald-400 transition-all hover:scale-[1.02]"
             >
-              <span>{isVi ? 'Bắt Đầu Giám Sát' : 'Launch Station'}</span>
+              <span>Launch Station</span>
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>

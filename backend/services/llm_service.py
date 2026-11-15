@@ -24,33 +24,34 @@ from urllib.request import Request, urlopen
 
 logger = logging.getLogger("llm_service")
 
-SYSTEM_PROMPT = """Bạn là Sĩ quan Phân tích Tác chiến Cứu hỏa Rừng (Wildfire Tactical Intelligence Officer).
-Nhiệm vụ của bạn là tiếp nhận telemetry đo đạc không-thời gian (kinematics) từ vệ tinh NASA FIRMS kết hợp khí tượng Open-Meteo, phân tích địa hình độ dốc (Topography DEM), sinh thái thảm thực vật (MCD12Q1 Biome) và căn cứ không quân chữa cháy. Sau đó lập báo cáo tình huống chiến thuật (Tactical SITREP) và phương án khoanh vùng ứng cứu.
+SYSTEM_PROMPT = """You are a Wildfire Tactical Intelligence Officer.
+Your mission is to ingest spatio-temporal telemetry (kinematics) from NASA FIRMS satellites combined with Open-Meteo meteorology, analyze DEM topography slope, MCD12Q1 Biome landcover, and firefighting airbase logistics. Then produce a professional tactical situation report (Tactical SITREP) and containment strategy.
 
-Quy tắc bắt buộc:
-1. KHÔNG tự ý suy đoán lại tọa độ, góc la bàn hay thời gian cháy. Phải trích dẫn và sử dụng chính xác các số liệu đã được tính toán trong telemetry.
-2. Đánh giá ảnh hưởng của độ dốc địa hình (Forward Slope Deg): Nếu sườn dốc dương (leo dốc), đám cháy tăng tốc theo hệ số McArthur.
-3. Đánh giá tiềm năng cháy tán (Crown Fire) và nguy cơ bắn tàn lửa (Spotting) dựa trên loại thảm phủ thực vật (rừng lá kim, rừng khộp hay trảng cỏ).
-4. Phân tích 3 mốc chân trời (6h / 12h / 24h): Đánh giá diện tích bao phủ dự kiến (km² hoặc ha) và độ tin cậy duy trì của đám cháy theo thời tiết.
-5. Đề xuất phương án tác chiến: Vị trí lập đường băng cản lửa, điều động lực lượng mặt đất và xuất kích phi đội máy bay chữa cháy từ căn cứ không quân gần nhất.
-6. Bắt buộc trả về đúng định dạng JSON hợp lệ (không kèm văn bản thừa ngoài JSON) theo cấu trúc:
+Mandatory rules:
+1. DO NOT fabricate coordinates, compass bearings, or fire timestamps. Quote and use exact values from telemetry.
+2. Evaluate Forward Slope Deg: positive slope (uphill) accelerates spread according to the McArthur factor.
+3. Evaluate Crown Fire and Spotting potential based on landcover vegetation (coniferous forest, savanna, or grasslands).
+4. Analyze 3 multi-horizon projections (6h / 12h / 24h): expected burned area (km² or ha) and weather persistence.
+5. Propose tactical recommendations: firebreak placement, ground crew deployment, and aerial drops from the nearest airbase.
+6. Return strictly valid JSON (no markdown fence, no trailing text outside JSON) following this schema:
 {
-  "summary_vi": "Tóm tắt ngắn gọn tình hình (2-3 câu tiếng Việt)",
+  "summary": "Concise situation summary (2-3 sentences)",
+  "summary_vi": "Concise situation summary (alias for compatibility)",
   "risk_level": "LOW|MODERATE|HIGH|EXTREME",
   "spread_mechanism": "WIND_DRIVEN|SLOPE_DRIVEN|FUEL_DRIVEN|STATIONARY",
-  "threat_zone": "Mô tả vùng nguy cơ chịu ảnh hưởng chính",
-  "forecast_6h": "Dự báo hướng và cự ly lan truyền trong 6 giờ tới",
+  "threat_zone": "Primary affected risk zone description",
+  "forecast_6h": "Direction and spread distance in next 6 hours",
   "multi_horizon_assessment": {
-    "h6_summary": "Đánh giá quy mô và nguy cơ mốc 6h",
-    "h12_summary": "Đánh giá quy mô và nguy cơ mốc 12h",
-    "h24_summary": "Đánh giá quy mô và nguy cơ mốc 24h"
+    "h6_summary": "6h scale and risk assessment",
+    "h12_summary": "12h scale and risk assessment",
+    "h24_summary": "24h scale and risk assessment"
   },
   "tactical_recommendations": [
-    "Khuyến nghị tác chiến 1",
-    "Khuyến nghị tác chiến 2",
-    "Khuyến nghị tác chiến 3"
+    "Tactical recommendation 1",
+    "Tactical recommendation 2",
+    "Tactical recommendation 3"
   ],
-  "sitrep_markdown": "Toàn văn báo cáo chiến thuật định dạng Markdown chuyên nghiệp"
+  "sitrep_markdown": "Full SITREP in professional Markdown"
 }"""
 
 
@@ -368,16 +369,16 @@ def _generate_heuristic_sitrep(telemetry: Dict[str, Any]) -> Dict[str, Any]:
     # Mechanism
     if slope_deg >= 10.0 and ("OPPOSING" in align_status or wind_spd < 10.0):
         mechanism = "SLOPE_DRIVEN"
-        mech_vi = f"Lửa leo dốc sườn đồi ({slope_deg:.1f}°), gia tốc x{slope_multiplier:.1f} lần"
+        mech_en = f"Uphill slope spread ({slope_deg:.1f}°), accelerated x{slope_multiplier:.1f}"
     elif "STRONG_WIND" in align_status or "MODERATE_WIND" in align_status:
         mechanism = "WIND_DRIVEN"
-        mech_vi = f"Lan mạnh thuận chiều gió thổi ({wind_spd:.1f} km/h)"
+        mech_en = f"Wind-driven head fire ({wind_spd:.1f} km/h)"
     elif "OPPOSING" in align_status:
         mechanism = "SLOPE_DRIVEN"
-        mech_vi = "Lửa leo dốc sườn đồi hoặc cháy ngún ngược gió"
+        mech_en = "Slope-driven backing fire or smoldering against wind"
     else:
         mechanism = "FUEL_DRIVEN"
-        mech_vi = f"Cháy sườn theo vệt {biome_name}"
+        mech_en = f"Fuel-driven perimeter expansion in {biome_name}"
 
     proj_distance_6h = round(ros_kmh * 6.0 * slope_multiplier, 2)
     if proj_distance_6h < 0.2:
@@ -391,58 +392,59 @@ def _generate_heuristic_sitrep(telemetry: Dict[str, Any]) -> Dict[str, Any]:
     area_12h = _safe_float(h12_info.get("expected_area_ha"), round(area_6h * 2.2, 1))
     area_24h = _safe_float(h24_info.get("expected_area_ha"), round(area_12h * 1.8, 1))
 
-    summary_vi = (
-        f"Vụ cháy {event_id} ({biome_name}) đã duy trì trong {duration_h:.1f} giờ với tổng năng lượng {total_frp:.1f} MW. "
-        f"Vector lan truyền hướng về phía {compass_dir} ({bearing_deg:.1f}°) với vận tốc {ros_kmh:.2f} km/h, "
-        f"cơ chế chính: {mech_vi}."
+    summary = (
+        f"Wildfire {event_id} ({biome_name}) has sustained for {duration_h:.1f} hours with total FRP of {total_frp:.1f} MW. "
+        f"Propagation vector heads {compass_dir} ({bearing_deg:.1f}°) at rate of spread {ros_kmh:.2f} km/h, "
+        f"primary mechanism: {mech_en}."
     )
 
-    threat_zone = f"Hành lang sườn phía {compass_dir} trong bán kính {proj_distance_6h + 1.2:.1f} km tính từ tâm hỏa hoạn"
+    threat_zone = f"{compass_dir} flank corridor within a {proj_distance_6h + 1.2:.1f} km radius from fire centroid"
     forecast_6h = (
-        f"Dự báo trong 6 giờ tới, mũi lửa có xu hướng tiến thêm xấp xỉ {proj_distance_6h} km về hướng {compass_dir} "
-        f"(quy mô dự kiến {area_6h:.1f} ha) với xu hướng năng lượng {frp_trend}."
+        f"Over the next 6 hours, the fire front is projected to advance approximately {proj_distance_6h} km toward {compass_dir} "
+        f"(expected footprint {area_6h:.1f} ha) with energy trend {frp_trend}."
     )
 
     recs = [
-        f"Triển khai đường băng cản lửa (firebreak) đón đầu tại hướng {compass_dir} cách tâm đám cháy tối thiểu {proj_distance_6h + 0.6:.1f} km.",
-        f"Cảnh giới nguy cơ cháy tán (Crown Fire: {crown_pot}) trong thảm {biome_name}; tàn lửa có thể văng xa {spotting_km:.1f} km.",
+        f"Establish a containment firebreak ahead of the primary head toward {compass_dir} at least {proj_distance_6h + 0.6:.1f} km from centroid.",
+        f"Monitor crown fire potential ({crown_pot}) in {biome_name}; spotting range estimated up to {spotting_km:.1f} km.",
     ]
     if airbase_dist > 0.0:
-        recs.append(f"Kích hoạt phương án xuất kích không kích dập lửa từ {airbase_name} (cự ly {airbase_dist:.1f} km, ~{airbase_mins:.0f} phút bay).")
+        recs.append(f"Scramble aerial firefighting sorties from {airbase_name} (distance {airbase_dist:.1f} km, ~{airbase_mins:.0f} min flight time).")
     else:
-        recs.append(f"Ưu tiên bảo vệ các khu vực thảm thực vật dày và tài sản dân sinh phía hạ lưu gió ({wind_towards:.0f}°).")
+        recs.append(f"Prioritize protection of dense fuel stands and downwind assets ({wind_towards:.0f}°).")
 
     multi_horizon_assessment = {
-        "h6_summary": f"Mốc 6h: Dự kiến diện tích đạt {area_6h:.1f} ha ({h6_info.get('threat_milestone', 'Cấp 1-2')}), độ tin cậy duy trì {h6_info.get('persistence_confidence', 0.88):.2f}.",
-        "h12_summary": f"Mốc 12h: Dự kiến diện tích đạt {area_12h:.1f} ha, chuyển sang giai đoạn hạ nhiệt đêm với độ tin cậy duy trì {h12_info.get('persistence_confidence', 0.82):.2f}.",
-        "h24_summary": f"Mốc 24h: Quy mô mở rộng tiềm năng {area_24h:.1f} ha, cần hoàn tất đường băng cản lửa cấp chiến lược (độ tin cậy duy trì {h24_info.get('persistence_confidence', 0.50):.2f}).",
+        "h6_summary": f"6h Horizon: Projected footprint {area_6h:.1f} ha ({h6_info.get('threat_milestone', 'Tier 1-2')}), persistence confidence {h6_info.get('persistence_confidence', 0.88):.2f}.",
+        "h12_summary": f"12h Horizon: Projected footprint {area_12h:.1f} ha, transitioning to diurnal cooling phase with persistence confidence {h12_info.get('persistence_confidence', 0.82):.2f}.",
+        "h24_summary": f"24h Horizon: Potential footprint expands to {area_24h:.1f} ha, strategic containment line completion required (persistence confidence {h24_info.get('persistence_confidence', 0.50):.2f}).",
     }
 
-    sitrep_md = f"""### BÁO CÁO TÁC CHIẾN TÌNH HÌNH HỎA HOẠN (TACTICAL SITREP)
-**Mã sự kiện:** `{event_id}` | **Mức độ rủi ro:** `{risk_level}`
-* **Thời gian cháy tích lũy:** {duration_h:.1f} giờ | **Sinh cảnh thảm phủ:** {biome_name}
-* **Vector lan truyền:** Hướng **{compass_dir}** ({bearing_deg:.1f}°) | Vận tốc lan: **{ros_kmh:.2f} km/h**
-* **Đặc trưng địa hình:** Độ dốc sườn **{slope_deg:.1f}°** ({slope_effect}) | Hệ số gia tốc: **x{slope_multiplier:.2f}**
-* **Năng lượng bức xạ (FRP):** {total_frp:.1f} MW (Xu hướng: `{frp_trend}`)
-* **Khí tượng hiện trường:** Gió {wind_spd:.1f} km/h | Độ ẩm: {rh_pct:.1f}% | Nhiệt độ: {temp_c:.1f}°C
-* **Hậu cần cứu hỏa:** Sân bay gần nhất **{airbase_name}** ({airbase_dist:.1f} km, ~{airbase_mins:.0f} phút bay)
+    sitrep_md = f"""### TACTICAL SITUATION REPORT (TACTICAL SITREP)
+**Event ID:** `{event_id}` | **Risk Level:** `{risk_level}`
+* **Cumulative Active Duration:** {duration_h:.1f} hours | **Fuel Biome:** {biome_name}
+* **Propagation Vector:** Bearing **{compass_dir}** ({bearing_deg:.1f}°) | Rate of Spread: **{ros_kmh:.2f} km/h**
+* **Topography Profile:** Forward Slope **{slope_deg:.1f}°** ({slope_effect}) | Acceleration Factor: **x{slope_multiplier:.2f}**
+* **Fire Radiative Power (FRP):** {total_frp:.1f} MW (Trend: `{frp_trend}`)
+* **Field Meteorology:** Wind {wind_spd:.1f} km/h | Relative Humidity: {rh_pct:.1f}% | Temperature: {temp_c:.1f}°C
+* **Firefighting Logistics:** Nearest Airbase **{airbase_name}** ({airbase_dist:.1f} km, ~{airbase_mins:.0f} min transit)
 
-#### 1. Đánh giá Tác chiến & Cơ chế Lan truyền
-Đám cháy đang hoạt động theo cơ chế **{mechanism}**. Với thảm {biome_name} và độ ẩm {rh_pct:.1f}%, tiềm năng cháy tán được đánh giá ở mức **{crown_pot}**.
+#### 1. Tactical Evaluation & Spread Mechanism
+The wildfire is advancing primarily via **{mechanism}**. Given fuel biome {biome_name} and relative humidity {rh_pct:.1f}%, crown fire potential is evaluated at **{crown_pot}**.
 
-#### 2. Đánh giá Quy mô theo 3 Chân trời Thời gian
-* **Chân trời 6h:** {multi_horizon_assessment['h6_summary']}
-* **Chân trời 12h:** {multi_horizon_assessment['h12_summary']}
-* **Chân trời 24h:** {multi_horizon_assessment['h24_summary']}
+#### 2. Multi-Horizon Projections (6h / 12h / 24h)
+* **6h Horizon:** {multi_horizon_assessment['h6_summary']}
+* **12h Horizon:** {multi_horizon_assessment['h12_summary']}
+* **24h Horizon:** {multi_horizon_assessment['h24_summary']}
 
-#### 3. Phương án Ngăn chặn Khuyến nghị
+#### 3. Actionable Tactical Recommendations
 1. {recs[0]}
 2. {recs[1]}
 3. {recs[2]}
 """
 
     return {
-        "summary_vi": summary_vi,
+        "summary": summary,
+        "summary_vi": summary,
         "risk_level": risk_level,
         "spread_mechanism": mechanism,
         "threat_zone": threat_zone,
@@ -462,7 +464,15 @@ def _normalize_sitrep_keys(parsed: Any, telemetry: Dict[str, Any]) -> Dict[str, 
     """
     if not isinstance(parsed, dict):
         parsed = {}
+
+    # Synchronize summary and summary_vi
+    if "summary" in parsed and parsed["summary"] and ("summary_vi" not in parsed or not parsed["summary_vi"]):
+        parsed["summary_vi"] = parsed["summary"]
+    elif "summary_vi" in parsed and parsed["summary_vi"] and ("summary" not in parsed or not parsed["summary"]):
+        parsed["summary"] = parsed["summary_vi"]
+
     required_keys = [
+        "summary",
         "summary_vi",
         "risk_level",
         "spread_mechanism",

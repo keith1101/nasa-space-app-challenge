@@ -234,7 +234,7 @@ export interface CinematicEarthProps {
   isVi?: boolean;
 }
 
-export function CinematicEarth({ className, isVi = false }: CinematicEarthProps) {
+export function CinematicEarth({ className }: CinematicEarthProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -1250,7 +1250,7 @@ export function CinematicEarth({ className, isVi = false }: CinematicEarthProps)
               ? 'border-rose-400 bg-rose-950/90 text-rose-200 ring-1 ring-rose-400/50'
               : 'border-rose-500/30 bg-ink-950/80 text-rose-300 hover:border-rose-400/60 hover:bg-rose-950/40'
           )}
-          title={isVi ? 'Xem thông số vệ tinh MODIS (Terra/Aqua)' : 'View MODIS (Terra/Aqua) specs'}
+          title="View MODIS (Terra/Aqua) specs"
         >
           <span className="h-1.5 w-1.5 rounded-full bg-rose-400 animate-pulse" />
           <span>MODIS · 705 KM</span>
@@ -1266,7 +1266,7 @@ export function CinematicEarth({ className, isVi = false }: CinematicEarthProps)
               ? 'border-cyan-400 bg-cyan-950/90 text-cyan-200 ring-1 ring-cyan-400/50'
               : 'border-cyan-500/30 bg-ink-950/80 text-cyan-300 hover:border-cyan-400/60 hover:bg-cyan-950/40'
           )}
-          title={isVi ? 'Xem thông số vệ tinh VIIRS (Suomi-NPP/NOAA-20/21)' : 'View VIIRS (SNPP/NOAA) specs'}
+          title="View VIIRS (SNPP/NOAA) specs"
         >
           <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
           <span>VIIRS · 834 KM</span>
@@ -1276,7 +1276,7 @@ export function CinematicEarth({ className, isVi = false }: CinematicEarthProps)
       {/* Top Right Live Sun / Terminator Indicator */}
       <div className="absolute top-3 right-3 z-10 hidden sm:flex items-center gap-2 pointer-events-none">
         <div className="rounded-lg border border-line bg-ink-950/80 px-2.5 py-1 text-[10px] font-mono text-slate-300 backdrop-blur-md">
-          <span>{isVi ? 'Đường Ranh Giới Ngày / Đêm' : 'Solar Terminator: Active'}</span>
+          <span>Solar Terminator: Active</span>
         </div>
       </div>
 
@@ -1293,8 +1293,8 @@ export function CinematicEarth({ className, isVi = false }: CinematicEarthProps)
               />
               <span className="text-xs font-mono font-bold tracking-tight text-white">
                 {selectedSatellite === 'MODIS'
-                  ? (isVi ? 'VỆ TINH MODIS (TERRA / AQUA)' : 'MODIS SATELLITE (TERRA / AQUA)')
-                  : (isVi ? 'VỆ TINH VIIRS (SNPP / NOAA-20/21)' : 'VIIRS SATELLITE (SNPP / NOAA-20/21)')}
+                  ? 'MODIS SATELLITE (TERRA / AQUA)'
+                  : 'VIIRS SATELLITE (SNPP / NOAA-20/21)'}
               </span>
             </div>
             <button
@@ -1308,35 +1308,35 @@ export function CinematicEarth({ className, isVi = false }: CinematicEarthProps)
 
           <div className="mt-2.5 space-y-2 text-[11px] font-mono leading-relaxed">
             <div className="flex justify-between border-b border-line/40 pb-1">
-              <span className="text-slate-400">{isVi ? 'Quỹ đạo' : 'Orbit'}</span>
+              <span className="text-slate-400">Orbit</span>
               <span className="text-slate-200 font-semibold">
                 {selectedSatellite === 'MODIS' ? 'Sun-Synch LEO (705 km, 98.2°)' : 'Sun-Synch LEO (834 km, 98.7°)'}
               </span>
             </div>
             <div className="flex justify-between border-b border-line/40 pb-1">
-              <span className="text-slate-400">{isVi ? 'Độ phân giải Nadir' : 'Nadir Resolution'}</span>
+              <span className="text-slate-400">Nadir Resolution</span>
               <span className={selectedSatellite === 'MODIS' ? 'text-rose-300 font-bold' : 'text-cyan-300 font-bold'}>
                 {selectedSatellite === 'MODIS' ? '1,000 m (Thermal Ch21/31)' : '375 m (I-Band I4/I5)'}
               </span>
             </div>
             <div className="flex justify-between border-b border-line/40 pb-1">
-              <span className="text-slate-400">{isVi ? 'Dải quét Swath' : 'Swath Width'}</span>
+              <span className="text-slate-400">Swath Width</span>
               <span className="text-slate-200">
                 {selectedSatellite === 'MODIS' ? '2,330 km (±55° scan mirror)' : '3,040 km (Zero nadir gap)'}
               </span>
             </div>
             <div className="flex justify-between border-b border-line/40 pb-1">
-              <span className="text-slate-400">{isVi ? 'Hiệu ứng Bowtie' : 'Bowtie Effect'}</span>
+              <span className="text-slate-400">Bowtie Effect</span>
               <span className="text-slate-300">
                 {selectedSatellite === 'MODIS'
-                  ? (isVi ? 'Dãn nở 10x tại rìa góc quét 55°' : '10x pixel smear at 55° edge')
-                  : (isVi ? 'Gom pixel 3:1, khống chế 2.1x' : '3:1 aggregation, capped at 2.1x')}
+                  ? '10x pixel smear at 55° edge'
+                  : '3:1 aggregation, capped at 2.1x'}
               </span>
             </div>
             <div className="pt-1 text-[10px] text-slate-400 italic">
               {selectedSatellite === 'MODIS'
-                ? (isVi ? '✦ Dữ liệu FIRMS: Kênh MWIR 3.96µm bão hòa 500K đo siêu đám cháy.' : '✦ FIRMS Data: MWIR 3.96µm Ch21 (500K cap) captures megafires.')
-                : (isVi ? '✦ Dữ liệu FIRMS: Dải I4 3.74µm độ nhạy cao bắt cháy âm ỉ từ 100m².' : '✦ FIRMS Data: I-band 3.74µm high sensitivity detects sub-pixel small fires.')}
+                ? '✦ FIRMS Data: MWIR 3.96µm Ch21 (500K cap) captures megafires.'
+                : '✦ FIRMS Data: I-band 3.74µm high sensitivity detects sub-pixel small fires.'}
             </div>
           </div>
         </div>
@@ -1362,17 +1362,17 @@ export function CinematicEarth({ className, isVi = false }: CinematicEarthProps)
                 ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-400/40'
                 : 'bg-ink-900 text-slate-400 border border-line hover:text-white',
             )}
-            title={isVi ? 'Chuyển chế độ vệ tinh (Tất cả / MODIS / VIIRS / Tắt)' : 'Cycle Satellite Mode (All / MODIS / VIIRS / Off)'}
+            title="Cycle Satellite Mode (All / MODIS / VIIRS / Off)"
           >
             <Satellite className="h-3 w-3" />
             <span>
               {satelliteMode === 'all'
-                ? (isVi ? 'Vệ Tinh: Cả 2' : 'Sats: Both')
+                ? 'Sats: Both'
                 : satelliteMode === 'modis'
                 ? 'MODIS (1)'
                 : satelliteMode === 'viirs'
                 ? 'VIIRS (1)'
-                : (isVi ? 'Tắt Vệ Tinh' : 'Sats: Off')}
+                : 'Sats: Off'}
             </span>
           </button>
 
@@ -1386,10 +1386,10 @@ export function CinematicEarth({ className, isVi = false }: CinematicEarthProps)
                 ? 'bg-orange-500/20 text-orange-300 border border-orange-400/40'
                 : 'bg-ink-900 text-slate-400 border border-line hover:text-white',
             )}
-            title={isVi ? 'Bật/tắt điểm cháy vệ tinh' : 'Toggle Active Fire Embers'}
+            title="Toggle Active Fire Embers"
           >
             <Flame className="h-3 w-3" />
-            <span>{isVi ? 'Điểm Cháy' : 'Hotspots'}</span>
+            <span>Hotspots</span>
           </button>
 
           {/* Toggle Rotation */}
@@ -1402,10 +1402,10 @@ export function CinematicEarth({ className, isVi = false }: CinematicEarthProps)
                 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-400/40'
                 : 'bg-ink-900 text-slate-400 border border-line hover:text-white',
             )}
-            title={isVi ? 'Tự động quay quả địa cầu' : 'Toggle Auto-Rotation'}
+            title="Toggle Auto-Rotation"
           >
             <Eye className="h-3 w-3" />
-            <span>{isRotating ? (isVi ? 'Đang quay' : 'Spinning') : (isVi ? 'Tạm dừng' : 'Paused')}</span>
+            <span>{isRotating ? 'Spinning' : 'Paused'}</span>
           </button>
         </div>
 
@@ -1414,10 +1414,10 @@ export function CinematicEarth({ className, isVi = false }: CinematicEarthProps)
           type="button"
           onClick={handleResetOrientation}
           className="inline-flex items-center gap-1 rounded-md border border-line bg-ink-900 px-2 py-1 text-[10px] font-semibold text-slate-300 hover:text-white hover:border-slate-500 transition-colors"
-          title={isVi ? 'Đặt lại góc nhìn Trái Đất' : 'Reset Earth Orientation'}
+          title="Reset Earth Orientation"
         >
           <RotateCcw className="h-3 w-3" />
-          <span>{isVi ? 'Căn Lại' : 'Reset'}</span>
+          <span>Reset</span>
         </button>
       </div>
     </div>

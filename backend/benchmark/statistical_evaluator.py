@@ -85,7 +85,7 @@ def evaluate_response_consistency(
     # 4. Kinematic consistency checks
     gt_dir = ground_truth.get("compass_dir")
     summary_text = (
-        str(response.get("summary_vi", ""))
+        str(response.get("summary") or response.get("summary_vi", ""))
         + " " + str(response.get("threat_zone", ""))
         + " " + str(response.get("forecast_6h", ""))
     )

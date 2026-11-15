@@ -50,12 +50,12 @@ export function CockpitHUD({
   instruments,
   onExit,
   onToggleMode,
-  lang = 'vi',
+  lang: _lang = 'en',
   isFullscreen = false,
   onToggleFullscreen,
 }: CockpitHUDProps) {
   const [showHelp, setShowHelp] = useState(false);
-  const isVi = lang === 'vi';
+  const isVi = false;
 
   // Toggle Controls Cheat Sheet with 'H' key or close with 'Esc'
   useEffect(() => {

@@ -257,12 +257,12 @@ class TestTacticalSITREPGeneration(unittest.TestCase):
         self.assertIn("h24_summary", assessment)
 
         md = res["sitrep_markdown"]
-        self.assertIn("BÁO CÁO TÁC CHIẾN TÌNH HÌNH HỎA HOẠN", md)
-        self.assertIn("Chân trời 6h", md)
-        self.assertIn("Chân trời 12h", md)
-        self.assertIn("Chân trời 24h", md)
-        self.assertIn("Đặc trưng địa hình", md)
-        self.assertIn("Hậu cần cứu hỏa", md)
+        self.assertIn("TACTICAL SITUATION REPORT (TACTICAL SITREP)", md)
+        self.assertIn("6h Horizon", md)
+        self.assertIn("12h Horizon", md)
+        self.assertIn("24h Horizon", md)
+        self.assertIn("Topography Profile", md)
+        self.assertIn("Firefighting Logistics", md)
 
         # Enriched telemetry should be retained
         self.assertIn("enriched_telemetry", res)

@@ -10,7 +10,6 @@ import { Spinner, cx } from '../ui';
 
 const YEARS = [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026];
 const MONTHS_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const MONTHS_VI = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
 
 export interface FireRegimeHeatmapProps {
   lang: Language;
@@ -58,7 +57,7 @@ export function FireRegimeHeatmap({
   const heatmapOption = useMemo<EChartsOption>(() => {
     if (!records.length) return {};
 
-    const months = lang === 'vi' ? MONTHS_VI : MONTHS_EN;
+    const months = MONTHS_EN;
     const yearLabels = YEARS.map(String);
 
     // Prepare data items: [xIdx, yIdx, value] with custom metadata
@@ -181,7 +180,7 @@ export function FireRegimeHeatmap({
   // ECharts 12-Month Seasonal Climatology Option
   const seasonalOption = useMemo<EChartsOption>(() => {
     if (!activeData?.baseline_by_month) return {};
-    const months = lang === 'vi' ? MONTHS_VI : MONTHS_EN;
+    const months = MONTHS_EN;
     const means: number[] = [];
     const lowerStd: number[] = [];
     const upperStd: number[] = [];
@@ -273,7 +272,7 @@ export function FireRegimeHeatmap({
       {/* Header bar */}
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line bg-ink-850 px-3.5 py-2">
         <span className="text-xs font-bold text-white tracking-wide">
-          {lang === 'vi' ? 'Ma Trận Chế Độ Cháy 2018–2026' : 'Wildfire Regime Matrix 2018–2026'}
+          Wildfire Regime Matrix 2018–2026
         </span>
 
         {/* Region selector */}
@@ -340,7 +339,7 @@ export function FireRegimeHeatmap({
 
           <span className="text-[11px] text-slate-400">
             {activeData?.peak_season
-              ? `${lang === 'vi' ? 'Đỉnh mùa:' : 'Peak:'} ${activeData.peak_season}`
+              ? `Peak: ${activeData.peak_season}`
               : 'Apache ECharts'}
           </span>
         </div>
@@ -385,9 +384,7 @@ export function FireRegimeHeatmap({
       {/* Footer Info */}
       <div className="flex items-center justify-between border-t border-line/60 bg-ink-950/60 px-3.5 py-1.5 text-[10px] text-slate-400">
         <span className="text-slate-400">
-          {lang === 'vi'
-            ? 'Mô hình bán thực nghiệm (FIRMS C6.1 / VIIRS)'
-            : 'Semi-empirical model (FIRMS C6.1 / VIIRS)'}
+          Semi-empirical model (FIRMS C6.1 / VIIRS)
         </span>
         <span className="font-mono text-slate-500">NASA EOSDIS · ECharts Engine</span>
       </div>

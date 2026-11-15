@@ -886,10 +886,10 @@ export function FireDeckMap({
           <div className="pointer-events-auto flex items-center gap-2 rounded-xl border border-line-strong bg-ink-900/90 px-3 py-1.5 backdrop-blur-md shadow-lg">
             <span className="flex h-2.5 w-2.5 rounded-full bg-cyan-400 animate-pulse" />
             <span className="text-xs font-bold text-white tracking-wide">
-              {lang === 'vi' ? 'Deck.gl WebGL2 Engine' : 'Deck.gl WebGL2 Engine'}
+              Deck.gl WebGL2 Engine
             </span>
             <span className="text-[11px] text-cyan-300 font-mono">
-              {fmtInt(globalPoints.length)} {lang === 'vi' ? 'điểm' : 'hotspots'}
+              {fmtInt(globalPoints.length)} hotspots
             </span>
             {selectedCountry && (
               <div className="flex items-center gap-1 rounded bg-cyan-500/20 px-2 py-0.5 text-[10px] font-bold text-cyan-300 border border-cyan-400/30">
@@ -901,7 +901,7 @@ export function FireDeckMap({
                     handleResetView();
                   }}
                   className="hover:text-rose-400 transition-colors ml-0.5"
-                  title={lang === 'vi' ? 'Hủy lọc quốc gia, xem toàn cảnh thế giới' : 'Reset country filter'}
+                  title="Reset country filter"
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -912,7 +912,7 @@ export function FireDeckMap({
           <div className="flex items-center gap-2 pointer-events-auto">
             {/* Layer Mode Switcher */}
             <div className="flex items-center gap-1 rounded-xl border border-line-strong bg-ink-900/90 p-1 backdrop-blur-md shadow-lg">
-              <Tooltip content={lang === 'vi' ? 'Hiển thị cả mật độ nhiệt và từng điểm cháy' : 'Show both density heatmap and individual hotspots'}>
+              <Tooltip content="Show both density heatmap and individual hotspots">
                 <button
                   type="button"
                   onClick={() => setLayerMode('both')}
@@ -924,11 +924,11 @@ export function FireDeckMap({
                   )}
                 >
                   <Layers className="h-3.5 w-3.5" />
-                  <span>{lang === 'vi' ? 'Toàn bộ' : 'All'}</span>
+                  <span>All</span>
                 </button>
               </Tooltip>
 
-              <Tooltip content={lang === 'vi' ? 'Chỉ hiển thị các điểm cháy đơn lẻ' : 'Show individual hotspot scatter points only'}>
+              <Tooltip content="Show individual hotspot scatter points only">
                 <button
                   type="button"
                   onClick={() => setLayerMode('hotspots')}
@@ -940,11 +940,11 @@ export function FireDeckMap({
                   )}
                 >
                   <Flame className="h-3.5 w-3.5" />
-                  <span>{lang === 'vi' ? 'Điểm cháy' : 'Hotspots'}</span>
+                  <span>Hotspots</span>
                 </button>
               </Tooltip>
 
-              <Tooltip content={lang === 'vi' ? 'Chỉ hiển thị bản đồ nhiệt mật độ gom cụm' : 'Show aggregated density heatmap only'}>
+              <Tooltip content="Show aggregated density heatmap only">
                 <button
                   type="button"
                   onClick={() => setLayerMode('density')}
@@ -956,13 +956,13 @@ export function FireDeckMap({
                   )}
                 >
                   <Sparkles className="h-3.5 w-3.5" />
-                  <span>{lang === 'vi' ? 'Mật độ' : 'Density'}</span>
+                  <span>Density</span>
                 </button>
               </Tooltip>
             </div>
 
             {/* Fullscreen Button */}
-            <Tooltip content={isMapFullscreen ? (lang === 'vi' ? 'Thu nhỏ bản đồ (F)' : 'Exit Fullscreen (F)') : (lang === 'vi' ? 'Toàn màn hình bản đồ (F)' : 'Fullscreen Map (F)')}>
+            <Tooltip content={isMapFullscreen ? 'Exit Fullscreen (F)' : 'Fullscreen Map (F)'}>
               <button
                 type="button"
                 onClick={toggleMapFullscreen}
@@ -986,24 +986,24 @@ export function FireDeckMap({
         <div className="pointer-events-none absolute left-4 top-16 z-20 select-none">
           <div className="pointer-events-auto flex items-center gap-2 rounded-xl border border-line-strong bg-ink-950/95 px-3 py-1.5 text-[11px] shadow-2xl backdrop-blur-md">
             <span className="font-bold text-slate-200">
-              {lang === 'vi' ? '3 Vòng Lan Truyền:' : '3-Layer Spread:'}
+              3-Layer Spread:
             </span>
             <div className="flex items-center gap-1.5 rounded-lg bg-rose-500/15 border border-rose-500/30 px-2 py-0.5">
               <span className="h-2 w-2 rounded-full bg-rose-500" />
               <span className="font-bold text-rose-400 font-mono">
-                6h: {multiHorizonSize?.['6h'] ? `${multiHorizonSize['6h'].expected_area_ha} ha` : (lang === 'vi' ? 'Đỏ trong cùng' : 'Inner Red')}
+                6h: {multiHorizonSize?.['6h'] ? `${multiHorizonSize['6h'].expected_area_ha} ha` : 'Inner Red'}
               </span>
             </div>
             <div className="flex items-center gap-1.5 rounded-lg bg-orange-500/15 border border-orange-500/30 px-2 py-0.5">
               <span className="h-2 w-2 rounded-full bg-orange-500" />
               <span className="font-bold text-orange-400 font-mono">
-                12h: {multiHorizonSize?.['12h'] ? `${multiHorizonSize['12h'].expected_area_ha} ha` : (lang === 'vi' ? 'Cam ở giữa' : 'Middle Orange')}
+                12h: {multiHorizonSize?.['12h'] ? `${multiHorizonSize['12h'].expected_area_ha} ha` : 'Middle Orange'}
               </span>
             </div>
             <div className="flex items-center gap-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5">
               <span className="h-2 w-2 rounded-full bg-emerald-400" />
               <span className="font-bold text-emerald-300 font-mono">
-                24h: {multiHorizonSize?.['24h'] ? `${multiHorizonSize['24h'].expected_area_ha} ha` : (lang === 'vi' ? 'Xanh bao trùm' : 'Outer Green')}
+                24h: {multiHorizonSize?.['24h'] ? `${multiHorizonSize['24h'].expected_area_ha} ha` : 'Outer Green'}
               </span>
             </div>
           </div>
@@ -1051,7 +1051,7 @@ export function FireDeckMap({
                   {t.popupRawDetail(hoverInfo.point[5])}
                 </div>
                 <div className="pt-1 text-[10px] text-cyan-400 font-sans font-semibold">
-                  {lang === 'vi' ? 'Nhấp để xem chi tiết viễn thám' : 'Click to inspect detailed telemetry'}
+                  Click to inspect detailed telemetry
                 </div>
 
                 <button
@@ -1064,17 +1064,17 @@ export function FireDeckMap({
                   className="mt-2 w-full flex items-center justify-center gap-1.5 rounded-lg bg-gradient-to-r from-red-600 via-orange-600 to-amber-600 px-2.5 py-1.5 text-[11px] font-bold text-white shadow-md hover:from-red-500 hover:to-amber-500 pointer-events-auto transition-all"
                 >
                   <Plane className="h-3.5 w-3.5" />
-                  <span>{lang === 'vi' ? 'Xuất Kích Cứu Hỏa (3D Flight)' : 'Scramble 3D Flight'}</span>
+                  <span>Scramble 3D Flight</span>
                 </button>
               </div>
             </div>
           ) : hoverInfo.country ? (
             <div className="space-y-1">
               <div className="font-bold text-cyan-300 text-sm">
-                {hoverInfo.country.NAME || hoverInfo.country.ADMIN || 'Quốc gia'}
+                {hoverInfo.country.NAME || hoverInfo.country.ADMIN || 'Country'}
               </div>
               <div className="text-[11px] text-slate-300">
-                {hoverInfo.country.CONTINENT && <div>Châu lục: {hoverInfo.country.CONTINENT}</div>}
+                {hoverInfo.country.CONTINENT && <div>Continent: {hoverInfo.country.CONTINENT}</div>}
               </div>
             </div>
           ) : null}
@@ -1085,7 +1085,7 @@ export function FireDeckMap({
       {!isFlying && (
         <div className="absolute right-4 bottom-4 flex flex-col gap-2">
           {/* Fullscreen Map Button */}
-          <Tooltip content={isMapFullscreen ? (lang === 'vi' ? 'Thu nhỏ bản đồ (F)' : 'Exit Fullscreen (F)') : (lang === 'vi' ? 'Toàn màn hình bản đồ (F)' : 'Fullscreen Map (F)')} side="left">
+          <Tooltip content={isMapFullscreen ? 'Exit Fullscreen (F)' : 'Fullscreen Map (F)'} side="left">
             <button
               type="button"
               onClick={toggleMapFullscreen}
@@ -1103,7 +1103,7 @@ export function FireDeckMap({
 
           {onToggleBasemap && (
             <Tooltip
-              content={basemapStyle === 'dark' ? (lang === 'vi' ? 'Chuyển sang ảnh vệ tinh Esri' : 'Switch to Esri World Imagery') : (lang === 'vi' ? 'Chuyển sang bản đồ tối CARTO' : 'Switch to CARTO Dark Matter')}
+              content={basemapStyle === 'dark' ? 'Switch to Esri World Imagery' : 'Switch to CARTO Dark Matter'}
               side="left"
             >
               <button
@@ -1139,7 +1139,7 @@ export function FireDeckMap({
             </button>
           </Tooltip>
 
-          <Tooltip content={lang === 'vi' ? 'Bay Tự Do Toàn Cầu (Free Flight FPV)' : 'Free Roam Flight Simulator (FPV)'} side="left">
+          <Tooltip content="Free Roam Flight Simulator (FPV)" side="left">
             <button
               type="button"
               onClick={handleStartFreeFlight}
@@ -1150,7 +1150,7 @@ export function FireDeckMap({
             </button>
           </Tooltip>
 
-          <Tooltip content={lang === 'vi' ? 'Xuất kích cứu hỏa 3D tới điểm cháy' : 'Scramble 3D aerial firefighting flight'} side="left">
+          <Tooltip content="Scramble 3D aerial firefighting flight" side="left">
             <button
               type="button"
               onClick={() => handleScrambleMission()}
@@ -1188,12 +1188,12 @@ export function FireDeckMap({
           {selectedGlobalPoint && (
             <div className="pt-2 border-t border-line/60 space-y-1.5">
               <span className="font-bold text-amber-300 text-[10px] uppercase tracking-wider block">
-                {lang === 'vi' ? '3 Vòng Lan Truyền Trên Map' : '3-Layer Spread Concentric Rings'}
+                3-Layer Spread Concentric Rings
               </span>
               <div className="flex items-center justify-between gap-3 text-[10px]">
                 <div className="flex items-center gap-1.5">
                   <span className="h-2.5 w-2.5 rounded-full bg-rose-500 border border-rose-300 shadow-sm shadow-rose-500/50" />
-                  <span className="text-rose-300 font-semibold">{lang === 'vi' ? '6h (Đỏ trong cùng)' : '6h (Inner Red)'}</span>
+                  <span className="text-rose-300 font-semibold">6h (Inner Red)</span>
                 </div>
                 {multiHorizonSize?.['6h'] && (
                   <span className="font-mono text-slate-300">{multiHorizonSize['6h'].expected_area_ha} ha</span>
@@ -1202,7 +1202,7 @@ export function FireDeckMap({
               <div className="flex items-center justify-between gap-3 text-[10px]">
                 <div className="flex items-center gap-1.5">
                   <span className="h-2.5 w-2.5 rounded-full bg-orange-500 border border-orange-300 shadow-sm shadow-orange-500/50" />
-                  <span className="text-orange-300 font-semibold">{lang === 'vi' ? '12h (Cam ở giữa)' : '12h (Middle Orange)'}</span>
+                  <span className="text-orange-300 font-semibold">12h (Middle Orange)</span>
                 </div>
                 {multiHorizonSize?.['12h'] && (
                   <span className="font-mono text-slate-300">{multiHorizonSize['12h'].expected_area_ha} ha</span>
@@ -1211,7 +1211,7 @@ export function FireDeckMap({
               <div className="flex items-center justify-between gap-3 text-[10px]">
                 <div className="flex items-center gap-1.5">
                   <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 border border-emerald-300 shadow-sm shadow-emerald-400/50" />
-                  <span className="text-emerald-300 font-semibold">{lang === 'vi' ? '24h (Xanh bao trùm)' : '24h (Outer Green)'}</span>
+                  <span className="text-emerald-300 font-semibold">24h (Outer Green)</span>
                 </div>
                 {multiHorizonSize?.['24h'] && (
                   <span className="font-mono text-slate-300">{multiHorizonSize['24h'].expected_area_ha} ha</span>

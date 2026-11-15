@@ -39,7 +39,7 @@ export interface FireDetailDialogProps {
 export function FireDetailDialog({
   point,
   country,
-  lang,
+  lang: _lang,
   onClose,
   riskPersistence,
   onScramble,
@@ -50,7 +50,7 @@ export function FireDetailDialog({
   const [copied, setCopied] = useState(false);
   const [selectedHorizon, setSelectedHorizon] = useState<number>(initialHorizon);
   const [isMinimized, setIsMinimized] = useState(false);
-  const isVi = lang === 'vi';
+  const isVi = false;
 
   // Whenever a new fire point is selected, auto-expand the details card
   useEffect(() => {
